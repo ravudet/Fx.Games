@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build">
+
+  <PropertyGroup Condition=" '$(OutputPath)' == '' ">
+    <!--
+      OutputPath is required to be set because targets like Clean will read it.  Traversal projects shouldn't really emit any
+      output but it could be hard to track down all of the places where $(OutputPath) and $(OutDir) are expected to be set.
+    -->
+    <OutputPath Condition=" '$(Configuration)' == '' And '$(Platform)' == '' ">bin\Debug\</OutputPath>
+    <OutputPath Condition=" '$(Configuration)' != '' And '$(Platform)' == '' ">bin\$(Configuration)\</OutputPath>
+    <OutputPath Condition=" '$(Configuration)' != '' And '$(Platform)' != '' ">bin\$(Configuration)\$(Platform)\</OutputPath>
+  </PropertyGroup>
+  
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  
+  <PropertyGroup>
+    <!--<CoreBuildDependsOn>
+      PrepareForBuild
+    </CoreBuildDependsOn>-->
+
+
+    <CoreBuildDependsOn>
+      BuildOnlySettings;
+      PrepareForBuild;
+      PreBuildEvent;
+      ResolveReferences;
+      PostBuildEvent
+    </CoreBuildDependsOn>
+
+    <PrepareForBuildDependsOn></PrepareForBuildDependsOn>
+
+    <PublishDependsOn>
+      Build;
+    </PublishDependsOn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="@(ProjectFile)" />
+  </ItemGroup>
+
+  <Target Name="PrepareForBuild"
+          DependsOnTargets="$(PrepareForBuildDependsOn)" />
+  
+	<Target Name="Build"
+          DependsOnTargets="$(BuildDependsOn)"
+          Returns="@(CollectedBuildOutput)">
+        <MSBuild Projects="@(ProjectReference)"
+             BuildInParallel="$([MSBuild]::ValueOrDefault('%(ProjectReference.BuildInParallel)', '$(BuildInParallel)'))"
+             Properties="%(ProjectReference.SetConfiguration); %(ProjectReference.SetPlatform); %(ProjectReference.SetTargetFramework)"
+             SkipNonexistentProjects="$(SkipNonexistentProjects)"
+             SkipNonexistentTargets="$(SkipNonexistentTargets)"
+             StopOnFirstFailure="$(StopOnFirstFailure)"
+             Targets="%(ProjectReference.Targets)"
+             ContinueOnError="true">
+          <Output TaskParameter="TargetOutputs" ItemName="CollectedBuildOutput" />
+    </MSBuild>
+	</Target>
+  <Target Name="Publish"
+          DependsOnTargets="$(PublishDependsOn)"
+          Condition=" '$(IsGraphBuild)' != 'true' ">
+    <MSBuild Projects="@(ProjectReference)"
+             Properties="$(TraversalPublishGlobalProperties)"
+             Targets="Publish"
+             Condition="'%(ProjectReference.Publish)' != 'false'"
+             BuildInParallel="$([MSBuild]::ValueOrDefault('%(ProjectReference.PublishInParallel)',
+                               $([MSBuild]::ValueOrDefault('%(ProjectReference.BuildInParallel)',
+                                $([MSBuild]::ValueOrDefault('$(PublishInParallel)', '$(BuildInParallel)'))
+                                ))
+                               ))"
+             SkipNonexistentProjects="$(SkipNonexistentProjects)"
+             SkipNonexistentTargets="$(SkipNonexistentTargets)"
+             StopOnFirstFailure="$(StopOnFirstFailure)"
+             ContinueOnError="$([MSBuild]::ValueOrDefault('$(PublishContinueOnError)', '$(ContinueOnError)'))" />
+  </Target>
+
+  <Target Name="GetTargetPath"
+          DependsOnTargets="$(GetTargetPathDependsOn)"
+          Returns="@(CollectedBuildOutput)">
+    <MSBuild Projects="@(ProjectReference)"
+             Condition="'%(ProjectReference.Build)' != 'false'"
+             Targets="GetTargetPath"
+             BuildInParallel="$([MSBuild]::ValueOrDefault('%(ProjectReference.BuildInParallel)', '$(BuildInParallel)'))"
+             SkipNonexistentProjects="$(SkipNonexistentProjects)"
+             SkipNonexistentTargets="$(SkipNonexistentTargets)"
+             StopOnFirstFailure="$(StopOnFirstFailure)"
+             Properties="%(ProjectReference.SetConfiguration); %(ProjectReference.SetPlatform); %(ProjectReference.SetTargetFramework)"
+             ContinueOnError="$(ContinueOnError)">
+      <Output TaskParameter="TargetOutputs" ItemName="CollectedBuildOutput" />
+    </MSBuild>
+  </Target>
+</Project>
