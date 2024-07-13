@@ -1,0 +1,103 @@
+﻿namespace Fx.Games.Driver
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Fx.Games.Displayer;
+    using Fx.Games.Game;
+    using Fx.Games.Strategy;
+
+    /// <summary>
+    /// Coordinates the playing of a game by leveraging the specific strategies assigned to each player
+    /// TODO should this be an extension on the displayer?
+    /// </summary>
+    /// <typeparam name="TGame">The type of the game that is being played</typeparam>
+    /// <typeparam name="TBoard">The type of the board that the <typeparamref name="TGame"/> uses</typeparam>
+    /// <typeparam name="TMove">The type of the moves that the <typeparamref name="TGame"/> uses</typeparam>
+    /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
+    /// <threadsafety static="true" instance="true"/>
+    public sealed class Driver<TGame, TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer> where TPlayer : notnull
+    {
+        /// <summary>
+        /// The strategy that is assigned to each player of the game
+        /// </summary>
+        private readonly ICovariantReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies;
+
+        /// <summary>
+        /// The <see cref="IDisplayer{TGame, TBoard, TMove, TPlayer}"/> that represents the input/output interactions between a user and the game that this <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> coordinates
+        /// </summary>
+        private readonly IDisplayer<TGame, TBoard, TMove, TPlayer> displayer;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> class.
+        /// </summary>
+        /// <param name="strategies">The strategy that is assigned to each player of the game</param>
+        /// <param name="displayer">The <see cref="IDisplayer{TGame, TBoard, TMove, TPlayer}"/> that represents the input/output interactions between a user and the game that this <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> coordinates</param>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="strategies"/> or <paramref name="displayer"/> is <see langword="null"/></exception>
+        public Driver(ICovariantReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies, IDisplayer<TGame, TBoard, TMove, TPlayer> displayer)
+        {
+            if (strategies == null)
+            {
+                throw new ArgumentNullException(nameof(strategies));
+            }
+
+            if (displayer == null)
+            {
+                throw new ArgumentNullException(nameof(displayer));
+            }
+
+            this.strategies = strategies; //// TODO create a copy constructor extension
+            this.displayer = displayer;
+        }
+
+        /// <summary>
+        /// Coordinates playing <paramref name="game"/> by leveraging the configured <see cref="IStrategy{TGame, TBoard, TMove, TPlayer}"/>s asssigned to each player of the game
+        /// </summary>
+        /// <param name="game">The game to play</param>
+        /// <returns>The final state of the played game</returns>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="game"/> is <see langword="null"/></exception>
+        /// <exception cref="PlayerNotFoundExeption">Thrown if <paramref name="game"/> has reached a state where a certain player is the current player, but there is no strategy configured for that player</exception>
+        /// <exception cref="InvalidGameException">Thrown if a strategy is asked to select a move from a game with no valid moves</exception>
+        /// <exception cref="IllegalMoveExeption">Thrown if a strategy selects a move that is not currently legal</exception>
+        public TGame Run(TGame game)
+        {
+            //// TODO should you handle any of the exceptions that end up surfaced?
+
+            if (game == null)
+            {
+                throw new ArgumentNullException(nameof(game));
+            }
+
+            while (!game.IsGameOver)
+            {
+                var currentPlayer = game.CurrentPlayer;
+                IStrategy<TGame, TBoard, TMove, TPlayer> strategy;
+                try
+                {
+                    strategy = this.strategies[currentPlayer];
+                }
+                catch (KeyNotFoundException)
+                {
+                    //// TODO the string interpolation only works because you normally use string for the player type
+                    throw new PlayerNotFoundExeption($"Could not find player {game.CurrentPlayer} in the configured strategies.");
+                }
+
+                displayer.DisplayBoard(game);
+                displayer.DisplayAvailableMoves(game);
+                var move = strategy.SelectMove(game);
+                displayer.DisplaySelectedMove(move);
+                game = game.CommitMove(move);
+                /*
+                TODO should you add this back?
+                if (game.IsGameOver)
+                {
+                    break;
+                }*/
+            }
+
+            displayer.DisplayBoard(game);
+            displayer.DisplayOutcome(game);
+            return game;
+        }
+    }
+}
