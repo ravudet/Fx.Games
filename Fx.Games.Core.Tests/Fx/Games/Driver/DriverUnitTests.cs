@@ -10,7 +10,7 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     /// <summary>
-    /// Unit tests for <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/>
+    /// Unit tests for <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> and <see cref="Driver"/>
     /// </summary>
     [TestClass]
     public sealed class DriverUnitTests
@@ -21,15 +21,33 @@
         [TestMethod]
         public void NullStrategies()
         {
-            //// TODO clean up 79e900e4a410cf85d445bc9b56edba6097887d10 onward
-            /*var game = new MockGame();
-            Driver.Create(
-                new[] 
-                { 
-                    KeyValuePair.Create("first", MockStrategy.Create(game))
-                }.ToCovariantReadOnlyDictionary(), 
-                game.NullDisplayer());*/
+            var game = new MockGame();
+            Assert.ThrowsException<ArgumentNullException>(() => new Driver<MockGame, string[], string, string>(
+                null,
+                game.NullDisplayer()));
+        }
 
+        /// <summary>
+        /// Creates a driver with a <see langword="null"/> displayer
+        /// </summary>
+        [TestMethod]
+        public void NullDisplayer()
+        {
+            var game = new MockGame();
+            Assert.ThrowsException<ArgumentNullException>(() => new Driver<MockGame, string[], string, string>(
+                new[]
+                {
+                    KeyValuePair.Create("first", MockStrategy.Create(game)),
+                }.ToDictionary(),
+                null));
+        }
+
+        /// <summary>
+        /// Creates a driver with <see langword="null"/> strategies
+        /// </summary>
+        [TestMethod]
+        public void NullStrategiesFactory()
+        {
             var game = new MockGame();
             Assert.ThrowsException<ArgumentNullException>(() => Driver.Create(
                 null,
@@ -40,7 +58,7 @@
         /// Creates a driver with a <see langword="null"/> displayer
         /// </summary>
         [TestMethod]
-        public void NullDisplayer()
+        public void NullDisplayerFactory()
         {
             var game = new MockGame();
             Assert.ThrowsException<ArgumentNullException>(() => Driver.Create(
