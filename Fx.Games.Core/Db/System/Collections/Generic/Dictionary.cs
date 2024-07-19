@@ -6,7 +6,7 @@ namespace Db.System.Collections.Generic
     {
         private readonly global::System.Collections.Generic.Dictionary<TKey, TValue> dictionary;
 
-        private readonly DbNullable<TValue> nullValue;
+        private readonly Nullable<TValue> nullValue;
 
         public Dictionary()
             : this(global::System.Collections.Generic.EqualityComparer<TKey>.Default)

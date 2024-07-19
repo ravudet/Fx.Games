@@ -1,8 +1,8 @@
 ﻿namespace Db.System
 {
-    public struct DbNullable<T>
+    public struct Nullable<T>
     {
-        public DbNullable(T value)
+        public Nullable(T value)
         {
             this.Value = value;
             this.HasValue = true;

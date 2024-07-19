@@ -47,7 +47,7 @@
                 new[]
                 {
                     KeyValuePair.Create("first", MockStrategy.Create(game)),
-                }.ToCovariantReadOnlyDictionary(),
+                }.ToDictionary(),
                 null));
         }
 
@@ -62,7 +62,7 @@
                 new[]
                 {
                     KeyValuePair.Create("first", MockStrategy.Create(game)),
-                }.ToCovariantReadOnlyDictionary(),
+                }.ToDictionary(),
                 game.NullDisplayer());
 
             Assert.ThrowsException<ArgumentNullException>(() => driver.Run(null));
@@ -76,7 +76,7 @@
                 new[]
                 {
                     KeyValuePair.Create("first", MockStrategy.Create(game)),
-                }.ToCovariantReadOnlyDictionary(),
+                }.ToDictionary(),
                 game.NullDisplayer());
             Assert.ThrowsException<PlayerNotFoundExeption>(() => driver.Run(game));
         }
@@ -90,7 +90,7 @@
                 new[]
                 {
                     KeyValuePair.Create("asdf", strategy),
-                }.ToCovariantReadOnlyDictionary(),
+                }.ToDictionary(),
                 game.NullDisplayer());
             driver.Run(game);
 
