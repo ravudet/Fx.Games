@@ -1,7 +1,7 @@
 ﻿namespace ConsoleApplication1
 {
     using System;
-
+    using System.Collections.Generic;
     using Db.System.Collections.Generic;
 
     using Fx.Games.Displayer;
@@ -60,10 +60,10 @@
             var game = new PegGame<string>(player);
             var driver = Driver.Create(
                 //// TODO dictionary.create
-                new Dictionary<string, IStrategy<PegGame<string>, PegBoard, PegMove, string>>
+                new[]
                 {
-                    { player, new ConsoleStrategy<PegGame<string>, PegBoard, PegMove, string>() },
-                },
+                    KeyValuePair.Create(player, new ConsoleStrategy<PegGame<string>, PegBoard, PegMove, string>()),
+                }.ToDictionary(),
                 displayer);
             var result = driver.Run(game);
         }
@@ -75,10 +75,10 @@
             var game = new PegGame<string>(player);
             var driver = Driver.Create(
                 //// TODO dictionary.create
-                new Dictionary<string, IStrategy<PegGame<string>, PegBoard, PegMove, string>>
+                new[]
                 {
-                    { player, new RandomStrategy<PegGame<string>, PegBoard, PegMove, string>() },
-                },
+                    KeyValuePair.Create(player, new RandomStrategy<PegGame<string>, PegBoard, PegMove, string>()),
+                }.ToDictionary(),
                 displayer);
             var result = driver.Run(game);
         }
