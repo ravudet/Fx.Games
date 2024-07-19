@@ -15,7 +15,12 @@ namespace Db.System.Collections.Generic
 
         public Dictionary(global::System.Collections.Generic.IEqualityComparer<TKey> comparer)
         {
-            this.dictionary = new global::System.Collections.Generic.Dictionary<TKey, TValue>();
+            if (comparer == null)
+            {
+                throw new ArgumentNullException(nameof(comparer));
+            }
+
+            this.dictionary = new global::System.Collections.Generic.Dictionary<TKey, TValue>(comparer);
             this.nullValue = default;
         }
 
