@@ -59,7 +59,7 @@
             var player = "player";
             var game = new PegGame<string>(player);
             var driver = Driver.Create(
-                new[]
+                new[] //// TODO use a fluent builder?
                 {
                     KeyValuePair.Create(player, game.ConsoleStrategy()),
                 }.ToDictionary(),

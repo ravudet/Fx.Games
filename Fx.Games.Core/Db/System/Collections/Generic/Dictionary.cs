@@ -1,6 +1,6 @@
 ﻿namespace Db.System.Collections.Generic
 {
-    public sealed partial class Dictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
+    public sealed class Dictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
     {
         private readonly global::System.Collections.Generic.Dictionary<TKey, TValue> dictionary;
 
@@ -17,9 +17,15 @@
             this.nullValue = default;
         }
 
-        public void Add(TKey key, TValue value)
+        public Dictionary<TKey, TValue> Add(TKey key, TValue value)
         {
+            if (key == null)
+            {
+                //// TODO
+            }
+
             this.dictionary.Add(key, value);
+            return this;
         }
 
         public TValue GetValueTry(TKey key, out bool contained)
