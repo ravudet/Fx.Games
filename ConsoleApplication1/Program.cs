@@ -59,10 +59,9 @@
             var player = "player";
             var game = new PegGame<string>(player);
             var driver = Driver.Create(
-                //// TODO dictionary.create
                 new[]
                 {
-                    KeyValuePair.Create(player, new ConsoleStrategy<PegGame<string>, PegBoard, PegMove, string>()),
+                    KeyValuePair.Create(player, game.ConsoleStrategy()),
                 }.ToDictionary(),
                 displayer);
             var result = driver.Run(game);
@@ -74,10 +73,9 @@
             var player = "random";
             var game = new PegGame<string>(player);
             var driver = Driver.Create(
-                //// TODO dictionary.create
                 new[]
                 {
-                    KeyValuePair.Create(player, new RandomStrategy<PegGame<string>, PegBoard, PegMove, string>()),
+                    KeyValuePair.Create(player, game.RandomStrategy()),
                 }.ToDictionary(),
                 displayer);
             var result = driver.Run(game);
