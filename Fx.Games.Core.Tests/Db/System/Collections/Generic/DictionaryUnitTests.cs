@@ -44,5 +44,26 @@
             Assert.IsTrue(dictionary.TryGetValue(null, out var value));
             Assert.AreEqual("some value", value);
         }
+
+        /// <summary>
+        /// Adds a duplicate <see langword="null"/> key to a dictionary
+        /// </summary>
+        [TestMethod]
+        public void AddDuplicateNullKey()
+        {
+            var dictionary = new Dictionary<string?, string>();
+            dictionary.Add(null, "some value");
+            Assert.ThrowsException<DuplicateKeyException>(() => dictionary.Add(null, "some other value"));
+        }
+
+        /// <summary>
+        /// Retrieves a key that hasn't been added to a dictionary
+        /// </summary>
+        [TestMethod]
+        public void RetrieveNonExistentKey()
+        {
+            var dictionary = new Dictionary<string, string>();
+            Assert.IsFalse(dictionary.TryGetValue("some key", out var value));
+        }
     }
 }
