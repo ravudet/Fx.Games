@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Db.System.Collections.Generic
+﻿namespace Db.System.Collections.Generic
 {
     public sealed class Dictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
     {
@@ -17,7 +15,7 @@ namespace Db.System.Collections.Generic
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException(nameof(comparer));
+                throw new global::System.ArgumentNullException(nameof(comparer));
             }
 
             this.dictionary = new global::System.Collections.Generic.Dictionary<TKey, TValue>(comparer);
@@ -30,7 +28,7 @@ namespace Db.System.Collections.Generic
             {
                 if (this.nullValue.HasValue)
                 {
-                    throw new ArgumentException("TODO duplicate key");
+                    throw new global::System.ArgumentException("TODO duplicate key");
                 }
                 else
                 {
