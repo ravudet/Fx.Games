@@ -9,6 +9,17 @@
     public sealed class DictionaryUnitTests
     {
         /// <summary>
+        /// Creates a dictionary with a <see langword="null"/> comparer
+        /// </summary>
+        [TestMethod]
+        public void NullComparer()
+        {
+            Assert.ThrowsException<global::System.ArgumentNullException>(() => new Dictionary<string, string>(
+                null
+                ));
+        }
+
+        /// <summary>
         /// Adds a key/value pair to a dictionary
         /// </summary>
         [TestMethod]
@@ -60,10 +71,33 @@
         /// Retrieves a key that hasn't been added to a dictionary
         /// </summary>
         [TestMethod]
-        public void RetrieveNonExistentKey()
+        public void RetrieveNonexistentKey()
         {
             var dictionary = new Dictionary<string, string>();
             Assert.IsFalse(dictionary.TryGetValue("some key", out var value));
+        }
+
+        /// <summary>
+        /// Retrieves a <see langword="null"/> key that hasn't been added to a dictionary
+        /// </summary>
+        [TestMethod]
+        public void RetrieveNonexistentNullKey()
+        {
+            var dictionary = new Dictionary<string?, string>();
+            Assert.IsFalse(dictionary.TryGetValue(null, out var value));
+        }
+
+        /// <summary>
+        /// Adds a key/value pair to a dictionary using a comparer
+        /// </summary>
+        [TestMethod]
+        public void AddAndRetrievePairWithComparer()
+        {
+            var dictionary = new Dictionary<string, string>(global::System.StringComparer.OrdinalIgnoreCase);
+            dictionary.Add("a KEY", "some value");
+
+            Assert.IsTrue(dictionary.TryGetValue("a key", out var value));
+            Assert.AreEqual("some value", value);
         }
     }
 }
