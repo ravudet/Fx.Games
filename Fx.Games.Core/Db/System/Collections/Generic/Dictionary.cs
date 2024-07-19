@@ -1,8 +1,6 @@
-﻿using System.Collections;
-
-namespace Db.System.Collections.Generic
+﻿namespace Db.System.Collections.Generic
 {
-    public sealed partial class Dictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>, IEnumerable
+    public sealed partial class Dictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
     {
         private readonly global::System.Collections.Generic.Dictionary<TKey, TValue> dictionary;
 
@@ -22,11 +20,6 @@ namespace Db.System.Collections.Generic
         public void Add(TKey key, TValue value)
         {
             this.dictionary.Add(key, value);
-        }
-
-        public IEnumerator GetEnumerator()
-        {
-            throw new global::System.NotImplementedException();
         }
 
         public TValue GetValueTry(TKey key, out bool contained)
