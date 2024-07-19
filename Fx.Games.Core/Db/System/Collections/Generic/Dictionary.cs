@@ -48,6 +48,7 @@
             }
         }
 
+        /// <inheritdoc/>
         public TValue GetValueTry(TKey key, out bool contained)
         {
             if (key == null)
