@@ -1,7 +1,7 @@
 ﻿namespace Fx.Games.Driver
 {
     using System;
-    using System.Collections.Generic;
+    using Db.System.Collections.Generic;
     using Fx.Games.Displayer;
     using Fx.Games.Game;
     using Fx.Games.Strategy;
@@ -24,7 +24,7 @@
         /// <returns>The new instance of <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/></returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="strategies"/> or <paramref name="displayer"/> is <see langword="null"/></exception>
         public static Driver<TGame, TBoard, TMove, TPlayer> Create<TGame, TBoard, TMove, TPlayer>(
-            ICovariantReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies,
+            IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies,
             IDisplayer<TGame, TBoard, TMove, TPlayer> displayer)
             where TGame : IGame<TGame, TBoard, TMove, TPlayer> where TPlayer : notnull
         {

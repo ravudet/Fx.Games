@@ -1,7 +1,8 @@
 ﻿namespace ConsoleApplication1
 {
     using System;
-    using System.Collections.Generic;
+
+    using Db.System.Collections.Generic;
 
     using Fx.Games.Displayer;
     using Fx.Games.Driver;
@@ -10,7 +11,7 @@
 
     class Program
     {
-        private static readonly IReadOnlyList<(string, Action)> games = new (string, Action)[]
+        private static readonly global::System.Collections.Generic.IReadOnlyList<(string, Action)> games = new (string, Action)[]
         {
             (nameof(PegsRandom), PegsRandom),
             (nameof(PegsHuman), PegsHuman),
@@ -62,7 +63,7 @@
                 new Dictionary<string, IStrategy<PegGame<string>, PegBoard, PegMove, string>>
                 {
                     { player, new ConsoleStrategy<PegGame<string>, PegBoard, PegMove, string>() },
-                }.ToCovariantReadOnlyDictionary(),
+                },
                 displayer);
             var result = driver.Run(game);
         }
@@ -77,7 +78,7 @@
                 new Dictionary<string, IStrategy<PegGame<string>, PegBoard, PegMove, string>>
                 {
                     { player, new RandomStrategy<PegGame<string>, PegBoard, PegMove, string>() },
-                }.ToCovariantReadOnlyDictionary(),
+                },
                 displayer);
             var result = driver.Run(game);
         }

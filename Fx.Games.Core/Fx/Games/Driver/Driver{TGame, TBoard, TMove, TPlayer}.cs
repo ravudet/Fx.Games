@@ -1,8 +1,7 @@
 ﻿namespace Fx.Games.Driver
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
+    using Db.System.Collections.Generic;
     using Fx.Games.Displayer;
     using Fx.Games.Game;
     using Fx.Games.Strategy;
@@ -21,7 +20,7 @@
         /// <summary>
         /// The strategy that is assigned to each player of the game
         /// </summary>
-        private readonly ICovariantReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies;
+        private readonly IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies;
 
         /// <summary>
         /// The <see cref="IDisplayer{TGame, TBoard, TMove, TPlayer}"/> that represents the input/output interactions between a user and the game that this <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> coordinates
@@ -34,7 +33,7 @@
         /// <param name="strategies">The strategy that is assigned to each player of the game</param>
         /// <param name="displayer">The <see cref="IDisplayer{TGame, TBoard, TMove, TPlayer}"/> that represents the input/output interactions between a user and the game that this <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> coordinates</param>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="strategies"/> or <paramref name="displayer"/> is <see langword="null"/></exception>
-        public Driver(ICovariantReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies, IDisplayer<TGame, TBoard, TMove, TPlayer> displayer)
+        public Driver(IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies, IDisplayer<TGame, TBoard, TMove, TPlayer> displayer)
         {
             if (strategies == null)
             {
@@ -71,15 +70,10 @@
             while (!game.IsGameOver)
             {
                 var currentPlayer = game.CurrentPlayer;
-                IStrategy<TGame, TBoard, TMove, TPlayer> strategy;
-                try
-                {
-                    strategy = this.strategies[currentPlayer];
-                }
-                catch (KeyNotFoundException)
+                if (!this.strategies.TryGetValue(currentPlayer, out var strategy))
                 {
                     //// TODO the string interpolation only works because you normally use string for the player type
-                    throw new PlayerNotFoundExeption($"Could not find player {game.CurrentPlayer} in the configured strategies.");
+                    throw new PlayerNotFoundExeption($"Could not find player {currentPlayer} in the configured strategies.");
                 }
 
                 displayer.DisplayBoard(game);
