@@ -1,10 +1,12 @@
-﻿namespace Db.System.Collections.Generic
+﻿using System;
+
+namespace Db.System.Collections.Generic
 {
     public sealed class Dictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
     {
         private readonly global::System.Collections.Generic.Dictionary<TKey, TValue> dictionary;
 
-        private readonly Nullable<TValue> nullValue;
+        private Nullable<TValue> nullValue;
 
         public Dictionary()
             : this(global::System.Collections.Generic.EqualityComparer<TKey>.Default)
@@ -21,7 +23,14 @@
         {
             if (key == null)
             {
-                //// TODO
+                if (this.nullValue.HasValue)
+                {
+                    throw new ArgumentException("TODO duplicate key");
+                }
+                else
+                {
+                    this.nullValue = new Nullable<TValue>(value);
+                }
             }
 
             this.dictionary.Add(key, value);
