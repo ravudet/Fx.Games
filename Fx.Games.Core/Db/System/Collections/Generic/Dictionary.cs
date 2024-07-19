@@ -22,22 +22,30 @@
             this.nullValue = default;
         }
 
-        public Dictionary<TKey, TValue> Add(TKey key, TValue value)
+        public void Add(TKey key, TValue value)
         {
             if (key == null)
             {
                 if (this.nullValue.HasValue)
                 {
-                    throw new global::System.ArgumentException("TODO duplicate key");
+                    throw new DuplicateKeyException("TODO duplicate key");
                 }
                 else
                 {
                     this.nullValue = new Nullable<TValue>(value);
                 }
             }
-
-            this.dictionary.Add(key, value);
-            return this;
+            else
+            {
+                try
+                {
+                    this.dictionary.Add(key, value);
+                }
+                catch (global::System.ArgumentException e)
+                {
+                    throw new DuplicateKeyException("TODO duplicate key", e);
+                }
+            }
         }
 
         public TValue GetValueTry(TKey key, out bool contained)
