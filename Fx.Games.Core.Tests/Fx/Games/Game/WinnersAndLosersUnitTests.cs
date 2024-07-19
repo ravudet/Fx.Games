@@ -46,5 +46,21 @@
                 Enumerable.Empty<string>(),
                 null));
         }
+
+        /// <summary>
+        /// Creates a <see cref="WinnersAndLosers{TPlayer}"/> with <see langword="null"/> drawers
+        /// </summary>
+        [TestMethod]
+        public void WinnersAndLosersData()
+        {
+            var winnersAndLosers = new WinnersAndLosers<string>(
+                new[] { "winner" },
+                new[] { "loser" },
+                new[] { "drawer" });
+
+            CollectionAssert.AreEqual(new[] { "winner" }, winnersAndLosers.Winners.ToList());
+            CollectionAssert.AreEqual(new[] { "loser" }, winnersAndLosers.Losers.ToList());
+            CollectionAssert.AreEqual(new[] { "drawer" }, winnersAndLosers.Drawers.ToList());
+        }
     }
 }
