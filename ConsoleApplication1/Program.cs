@@ -2,8 +2,9 @@
 // productize db
 // productize db adapters
 // address TODOs in Driver<T>
-// get rid of fx.games
+// get rid of fx.games (productizing as you go)
 // rename consoleapplication1 to fx.games
+// productize the console application
 // get rid of warnings
 // add tictactoe back
 // write a version of game of amazons
