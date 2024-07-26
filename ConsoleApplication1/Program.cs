@@ -1,5 +1,5 @@
 ﻿// TODOs
-// productize db (you are at enumerableextesnions)
+// productize db (you are at ienumerable)
 // productize db adapters
 // address TODOs in Driver<T> and productize
 // get rid of fx.games (productizing as you go)
