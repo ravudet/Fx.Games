@@ -1,7 +1,13 @@
 ﻿// TODOs
+// productize db
+// productize db adapters
 // address TODOs in Driver<T>
 // get rid of fx.games
 // rename consoleapplication1 to fx.games
+// get rid of warnings
+// add tictactoe back
+// write a version of game of amazons
+// write perf tests for game of amazons
 // what are the correct db namespaces?
 
 namespace ConsoleApplication1

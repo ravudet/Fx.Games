@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+
+    using Db.System.Collections.Generic;
     using DbAdapters.System.Collections.Generic;
     using Fx.Games.Game;
     using Fx.Games.Strategy;
@@ -39,7 +41,7 @@
                 new[]
                 {
                     KeyValuePair.Create("first", MockStrategy.Create(game)),
-                }.ToDictionary(),
+                }.ToDb().ToDictionary(),
                 null));
         }
 
@@ -66,7 +68,7 @@
                 new[]
                 {
                     KeyValuePair.Create("first", MockStrategy.Create(game)),
-                }.ToDictionary(),
+                }.ToDb().ToDictionary(),
                 null));
         }
 
@@ -81,7 +83,7 @@
                 new[]
                 {
                     KeyValuePair.Create("first", MockStrategy.Create(game)),
-                }.ToDictionary(),
+                }.ToDb().ToDictionary(),
                 game.NullDisplayer());
 
             Assert.ThrowsException<ArgumentNullException>(() => driver.Run(null));
@@ -95,7 +97,7 @@
                 new[]
                 {
                     KeyValuePair.Create("first", MockStrategy.Create(game)),
-                }.ToDictionary(),
+                }.ToDb().ToDictionary(),
                 game.NullDisplayer());
             Assert.ThrowsException<PlayerNotFoundExeption>(() => driver.Run(game));
         }
@@ -109,7 +111,7 @@
                 new[]
                 {
                     KeyValuePair.Create("asdf", strategy),
-                }.ToDictionary(),
+                }.ToDb().ToDictionary(),
                 game.NullDisplayer());
             driver.Run(game);
 
@@ -132,7 +134,7 @@
 
             public string CurrentPlayer => "asdf";
 
-            public IEnumerable<string> Moves
+            public global::System.Collections.Generic.IEnumerable<string> Moves
             {
                 get
                 {
@@ -169,7 +171,7 @@
                 this.calledGames = new List<TGame>();
             }
 
-            public IEnumerable<TGame> CalledGames
+            public global::System.Collections.Generic.IEnumerable<TGame> CalledGames
             {
                 get
                 {
