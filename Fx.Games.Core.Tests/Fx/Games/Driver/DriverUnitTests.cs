@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using DbAdapters.System.Collections.Generic;
     using Fx.Games.Game;
     using Fx.Games.Strategy;
     using Microsoft.VisualStudio.TestPlatform;

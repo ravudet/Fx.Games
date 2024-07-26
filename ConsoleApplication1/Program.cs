@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using Db.System.Collections.Generic;
-
+    using DbAdapters.System.Collections.Generic;
     using Fx.Games.Displayer;
     using Fx.Games.Driver;
     using Fx.Games.Game;
@@ -11,7 +11,7 @@
 
     class Program
     {
-        private static readonly global::System.Collections.Generic.IReadOnlyList<(string, Action)> games = new (string, Action)[]
+        private static readonly IReadOnlyList<(string, Action)> games = new (string, Action)[]
         {
             (nameof(PegsRandom), PegsRandom),
             (nameof(PegsHuman), PegsHuman),
@@ -62,7 +62,7 @@
                 new[] //// TODO use a fluent builder?
                 {
                     KeyValuePair.Create(player, game.ConsoleStrategy()),
-                }.ToDictionary(),
+                }.ToDb().ToDictionary(),
                 displayer);
             var result = driver.Run(game);
         }
@@ -76,7 +76,7 @@
                 new[]
                 {
                     KeyValuePair.Create(player, game.RandomStrategy()),
-                }.ToDictionary(),
+                }.ToDb().ToDictionary(),
                 displayer);
             var result = driver.Run(game);
         }
