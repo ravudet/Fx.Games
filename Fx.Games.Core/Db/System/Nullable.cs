@@ -4,7 +4,7 @@
     /// A structure that was either initialized with a value or initialized without a value
     /// </summary>
     /// <typeparam name="T">The type of the value that the instance was potentially initialized with</typeparam>
-    internal struct Nullable<T>
+    public struct Nullable<T>
     {
         /// <summary>
         /// The contained value
