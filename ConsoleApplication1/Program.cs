@@ -1,7 +1,7 @@
 ﻿// TODOs
-// productize db
+// productize db (you are at enumerableextesnions)
 // productize db adapters
-// address TODOs in Driver<T>
+// address TODOs in Driver<T> and productize
 // get rid of fx.games (productizing as you go)
 // rename consoleapplication1 to fx.games
 // productize the console application

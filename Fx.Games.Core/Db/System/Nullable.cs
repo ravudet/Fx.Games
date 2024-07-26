@@ -1,6 +1,6 @@
 ﻿namespace Db.System
 {
-    public struct Nullable<T>
+    internal struct Nullable<T>
     {
         public Nullable(T value)
         {

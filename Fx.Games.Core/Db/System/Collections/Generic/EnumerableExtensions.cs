@@ -1,5 +1,8 @@
 ﻿namespace Db.System.Collections.Generic
 {
+    /// <summary>
+    /// Extension methods for <see cref="global::System.Collections.Generic.IEnumerable{T}"/>
+    /// </summary>
     public static class EnumerableExtensions
     {
         /// <summary>
