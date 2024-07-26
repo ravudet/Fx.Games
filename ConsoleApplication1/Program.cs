@@ -1,5 +1,8 @@
 ﻿// TODOs
 // address TODOs in Driver<T>
+// get rid of fx.games
+// rename consoleapplication1 to fx.games
+// what are the correct db namespaces?
 
 namespace ConsoleApplication1
 {
