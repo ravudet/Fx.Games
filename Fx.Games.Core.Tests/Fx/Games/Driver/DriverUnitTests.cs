@@ -44,6 +44,22 @@
         }
 
         /// <summary>
+        /// Creates a driver with <see langword="null"/> settings
+        /// </summary>
+        [TestMethod]
+        public void NullSettings()
+        {
+            var game = new MockGame();
+            Assert.ThrowsException<ArgumentNullException>(() => new Driver<MockGame, string[], string, string>(
+                new[]
+                {
+                    KeyValuePair.Create("first", MockStrategy.Create(game)),
+                }.ToDb().ToDictionary(),
+                game.NullDisplayer(),
+                null));
+        }
+
+        /// <summary>
         /// Creates a driver with <see langword="null"/> strategies
         /// </summary>
         [TestMethod]
@@ -98,6 +114,23 @@
                 }.ToDb().ToDictionary(),
                 game.NullDisplayer());
             Assert.ThrowsException<PlayerNotFoundExeption>(() => driver.Run(game));
+        }
+
+        [TestMethod]
+        public void PlayerNotFoundTranscriber()
+        {
+            var game = new MockGame();
+            var driver = Driver.Create(
+                new[]
+                {
+                    KeyValuePair.Create("first", MockStrategy.Create(game)),
+                }.ToDb().ToDictionary(),
+                game.NullDisplayer(),
+                new DriverSettings<MockGame, string[], string, string>.Builder()
+                {
+                    PlayerTranscriber = player => nameof(PlayerNotFoundTranscriber),
+                }.Build());
+            var playerNotFoundException = Assert.ThrowsException<PlayerNotFoundExeption>(() => driver.Run(game));
         }
 
         [TestMethod]
