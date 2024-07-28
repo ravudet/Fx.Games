@@ -8,14 +8,13 @@
 
     /// <summary>
     /// Coordinates the playing of a game by leveraging the specific strategies assigned to each player
-    /// TODO should this be an extension on the displayer?
     /// </summary>
     /// <typeparam name="TGame">The type of the game that is being played</typeparam>
     /// <typeparam name="TBoard">The type of the board that the <typeparamref name="TGame"/> uses</typeparam>
     /// <typeparam name="TMove">The type of the moves that the <typeparamref name="TGame"/> uses</typeparam>
     /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
     /// <threadsafety static="true" instance="true"/>
-    public sealed class Driver<TGame, TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer> where TPlayer : notnull
+    public sealed class Driver<TGame, TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer> where TPlayer : notnull //// TODO why is tplayer not null?
     {
         /// <summary>
         /// The strategy that is assigned to each player of the game
@@ -28,12 +27,29 @@
         private readonly IDisplayer<TGame, TBoard, TMove, TPlayer> displayer;
 
         /// <summary>
+        /// Converts a <see cref="TPlayer"/> to a string for logging and error handling
+        /// </summary>
+        private readonly Func<TPlayer, string> playerTranscriber;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> class.
         /// </summary>
         /// <param name="strategies">The strategy that is assigned to each player of the game</param>
         /// <param name="displayer">The <see cref="IDisplayer{TGame, TBoard, TMove, TPlayer}"/> that represents the input/output interactions between a user and the game that this <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> coordinates</param>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="strategies"/> or <paramref name="displayer"/> is <see langword="null"/></exception>
         public Driver(IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies, IDisplayer<TGame, TBoard, TMove, TPlayer> displayer)
+            : this(strategies, displayer, DriverSettings<TGame, TBoard, TMove, TPlayer>.Default)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> class.
+        /// </summary>
+        /// <param name="strategies">The strategy that is assigned to each player of the game</param>
+        /// <param name="displayer">The <see cref="IDisplayer{TGame, TBoard, TMove, TPlayer}"/> that represents the input/output interactions between a user and the game that this <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> coordinates</param>
+        /// <param name="settings">The settings used to configure the driver</param>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="strategies"/> or <paramref name="displayer"/> or <paramref name="settings"/> is <see langword="null"/></exception>
+        public Driver(IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies, IDisplayer<TGame, TBoard, TMove, TPlayer> displayer, DriverSettings<TGame, TBoard, TMove, TPlayer> settings)
         {
             if (strategies == null)
             {
@@ -45,8 +61,14 @@
                 throw new ArgumentNullException(nameof(displayer));
             }
 
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
+
             this.strategies = strategies; //// TODO create a copy constructor extension
             this.displayer = displayer;
+            this.playerTranscriber = settings.PlayerTranscriber;
         }
 
         /// <summary>
@@ -60,8 +82,6 @@
         /// <exception cref="IllegalMoveExeption">Thrown if a strategy selects a move that is not currently legal</exception>
         public TGame Run(TGame game)
         {
-            //// TODO should you handle any of the exceptions that end up surfaced?
-
             if (game == null)
             {
                 throw new ArgumentNullException(nameof(game));
@@ -72,25 +92,18 @@
                 var currentPlayer = game.CurrentPlayer;
                 if (!this.strategies.TryGetValue(currentPlayer, out var strategy))
                 {
-                    //// TODO the string interpolation only works because you normally use string for the player type
-                    throw new PlayerNotFoundExeption($"Could not find player {currentPlayer} in the configured strategies.");
+                    throw new PlayerNotFoundExeption($"Could not find player {this.playerTranscriber(currentPlayer)} in the configured strategies.");
                 }
 
-                displayer.DisplayBoard(game);
-                displayer.DisplayAvailableMoves(game);
+                this.displayer.DisplayBoard(game);
+                this.displayer.DisplayAvailableMoves(game);
                 var move = strategy.SelectMove(game);
-                displayer.DisplaySelectedMove(move);
+                this.displayer.DisplaySelectedMove(move);
                 game = game.CommitMove(move);
-                /*
-                TODO should you add this back?
-                if (game.IsGameOver)
-                {
-                    break;
-                }*/
             }
 
-            displayer.DisplayBoard(game);
-            displayer.DisplayOutcome(game);
+            this.displayer.DisplayBoard(game);
+            this.displayer.DisplayOutcome(game);
             return game;
         }
     }
