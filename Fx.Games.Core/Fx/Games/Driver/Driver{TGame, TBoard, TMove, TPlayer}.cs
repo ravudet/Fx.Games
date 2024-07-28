@@ -96,15 +96,15 @@
                     throw new PlayerNotFoundExeption($"Could not find player {this.playerTranscriber(currentPlayer)} in the configured strategies.");
                 }
 
-                displayer.DisplayBoard(game);
-                displayer.DisplayAvailableMoves(game);
+                this.displayer.DisplayBoard(game);
+                this.displayer.DisplayAvailableMoves(game);
                 var move = strategy.SelectMove(game);
-                displayer.DisplaySelectedMove(move);
+                this.displayer.DisplaySelectedMove(move);
                 game = game.CommitMove(move);
             }
 
-            displayer.DisplayBoard(game);
-            displayer.DisplayOutcome(game);
+            this.displayer.DisplayBoard(game);
+            this.displayer.DisplayOutcome(game);
             return game;
         }
     }
