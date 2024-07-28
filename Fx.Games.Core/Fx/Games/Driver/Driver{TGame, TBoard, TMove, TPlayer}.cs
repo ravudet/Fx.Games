@@ -27,12 +27,29 @@
         private readonly IDisplayer<TGame, TBoard, TMove, TPlayer> displayer;
 
         /// <summary>
+        /// Converts a <see cref="TPlayer"/> to a string for logging and error handling
+        /// </summary>
+        private readonly Func<TPlayer, string> playerTranscriber;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> class.
         /// </summary>
         /// <param name="strategies">The strategy that is assigned to each player of the game</param>
         /// <param name="displayer">The <see cref="IDisplayer{TGame, TBoard, TMove, TPlayer}"/> that represents the input/output interactions between a user and the game that this <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> coordinates</param>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="strategies"/> or <paramref name="displayer"/> is <see langword="null"/></exception>
         public Driver(IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies, IDisplayer<TGame, TBoard, TMove, TPlayer> displayer)
+            : this(strategies, displayer, player => $"{player}")
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> class.
+        /// </summary>
+        /// <param name="strategies">The strategy that is assigned to each player of the game</param>
+        /// <param name="displayer">The <see cref="IDisplayer{TGame, TBoard, TMove, TPlayer}"/> that represents the input/output interactions between a user and the game that this <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> coordinates</param>
+        /// <param name="playerTranscriber">Converts a <see cref="TPlayer"/> to a string for logging and error handling</param>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="strategies"/> or <paramref name="displayer"/> or <paramref name="playerTranscriber"/> is <see langword="null"/></exception>
+        public Driver(IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies, IDisplayer<TGame, TBoard, TMove, TPlayer> displayer, Func<TPlayer, string> playerTranscriber)
         {
             if (strategies == null)
             {
@@ -44,8 +61,14 @@
                 throw new ArgumentNullException(nameof(displayer));
             }
 
+            if (playerTranscriber == null)
+            {
+                throw new ArgumentNullException(nameof(playerTranscriber));
+            }
+
             this.strategies = strategies; //// TODO create a copy constructor extension
             this.displayer = displayer;
+            this.playerTranscriber = playerTranscriber;
         }
 
         /// <summary>
@@ -70,7 +93,7 @@
                 if (!this.strategies.TryGetValue(currentPlayer, out var strategy))
                 {
                     //// TODO the string interpolation only works because you normally use string for the player type
-                    throw new PlayerNotFoundExeption($"Could not find player {currentPlayer} in the configured strategies.");
+                    throw new PlayerNotFoundExeption($"Could not find player {this.playerTranscriber(currentPlayer)} in the configured strategies.");
                 }
 
                 displayer.DisplayBoard(game);
