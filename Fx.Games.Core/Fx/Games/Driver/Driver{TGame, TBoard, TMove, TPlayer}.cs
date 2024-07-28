@@ -8,7 +8,6 @@
 
     /// <summary>
     /// Coordinates the playing of a game by leveraging the specific strategies assigned to each player
-    /// TODO should this be an extension on the displayer?
     /// </summary>
     /// <typeparam name="TGame">The type of the game that is being played</typeparam>
     /// <typeparam name="TBoard">The type of the board that the <typeparamref name="TGame"/> uses</typeparam>
