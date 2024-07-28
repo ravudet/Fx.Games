@@ -60,8 +60,6 @@
         /// <exception cref="IllegalMoveExeption">Thrown if a strategy selects a move that is not currently legal</exception>
         public TGame Run(TGame game)
         {
-            //// TODO should you handle any of the exceptions that end up surfaced?
-
             if (game == null)
             {
                 throw new ArgumentNullException(nameof(game));
@@ -81,12 +79,6 @@
                 var move = strategy.SelectMove(game);
                 displayer.DisplaySelectedMove(move);
                 game = game.CommitMove(move);
-                /*
-                TODO should you add this back?
-                if (game.IsGameOver)
-                {
-                    break;
-                }*/
             }
 
             displayer.DisplayBoard(game);
