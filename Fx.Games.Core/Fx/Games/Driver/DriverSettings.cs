@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Fx.Games.Game;
+using System;
 
 namespace Fx.Games.Driver
 {
     /// <summary>
     /// The settings used to instantiate a <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/>
     /// </summary>
-    public sealed class DriverSettings<TGame, TBoard, TMove, TPlayer>
+    public sealed class DriverSettings<TGame, TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer>
     {
         /// <summary>
         /// TODO

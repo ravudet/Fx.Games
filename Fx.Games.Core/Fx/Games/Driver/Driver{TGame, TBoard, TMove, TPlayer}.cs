@@ -14,7 +14,7 @@
     /// <typeparam name="TMove">The type of the moves that the <typeparamref name="TGame"/> uses</typeparam>
     /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
     /// <threadsafety static="true" instance="true"/>
-    public sealed class Driver<TGame, TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer> where TPlayer : notnull
+    public sealed class Driver<TGame, TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer> where TPlayer : notnull //// TODO why is tplayer not null?
     {
         /// <summary>
         /// The strategy that is assigned to each player of the game
@@ -38,7 +38,7 @@
         /// <param name="displayer">The <see cref="IDisplayer{TGame, TBoard, TMove, TPlayer}"/> that represents the input/output interactions between a user and the game that this <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> coordinates</param>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="strategies"/> or <paramref name="displayer"/> is <see langword="null"/></exception>
         public Driver(IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies, IDisplayer<TGame, TBoard, TMove, TPlayer> displayer)
-            : this(strategies, displayer, player => $"{player}")
+            : this(strategies, displayer, new DriverSettings<TGame, TBoard, TMove, TPlayer>.Builder().Build())
         {
         }
 
@@ -47,9 +47,9 @@
         /// </summary>
         /// <param name="strategies">The strategy that is assigned to each player of the game</param>
         /// <param name="displayer">The <see cref="IDisplayer{TGame, TBoard, TMove, TPlayer}"/> that represents the input/output interactions between a user and the game that this <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> coordinates</param>
-        /// <param name="playerTranscriber">Converts a <see cref="TPlayer"/> to a string for logging and error handling</param>
-        /// <exception cref="ArgumentNullException">Thrown if <paramref name="strategies"/> or <paramref name="displayer"/> or <paramref name="playerTranscriber"/> is <see langword="null"/></exception>
-        public Driver(IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies, IDisplayer<TGame, TBoard, TMove, TPlayer> displayer, Func<TPlayer, string> playerTranscriber)
+        /// <param name="settings">The settings used to configure the driver</param>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="strategies"/> or <paramref name="displayer"/> or <paramref name="settings"/> is <see langword="null"/></exception>
+        public Driver(IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies, IDisplayer<TGame, TBoard, TMove, TPlayer> displayer, DriverSettings<TGame, TBoard, TMove, TPlayer> settings)
         {
             if (strategies == null)
             {
@@ -61,15 +61,14 @@
                 throw new ArgumentNullException(nameof(displayer));
             }
 
-            //// TODO use settings intead of a paramter for this
-            if (playerTranscriber == null)
+            if (settings == null)
             {
-                throw new ArgumentNullException(nameof(playerTranscriber));
+                throw new ArgumentNullException(nameof(settings));
             }
 
             this.strategies = strategies; //// TODO create a copy constructor extension
             this.displayer = displayer;
-            this.playerTranscriber = playerTranscriber;
+            this.playerTranscriber = settings.PlayerTranscriber;
         }
 
         /// <summary>
