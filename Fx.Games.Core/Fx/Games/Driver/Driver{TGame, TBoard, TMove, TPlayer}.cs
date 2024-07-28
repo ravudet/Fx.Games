@@ -38,7 +38,7 @@
         /// <param name="displayer">The <see cref="IDisplayer{TGame, TBoard, TMove, TPlayer}"/> that represents the input/output interactions between a user and the game that this <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> coordinates</param>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="strategies"/> or <paramref name="displayer"/> is <see langword="null"/></exception>
         public Driver(IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies, IDisplayer<TGame, TBoard, TMove, TPlayer> displayer)
-            : this(strategies, displayer, new DriverSettings<TGame, TBoard, TMove, TPlayer>.Builder().Build())
+            : this(strategies, displayer, DriverSettings<TGame, TBoard, TMove, TPlayer>.Default)
         {
         }
 
