@@ -3,13 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading;
 
     using Db.System.Collections.Generic;
     using DbAdapters.System.Collections.Generic;
     using Fx.Games.Game;
     using Fx.Games.Strategy;
-    using Microsoft.VisualStudio.TestPlatform;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     /// <summary>

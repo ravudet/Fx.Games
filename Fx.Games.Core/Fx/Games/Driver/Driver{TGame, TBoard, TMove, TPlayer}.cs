@@ -61,6 +61,7 @@
                 throw new ArgumentNullException(nameof(displayer));
             }
 
+            //// TODO use settings intead of a paramter for this
             if (playerTranscriber == null)
             {
                 throw new ArgumentNullException(nameof(playerTranscriber));
