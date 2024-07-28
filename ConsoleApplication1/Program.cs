@@ -1,5 +1,4 @@
 ﻿// TODOs
-// productize db adapters
 // address TODOs in Driver<T> and productize
 // get rid of fx.games (productizing as you go)
 // rename consoleapplication1 to fx.games
