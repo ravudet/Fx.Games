@@ -32,7 +32,10 @@
             var cEnumerator = this.cEnumerable.GetEnumerator();
             if (cEnumerator == null)
             {
-                return null; //// TODO is this the right behavior? what does foreach expect?
+#pragma warning disable CS8603 // Possible null reference return.
+                // ienumerable.getenumerator isn't "supposed" to return null, but if it does, we should just pass that along and let the foreach (or whatever caller) treat it as it would normally treat a null (which is usually to make no such assertion, as is the case with foreach)
+                return null;
+#pragma warning restore CS8603 // Possible null reference return.
             }
 
             return new DbEnumeratorAdapter<T>(cEnumerator);
