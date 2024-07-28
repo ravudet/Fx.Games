@@ -1,8 +1,6 @@
 ﻿namespace DbAdapters.System.Collections.Generic
 {
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using System;
-    using System.Collections.Generic;
 
     /// <summary>
     /// Unit tests for <see cref="DbEnumerableAdapter{T}"/>
