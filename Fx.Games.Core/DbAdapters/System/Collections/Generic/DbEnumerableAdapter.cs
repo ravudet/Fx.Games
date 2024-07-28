@@ -1,9 +1,9 @@
 ﻿namespace DbAdapters.System.Collections.Generic
 {
     /// <summary>
-    /// An adapter from a C# <see cref="global::System.Collections.Generic.IEnumerable{T}"/> to a Db <see cref="Db.System.Collections.Generic.IEnumerable{T}"/>
+    /// An adapter from a C# <see cref="global::System.Collections.Generic.IEnumerable{T}"/> to a Db <see cref="global::Db.System.Collections.Generic.IEnumerable{T}"/>
     /// </summary>
-    /// <typeparam name="T">The type of the elements of the <see cref="Db.System.Collections.Generic.IEnumerable{T}"/></typeparam>
+    /// <typeparam name="T">The type of the elements of the <see cref="global::Db.System.Collections.Generic.IEnumerable{T}"/></typeparam>
     public sealed class DbEnumerableAdapter<T> : global::Db.System.Collections.Generic.IEnumerable<T>
     {
         /// <summary>
