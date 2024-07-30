@@ -69,7 +69,7 @@
         {
         }
 
-        public static DbEmpty<T> Instance { get; } = new DbEmpty<T>();
+        public static IDbEnumerable<T> Instance { get; } = new DbEmpty<T>();
 
         public T Current
         {
@@ -88,8 +88,64 @@
 
     public static class DbEnumerableExtensions
     {
+        public static IDbEnumerable<TElement> Append<TElement>(this IDbEnumerable<TElement> self, TElement element)
+        {
+            return new AppendEnumerable<TElement>(self, element);
+        }
+
+        private sealed class AppendEnumerable<TElement> : IDbEnumerable<TElement>
+        {
+            private readonly IDbEnumerable<TElement> self;
+            private readonly TElement element;
+
+            public AppendEnumerable(IDbEnumerable<TElement> self, TElement element)
+            {
+                this.self = self;
+                this.element = element;
+            }
+
+            public TElement Current
+            {
+                get
+                {
+                    return this.self.Current;
+                }
+            }
+
+            public IDbEnumerable<TElement> TryMoveNext(out bool moved)
+            {
+                var next = this.self.TryMoveNext(out moved);
+                if (moved)
+                {
+                    return next;
+                }
+                else
+                {
+                    moved = true;
+                    return new End(this.element);
+                }
+            }
+
+            private sealed class End : IDbEnumerable<TElement>
+            {
+                public End(TElement element)
+                {
+                    this.Current = element;
+                }
+
+                public TElement Current { get; }
+
+                public IDbEnumerable<TElement> TryMoveNext(out bool moved)
+                {
+                    moved = false;
+                    return null;
+                }
+            }
+        }
+
         public static IDbEnumerable<TElement> Where<TElement>(this IDbEnumerable<TElement> self, Func<TElement, bool> predicate)
         {
+            return new WhereEnumerable<TElement>(self, predicate);
         }
 
         private sealed class WhereEnumerable<TElement> : IDbEnumerable<TElement>
@@ -113,7 +169,17 @@
 
             public IDbEnumerable<TElement> TryMoveNext(out bool moved)
             {
-                if ()
+                moved = true;
+                while (moved)
+                {
+                    var next = this.self.TryMoveNext(out moved);
+                    if (this.predicate(next.Current))
+                    {
+                        return next;
+                    }
+                }
+
+                return null;
             }
         }
 
@@ -215,6 +281,19 @@
             var list2 = new DbList<string>();
             list2.Add("Asdf");
             foreach (var element in list2.Enumerator())
+            {
+            }
+
+            var enumerable = DbEmpty<string>.Instance;
+            enumerable = enumerable.Append("asdf");
+            enumerable = enumerable.Append("qwer");
+            enumerable = enumerable.Append("1234567");
+
+            enumerable = enumerable
+                .Select(element => new string(element.Reverse().ToArray()))
+                .Where(element => char.IsLetter(element[0]));
+
+            foreach (var element in enumerable.Enumerator()) //// TODO this doesn't fully enumerate, didn't figureout the bug yet
             {
             }
         }
