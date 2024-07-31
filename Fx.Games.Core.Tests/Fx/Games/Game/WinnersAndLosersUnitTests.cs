@@ -349,5 +349,42 @@
             CollectionAssert.AreEqual(new[] { "loser" }, winnersAndLosers.Losers.ToList());
             CollectionAssert.AreEqual(new[] { "drawer" }, winnersAndLosers.Drawers.ToList());
         }
+
+        [TestMethod]
+        public void RefStructTest()
+        {
+            var @string = "Asdf";
+            var foo = new Foo(ref @string, new Bar());
+
+            var bar = new Bar();
+            var foo2 = new Foo(ref SomeString, bar);
+
+            var foo3 = new Foo(ref SomeString, BarInstance);
+        }
+
+        public static string SomeString = "qwer";
+
+        public static Bar BarInstance = new Bar();
+
+        public struct Bar
+        {
+        }
+
+        public ref struct Foo
+        {
+            public Foo()
+            {
+                throw new InvalidOperationException();
+            }
+
+            public Foo(ref string value, Bar bar)
+            {
+                this.Value = ref value;
+                this.Bar = bar;
+            }
+
+            public readonly ref string Value;
+
+            public readonly ref Bar Bar;
     }
 }
