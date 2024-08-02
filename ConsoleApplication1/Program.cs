@@ -1,6 +1,4 @@
 ﻿// TODOs
-// consolidate mockgame into noimplementation game
-// fix test coverage
 // factor out common strategy tests?
 // get rid of fx.games (productizing as you go)
 // rename consoleapplication1 to fx.games
