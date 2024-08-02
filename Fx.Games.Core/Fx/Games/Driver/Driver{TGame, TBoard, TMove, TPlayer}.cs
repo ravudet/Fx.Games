@@ -14,7 +14,7 @@
     /// <typeparam name="TMove">The type of the moves that the <typeparamref name="TGame"/> uses</typeparam>
     /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
     /// <threadsafety static="true" instance="true"/>
-    public sealed class Driver<TGame, TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer> where TPlayer : notnull //// TODO why is tplayer not null?
+    public sealed class Driver<TGame, TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer>
     {
         /// <summary>
         /// The strategy that is assigned to each player of the game
@@ -66,7 +66,7 @@
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            this.strategies = strategies; //// TODO create a copy constructor extension
+            this.strategies = strategies;
             this.displayer = displayer;
             this.playerTranscriber = settings.PlayerTranscriber;
         }
