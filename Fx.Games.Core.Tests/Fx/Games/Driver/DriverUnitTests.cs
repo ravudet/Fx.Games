@@ -139,16 +139,15 @@
         public void PlayerNotFoundTranscriber()
         {
             var game = new MockGame();
+            var driverSettings = game.DriverSettings();
+            driverSettings.PlayerTranscriber = player => nameof(PlayerNotFoundTranscriber);
             var driver = Driver.Create(
                 new[]
                 {
                     KeyValuePair.Create("first", MockStrategy.Create(game)),
                 }.ToDb().ToDictionary(),
                 game.NullDisplayer(),
-                new DriverSettings<MockGame, string[], string, string>.Builder()
-                {
-                    PlayerTranscriber = player => nameof(PlayerNotFoundTranscriber),
-                }.Build());
+                driverSettings.Build());
             var playerNotFoundException = Assert.ThrowsException<PlayerNotFoundExeption>(() => driver.Run(game));
         }
 

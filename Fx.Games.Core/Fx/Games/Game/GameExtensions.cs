@@ -1,6 +1,7 @@
 ﻿namespace Fx.Games.Game
 {
     using Fx.Games.Displayer;
+    using Fx.Games.Driver;
 
     /// <summary>
     /// Extension methods for <see cref="IGame{TGame, TBoard, TMove, TPlayer}"/>
@@ -19,6 +20,11 @@
         public static NullDisplayer<TGame, TBoard, TMove, TPlayer> NullDisplayer<TGame, TBoard, TMove, TPlayer>(this IGame<TGame, TBoard, TMove, TPlayer> game) where TGame : IGame<TGame, TBoard, TMove, TPlayer>
         {
             return Fx.Games.Displayer.NullDisplayer<TGame, TBoard, TMove, TPlayer>.Instance;
+        }
+
+        public static DriverSettings<TGame, TBoard, TMove, TPlayer>.Builder DriverSettings<TGame, TBoard, TMove, TPlayer>(this IGame<TGame, TBoard, TMove, TPlayer> game) where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+        {
+            return new DriverSettings<TGame, TBoard, TMove, TPlayer>.Builder();
         }
     }
 }

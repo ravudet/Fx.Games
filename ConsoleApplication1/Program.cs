@@ -1,7 +1,5 @@
 ﻿// TODOs
 // add comments to driver unit tests
-// add an extension to game to give you a driver builder?
-// unit test driver settings
 // get rid of fx.games (productizing as you go)
 // rename consoleapplication1 to fx.games
 // productize the console application
