@@ -50,5 +50,19 @@
         {
             return new RandomStrategy<TGame, TBoard, TMove, TPlayer>();
         }
+
+        /// <summary>
+        /// Gets a <see cref="Fx.Games.Strategy.ConsoleStrategy{TGame, TBoard, TMove, TPlayer}(IGame{TGame, TBoard, TMove, TPlayer})"/> that can be used to play <paramref name="self"/>
+        /// </summary>
+        /// <typeparam name="TGame">The type of the game that the <see cref="Fx.Games.Strategy.ConsoleStrategy{TGame, TBoard, TMove, TPlayer}"/> would play</typeparam>
+        /// <typeparam name="TBoard">The type of the board that <typeparamref name="TGame"/> uses</typeparam>
+        /// <typeparam name="TMove">The type of the moves that the <typeparamref name="TGame"/> uses</typeparam>
+        /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
+        /// <param name="self">The game that the <see cref="Fx.Games.Strategy.ConsoleStrategy{TGame, TBoard, TMove, TPlayer}"/> will play</param>
+        /// <returns>A <see cref="Fx.Games.Strategy.ConsoleStrategy{TGame, TBoard, TMove, TPlayer}"/> that can be used to play <paramref name="self"/></returns>
+        public static ConsoleStrategy<TGame, TBoard, TMove, TPlayer> ConsoleStrategy<TGame, TBoard, TMove, TPlayer>(this IGame<TGame, TBoard, TMove, TPlayer> self) where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+        {
+            return Fx.Games.Strategy.ConsoleStrategy<TGame, TBoard, TMove, TPlayer>.Instance;
+        }
     }
 }
