@@ -13,6 +13,7 @@
         /// <param name="random">The <see cref="Random"/> that represents the distribution that should be sampled</param>
         /// <returns>The value that was sampled</returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="self"/> or <paramref name="random"/> is <see langword="null"/></exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="self"/> has no elements</exception>
         public static T Sample<T>(this IReadOnlyList<T> self, Random random)
         {
             if (self == null)
@@ -23,6 +24,11 @@
             if (random == null)
             {
                 throw new ArgumentNullException(nameof(random));
+            }
+
+            if (self.Count == 0)
+            {
+                throw new ArgumentOutOfRangeException($"There are no elements in the list to sample from");
             }
 
             var next = random.Next(0, self.Count);
