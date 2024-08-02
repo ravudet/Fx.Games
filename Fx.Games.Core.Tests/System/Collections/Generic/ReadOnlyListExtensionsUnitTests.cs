@@ -33,6 +33,18 @@
         }
 
         /// <summary>
+        /// Samples an element from an empty list
+        /// </summary>
+        [TestMethod]
+        public void SampleEmptyList()
+        {
+            var list = new List<string>();
+            var random = new Random();
+
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => list.Sample(random));
+        }
+
+        /// <summary>
         /// Samples an element from a list
         /// </summary>
         [TestMethod]
