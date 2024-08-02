@@ -8,6 +8,7 @@
 // add tictactoe back
 // write a version of game of amazons
 // write perf tests for game of amazons
+// add monty carlo back
 // what are the correct db namespaces?
 // does it make sense to use structs for the dbadapters? will boxing end up expensive? you can have a default constructor in c# now, so you probably should just use structs
 // what should db ienumerable + ienumerator actually look like
