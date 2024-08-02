@@ -3,13 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading;
 
     using Db.System.Collections.Generic;
     using DbAdapters.System.Collections.Generic;
     using Fx.Games.Game;
     using Fx.Games.Strategy;
-    using Microsoft.VisualStudio.TestPlatform;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     /// <summary>
@@ -46,6 +44,22 @@
         }
 
         /// <summary>
+        /// Creates a driver with <see langword="null"/> settings
+        /// </summary>
+        [TestMethod]
+        public void NullSettings()
+        {
+            var game = new MockGame();
+            Assert.ThrowsException<ArgumentNullException>(() => new Driver<MockGame, string[], string, string>(
+                new[]
+                {
+                    KeyValuePair.Create("first", MockStrategy.Create(game)),
+                }.ToDb().ToDictionary(),
+                game.NullDisplayer(),
+                null));
+        }
+
+        /// <summary>
         /// Creates a driver with <see langword="null"/> strategies
         /// </summary>
         [TestMethod]
@@ -69,6 +83,22 @@
                 {
                     KeyValuePair.Create("first", MockStrategy.Create(game)),
                 }.ToDb().ToDictionary(),
+                null));
+        }
+
+        /// <summary>
+        /// Creates a driver with <see langword="null"/> settings
+        /// </summary>
+        [TestMethod]
+        public void NullSettingsFactory()
+        {
+            var game = new MockGame();
+            Assert.ThrowsException<ArgumentNullException>(() => Driver.Create(
+                new[]
+                {
+                    KeyValuePair.Create("first", MockStrategy.Create(game)),
+                }.ToDb().ToDictionary(),
+                game.NullDisplayer(),
                 null));
         }
 
@@ -100,6 +130,26 @@
                 }.ToDb().ToDictionary(),
                 game.NullDisplayer());
             Assert.ThrowsException<PlayerNotFoundExeption>(() => driver.Run(game));
+        }
+
+        /// <summary>
+        /// Runs a game that has a player who does not have a strategy configured in the driver
+        /// </summary>
+        [TestMethod]
+        public void PlayerNotFoundTranscriber()
+        {
+            var game = new MockGame();
+            var driver = Driver.Create(
+                new[]
+                {
+                    KeyValuePair.Create("first", MockStrategy.Create(game)),
+                }.ToDb().ToDictionary(),
+                game.NullDisplayer(),
+                new DriverSettings<MockGame, string[], string, string>.Builder()
+                {
+                    PlayerTranscriber = player => nameof(PlayerNotFoundTranscriber),
+                }.Build());
+            var playerNotFoundException = Assert.ThrowsException<PlayerNotFoundExeption>(() => driver.Run(game));
         }
 
         [TestMethod]
