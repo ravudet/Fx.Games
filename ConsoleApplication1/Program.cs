@@ -1,5 +1,8 @@
 ﻿// TODOs
+// add comments to driver unit tests
+// add an extension to game to give you a driver builder?
 // address TODOs in Driver<T> and productize
+// unit test driver settings
 // get rid of fx.games (productizing as you go)
 // rename consoleapplication1 to fx.games
 // productize the console application
@@ -8,7 +11,8 @@
 // write a version of game of amazons
 // write perf tests for game of amazons
 // what are the correct db namespaces?
-// does it make sense to use structs for the dbadapters? will boxing end up expensive?
+// does it make sense to use structs for the dbadapters? will boxing end up expensive? you can have a default constructor in c# now, so you probably should just use structs
+// what should db ienumerable + ienumerator actually look like
 // is there a way to leverage the underling struct enumerators in the enumerable and enumerator dbadapters?
 
 namespace ConsoleApplication1
