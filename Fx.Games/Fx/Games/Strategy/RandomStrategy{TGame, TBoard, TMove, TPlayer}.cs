@@ -1,6 +1,7 @@
 namespace Fx.Games.Strategy
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     using Fx.Games.Game;
@@ -18,7 +19,7 @@ namespace Fx.Games.Strategy
         {
 
             var moves = game.Moves.ToList();
-            var move = rng.Choose(moves);
+            var move = moves.Sample(this.rng);
             return move;
         }
     }
