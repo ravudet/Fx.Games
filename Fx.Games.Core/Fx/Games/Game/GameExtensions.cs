@@ -22,6 +22,15 @@
             return Fx.Games.Displayer.NullDisplayer<TGame, TBoard, TMove, TPlayer>.Instance;
         }
 
+        /// <summary>
+        /// Gets a builder instance for the <see cref="DriverSettings{TGame, TBoard, TMove, TPlayer}(IGame{TGame, TBoard, TMove, TPlayer})"/> that would be used to configure a <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> that plays <paramref name="game"/>
+        /// </summary>
+        /// <typeparam name="TGame">The type of the game that the <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> would play</typeparam>
+        /// <typeparam name="TBoard">The type of the board that <typeparamref name="TGame"/> uses</typeparam>
+        /// <typeparam name="TMove">The type of the moves that the <typeparamref name="TGame"/> uses</typeparam>
+        /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
+        /// <param name="game">The game that the <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> will player</param>
+        /// <returns>A builder instance for the <see cref="DriverSettings{TGame, TBoard, TMove, TPlayer}(IGame{TGame, TBoard, TMove, TPlayer})"/> that would be used to configure a <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> that plays <paramref name="game"/></returns>
         public static DriverSettings<TGame, TBoard, TMove, TPlayer>.Builder DriverSettings<TGame, TBoard, TMove, TPlayer>(this IGame<TGame, TBoard, TMove, TPlayer> game) where TGame : IGame<TGame, TBoard, TMove, TPlayer>
         {
             return new DriverSettings<TGame, TBoard, TMove, TPlayer>.Builder();
