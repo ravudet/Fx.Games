@@ -47,7 +47,7 @@
         /// </summary>
         /// <param name="strategies">The strategy that is assigned to each player of the game</param>
         /// <param name="displayer">The <see cref="IDisplayer{TGame, TBoard, TMove, TPlayer}"/> that represents the input/output interactions between a user and the game that this <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> coordinates</param>
-        /// <param name="settings">The settings used to configure the driver</param>
+        /// <param name="settings">The settings to use to configure the driver</param>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="strategies"/> or <paramref name="displayer"/> or <paramref name="settings"/> is <see langword="null"/></exception>
         public Driver(IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies, IDisplayer<TGame, TBoard, TMove, TPlayer> displayer, DriverSettings<TGame, TBoard, TMove, TPlayer> settings)
         {
