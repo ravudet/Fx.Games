@@ -40,8 +40,6 @@
             Assert.ThrowsException<InvalidGameException>(() => strategy.SelectMove(game));
         }
 
-        public static object ConsoleLock = new object(); //// TODO you need to make this shared
-
         /// <summary>
         /// Selects a move from a game
         /// </summary>
@@ -53,7 +51,7 @@
             using (var textReader = new StringReader("0" + Environment.NewLine))
             {
                 string move;
-                lock (ConsoleLock)
+                lock (ConsoleUtilities.ConsoleLock)
                 {
                     var oldStdIn = Console.In;
                     try
@@ -83,7 +81,7 @@
             using (var textReader = new StringReader("1" + Environment.NewLine + "0" + Environment.NewLine))
             {
                 string move;
-                lock (ConsoleLock)
+                lock (ConsoleUtilities.ConsoleLock)
                 {
                     var oldStdIn = Console.In;
                     try
@@ -112,7 +110,7 @@
             using (var textReader = new StringReader("asdf" + Environment.NewLine + "1" + Environment.NewLine + "0" + Environment.NewLine))
             {
                 string move;
-                lock (ConsoleLock)
+                lock (ConsoleUtilities.ConsoleLock)
                 {
                     var oldStdIn = Console.In;
                     try

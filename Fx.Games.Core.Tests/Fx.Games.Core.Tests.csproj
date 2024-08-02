@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Fx.Games.Core\Fx.Games.Core.csproj" />
+    <ProjectReference Include="..\Fx.Games.TestCore\Fx.Games.TestCore.csproj" />
   </ItemGroup>
 
 </Project>
