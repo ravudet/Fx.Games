@@ -1,5 +1,4 @@
 ﻿// TODOs
-// add comments to driver unit tests
 // get rid of fx.games (productizing as you go)
 // rename consoleapplication1 to fx.games
 // productize the console application
