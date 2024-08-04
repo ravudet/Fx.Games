@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fx.Games.Core", "Fx.Games.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fx.Games.Core.Tests", "Fx.Games.Core.Tests\Fx.Games.Core.Tests.csproj", "{C5A07A5D-1D10-4DC4-B82F-7882832C73BB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApplication1", "ConsoleApplication1\ConsoleApplication1.csproj", "{C3D9DF97-3CFB-45F4-B56E-DB87312C0BD1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fx.Games", "Fx.Games\Fx.Games.csproj", "{C3D9DF97-3CFB-45F4-B56E-DB87312C0BD1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Db", "Db\Db.csproj", "{21B1A974-0A95-49AD-9C32-78DFEFB9E921}"
 EndProject
