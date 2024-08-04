@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Fx.Games.Core\Fx.Games.Core.csproj" />
-    <ProjectReference Include="..\Fx.Games\Fx.Games.csproj" />
   </ItemGroup>
 
 </Project>
