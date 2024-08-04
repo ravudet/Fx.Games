@@ -1,5 +1,4 @@
 ﻿// TODOs
-// factor out common strategy tests?
 // productize the console application
 // get rid of warnings
 // add tictactoe back
