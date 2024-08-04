@@ -1,6 +1,7 @@
 ﻿// TODOs
-// factor out common strategy tests?
 // get rid of fx.games (productizing as you go)
+// fx.games is still on disk even though it's not in the solution
+// factor out common strategy tests?
 // rename consoleapplication1 to fx.games
 // productize the console application
 // get rid of warnings
