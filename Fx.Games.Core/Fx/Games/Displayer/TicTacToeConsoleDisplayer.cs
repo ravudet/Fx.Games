@@ -5,7 +5,8 @@
     using System.Linq;
     using Fx.Games.Game;
 
-    public sealed class TicTacToeConsoleDisplayer<TPlayer> : IDisplayer<TicTacToe<TPlayer>, TicTacToeBoard, TicTacToeMove, TPlayer>
+    //// TODO
+    /*public sealed class TicTacToeConsoleDisplayer<TPlayer> : IDisplayer<TicTacToe<TPlayer>, TicTacToeBoard, TicTacToeMove, TPlayer>
     {
         private readonly Func<TPlayer, string> playerToString;
 
@@ -93,5 +94,5 @@
                 return moves[selectedMove];
             }
         }
-    }
+    }*/
 }

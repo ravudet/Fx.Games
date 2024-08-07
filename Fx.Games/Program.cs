@@ -1,9 +1,9 @@
 ﻿// TODOs
 // should peg position use uint instead of int?
 //
-// add tictactoe back
-// add monty carlo back
+// add tictactoe console displayer back
 // integrate the v2/qlearning branch
+// add monty carlo back
 // implement a read only list for peggameutilities.winningsequence
 // write a version of game of amazons
 // write perf tests for game of amazons
@@ -12,6 +12,7 @@
 // what should db ienumerable + ienumerator actually look like
 // is there a way to leverage the underling struct enumerators in the enumerable and enumerator dbadapters?
 // is it worth it for drvier to require a keyeddictionary just so that it can make a copy of the strategies?
+// add back any games or strategies from the initial commit
 // productize program class
 
 namespace ConsoleApplication1
