@@ -16,7 +16,12 @@
         [TestMethod]
         public void NullStart()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => new PegMove(null, new PegPosition(3, 2)));
+            Assert.ThrowsException<ArgumentNullException>(() => new PegMove(
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                // SUPPRESSION test case for the null validation
+                null,
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                new PegPosition(3, 2)));
         }
 
         /// <summary>
@@ -25,7 +30,13 @@
         [TestMethod]
         public void NullEnd()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => new PegMove(new PegPosition(3, 2), null));
+            Assert.ThrowsException<ArgumentNullException>(() => new PegMove(
+                new PegPosition(3, 2),
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                // SUPPRESSION test case for the null validation
+                null
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                ));
         }
 
         /// <summary>

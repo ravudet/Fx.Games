@@ -16,7 +16,12 @@
         [TestMethod]
         public void NullEmpties()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => new PegBoard(null));
+            Assert.ThrowsException<ArgumentNullException>(() => new PegBoard(
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                // SUPPRESSION test case for the null validation
+                null
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                ));
         }
 
         /// <summary>

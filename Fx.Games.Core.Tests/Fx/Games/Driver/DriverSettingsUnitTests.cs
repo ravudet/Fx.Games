@@ -52,7 +52,11 @@
         {
             var builder = new DriverSettings<NoImplementationGame, string[], string, string>.Builder()
             {
-                PlayerTranscriber = null,
+                PlayerTranscriber =
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                    // SUPPRESSION test case for the null validation
+                    null,
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             };
 
             Assert.ThrowsException<ArgumentNullException>(() => builder.Build());

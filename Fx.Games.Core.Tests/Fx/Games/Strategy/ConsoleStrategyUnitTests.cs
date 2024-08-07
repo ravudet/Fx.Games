@@ -25,7 +25,12 @@
         {
             var strategy = ConsoleStrategy<NoImplementationGame, string[], string, string>.Instance;
 
-            Assert.ThrowsException<ArgumentNullException>(() => strategy.SelectMove(null));
+            Assert.ThrowsException<ArgumentNullException>(() => strategy.SelectMove(
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                // SUPPRESSION test case for the null validation
+                null
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                ));
         }
 
         /// <summary>

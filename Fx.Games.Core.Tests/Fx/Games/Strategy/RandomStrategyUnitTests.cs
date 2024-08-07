@@ -19,7 +19,12 @@
         [TestMethod]
         public void NullSettings()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => new RandomStrategy<NoImplementationGame, string[], string, string>(null));
+            Assert.ThrowsException<ArgumentNullException>(() => new RandomStrategy<NoImplementationGame, string[], string, string>(
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                // SUPPRESSION test case for the null validation
+                null
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                ));
         }
 
         /// <summary>
@@ -30,7 +35,12 @@
         {
             var strategy = new RandomStrategy<NoImplementationGame, string[], string, string>();
 
-            Assert.ThrowsException<ArgumentNullException>(() => strategy.SelectMove(null));
+            Assert.ThrowsException<ArgumentNullException>(() => strategy.SelectMove(
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                // SUPPRESSION test case for the null validation
+                null
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                ));
         }
 
         /// <summary>

@@ -14,7 +14,12 @@
         [TestMethod]
         public void NullEnumerable()
         {
-            Assert.ThrowsException<global::System.ArgumentNullException>(() => new DbEnumerableAdapter<string>(null));
+            Assert.ThrowsException<global::System.ArgumentNullException>(() => new DbEnumerableAdapter<string>(
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                // SUPPRESSION test case for the null validation
+                null
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                ));
         }
 
         /// <summary>
@@ -63,7 +68,11 @@
             /// <inheritdoc/>
             public global::System.Collections.Generic.IEnumerator<string> GetEnumerator()
             {
-                return null;
+                return
+#pragma warning disable CS8603 // Possible null reference return.
+                    // SUPPRESSION test case for the null validation
+                    null;
+#pragma warning restore CS8603 // Possible null reference return.
             }
 
             /// <inheritdoc/>

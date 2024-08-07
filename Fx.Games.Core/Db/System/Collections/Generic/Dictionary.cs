@@ -10,7 +10,10 @@
         /// <summary>
         /// The data store for all of the key/value pairs where the key is not <see langword="null"/>
         /// </summary>
+#pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
+        // SUPPRESSION: we are explicitly handling null keys outselves to overcome the shortcoming of the .NET dictionary
         private readonly global::System.Collections.Generic.Dictionary<TKey, TValue> dictionary;
+#pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
 
         /// <summary>
         /// The value (if any) for the <see langword="null"/> key
@@ -37,7 +40,12 @@
                 throw new global::System.ArgumentNullException(nameof(comparer));
             }
 
-            this.dictionary = new global::System.Collections.Generic.Dictionary<TKey, TValue>(comparer);
+            this.dictionary = new global::System.Collections.Generic.Dictionary<
+#pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
+                // SUPPRESSION: we are explicitly handling null keys outselves to overcome the shortcoming of the .NET dictionary
+                TKey,
+#pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
+                TValue>(comparer);
             this.nullValue = default;
         }
 
@@ -86,13 +94,19 @@
                 else
                 {
                     contained = false;
+#pragma warning disable CS8603 // Possible null reference return.
+                    // SUPPRESSION we intend to return null (if a reference type) in the case where the value is not contained in the dictionary
                     return default;
+#pragma warning restore CS8603 // Possible null reference return.
                 }
             }
             else
             {
                 contained = this.dictionary.TryGetValue(key, out var value);
+#pragma warning disable CS8603 // Possible null reference return.
+                // SUPPRESSION if TValue is nullable, then this may be null, but in that case, the return type is nullable, so that's the correct behavior; if TValue is not nullable, then we couldn't add null to the dictionary in the first place
                 return value;
+#pragma warning restore CS8603 // Possible null reference return.
             }
         }
     }
