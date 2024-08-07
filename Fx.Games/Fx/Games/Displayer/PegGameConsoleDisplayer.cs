@@ -56,7 +56,7 @@
 
         private static string TranscribeMove(PegMove move)
         {
-            return $"({move.Start.Item1},{move.Start.Item2}) => ({move.End.Item1}, {move.End.Item2})";
+            return $"({move.Start.Row},{move.Start.Column}) => ({move.End.Row}, {move.End.Column})";
         }
     }
 }

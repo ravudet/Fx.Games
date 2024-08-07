@@ -1,10 +1,12 @@
 ﻿// TODOs
+// should peg position use uint instead of int?
 // productize the console application
 // get rid of warnings
 // add tictactoe back
+// add monty carlo back
+// integrate the v2/qlearning branch
 // write a version of game of amazons
 // write perf tests for game of amazons
-// add monty carlo back
 // what are the correct db namespaces?
 // does it make sense to use structs for the dbadapters? will boxing end up expensive? you can have a default constructor in c# now, so you probably should just use structs
 // what should db ienumerable + ienumerator actually look like
