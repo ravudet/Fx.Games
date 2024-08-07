@@ -5,6 +5,7 @@
 // add tictactoe back
 // add monty carlo back
 // integrate the v2/qlearning branch
+// implement a read only list for peggameutilities.winningsequence
 // write a version of game of amazons
 // write perf tests for game of amazons
 // what are the correct db namespaces?
@@ -70,7 +71,7 @@ namespace ConsoleApplication1
 
         private static void PegsHuman()
         {
-            var displayer = new PegGameConsoleDisplayer<string>();
+            var displayer = PegGameConsoleDisplayer<string>.Instance;
             var player = "player";
             var game = new PegGame<string>(player);
             var driver = Driver.Create(
@@ -84,7 +85,7 @@ namespace ConsoleApplication1
 
         private static void PegsRandom()
         {
-            var displayer = new PegGameConsoleDisplayer<string>();
+            var displayer = PegGameConsoleDisplayer<string>.Instance;
             var player = "random";
             var game = new PegGame<string>(player);
             var driver = Driver.Create(

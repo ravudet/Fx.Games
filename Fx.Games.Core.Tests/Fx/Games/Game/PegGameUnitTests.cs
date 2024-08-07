@@ -81,7 +81,7 @@
             Assert.IsFalse(pegGame.WinnersAndLosers.Drawers.Any());
 
             // move 1
-            pegGame = pegGame.CommitMove(new PegMove(new PegPosition(2, 0), new PegPosition(0, 0)));
+            pegGame = pegGame.CommitMove(PegGameUtilities.WinningSequence[0]);
             Assert.IsFalse(pegGame.IsGameOver);
             Assert.AreEqual(++emptyPegCount, EmptyPegCount(pegGame));
             Assert.IsFalse(pegGame.WinnersAndLosers.Winners.Any());
@@ -89,7 +89,7 @@
             Assert.IsFalse(pegGame.WinnersAndLosers.Drawers.Any());
 
             // move 2
-            pegGame = pegGame.CommitMove(new PegMove(new PegPosition(2, 2), new PegPosition(2, 0)));
+            pegGame = pegGame.CommitMove(PegGameUtilities.WinningSequence[1]);
             Assert.IsFalse(pegGame.IsGameOver);
             Assert.AreEqual(++emptyPegCount, EmptyPegCount(pegGame));
             Assert.IsFalse(pegGame.WinnersAndLosers.Winners.Any());
@@ -97,7 +97,7 @@
             Assert.IsFalse(pegGame.WinnersAndLosers.Drawers.Any());
 
             // move 3
-            pegGame = pegGame.CommitMove(new PegMove(new PegPosition(0, 0), new PegPosition(2, 2)));
+            pegGame = pegGame.CommitMove(PegGameUtilities.WinningSequence[2]);
             Assert.IsFalse(pegGame.IsGameOver);
             Assert.AreEqual(++emptyPegCount, EmptyPegCount(pegGame));
             Assert.IsFalse(pegGame.WinnersAndLosers.Winners.Any());
@@ -105,7 +105,7 @@
             Assert.IsFalse(pegGame.WinnersAndLosers.Drawers.Any());
 
             // move 4
-            pegGame = pegGame.CommitMove(new PegMove(new PegPosition(3, 0), new PegPosition(1, 0)));
+            pegGame = pegGame.CommitMove(PegGameUtilities.WinningSequence[3]);
             Assert.IsFalse(pegGame.IsGameOver);
             Assert.AreEqual(++emptyPegCount, EmptyPegCount(pegGame));
             Assert.IsFalse(pegGame.WinnersAndLosers.Winners.Any());
@@ -113,7 +113,7 @@
             Assert.IsFalse(pegGame.WinnersAndLosers.Drawers.Any());
 
             // move 5
-            pegGame = pegGame.CommitMove(new PegMove(new PegPosition(4, 3), new PegPosition(2, 0)));
+            pegGame = pegGame.CommitMove(PegGameUtilities.WinningSequence[4]);
             Assert.IsFalse(pegGame.IsGameOver);
             Assert.AreEqual(++emptyPegCount, EmptyPegCount(pegGame));
             Assert.IsFalse(pegGame.WinnersAndLosers.Winners.Any());
@@ -121,7 +121,7 @@
             Assert.IsFalse(pegGame.WinnersAndLosers.Drawers.Any());
 
             // move 6
-            pegGame = pegGame.CommitMove(new PegMove(new PegPosition(1, 0), new PegPosition(3, 0)));
+            pegGame = pegGame.CommitMove(PegGameUtilities.WinningSequence[5]);
             Assert.IsFalse(pegGame.IsGameOver);
             Assert.AreEqual(++emptyPegCount, EmptyPegCount(pegGame));
             Assert.IsFalse(pegGame.WinnersAndLosers.Winners.Any());
@@ -129,7 +129,7 @@
             Assert.IsFalse(pegGame.WinnersAndLosers.Drawers.Any());
 
             // move 7
-            pegGame = pegGame.CommitMove(new PegMove(new PegPosition(3, 3), new PegPosition(3, 1)));
+            pegGame = pegGame.CommitMove(PegGameUtilities.WinningSequence[6]);
             Assert.IsFalse(pegGame.IsGameOver);
             Assert.AreEqual(++emptyPegCount, EmptyPegCount(pegGame));
             Assert.IsFalse(pegGame.WinnersAndLosers.Winners.Any());
@@ -137,7 +137,7 @@
             Assert.IsFalse(pegGame.WinnersAndLosers.Drawers.Any());
 
             // move 8
-            pegGame = pegGame.CommitMove(new PegMove(new PegPosition(3, 0), new PegPosition(3, 2)));
+            pegGame = pegGame.CommitMove(PegGameUtilities.WinningSequence[7]);
             Assert.IsFalse(pegGame.IsGameOver);
             Assert.AreEqual(++emptyPegCount, EmptyPegCount(pegGame));
             Assert.IsFalse(pegGame.WinnersAndLosers.Winners.Any());
@@ -145,7 +145,7 @@
             Assert.IsFalse(pegGame.WinnersAndLosers.Drawers.Any());
 
             // move 9
-            pegGame = pegGame.CommitMove(new PegMove(new PegPosition(4, 4), new PegPosition(4, 2)));
+            pegGame = pegGame.CommitMove(PegGameUtilities.WinningSequence[8]);
             Assert.IsFalse(pegGame.IsGameOver);
             Assert.AreEqual(++emptyPegCount, EmptyPegCount(pegGame));
             Assert.IsFalse(pegGame.WinnersAndLosers.Winners.Any());
@@ -153,7 +153,7 @@
             Assert.IsFalse(pegGame.WinnersAndLosers.Drawers.Any());
 
             // move 10
-            pegGame = pegGame.CommitMove(new PegMove(new PegPosition(4, 1), new PegPosition(4, 3)));
+            pegGame = pegGame.CommitMove(PegGameUtilities.WinningSequence[9]);
             Assert.IsFalse(pegGame.IsGameOver);
             Assert.AreEqual(++emptyPegCount, EmptyPegCount(pegGame));
             Assert.IsFalse(pegGame.WinnersAndLosers.Winners.Any());
@@ -161,7 +161,7 @@
             Assert.IsFalse(pegGame.WinnersAndLosers.Drawers.Any());
 
             // move 11
-            pegGame = pegGame.CommitMove(new PegMove(new PegPosition(2, 2), new PegPosition(4, 2)));
+            pegGame = pegGame.CommitMove(PegGameUtilities.WinningSequence[10]);
             Assert.IsFalse(pegGame.IsGameOver);
             Assert.AreEqual(++emptyPegCount, EmptyPegCount(pegGame));
             Assert.IsFalse(pegGame.WinnersAndLosers.Winners.Any());
@@ -169,7 +169,7 @@
             Assert.IsFalse(pegGame.WinnersAndLosers.Drawers.Any());
 
             // move 12
-            pegGame = pegGame.CommitMove(new PegMove(new PegPosition(4, 3), new PegPosition(4, 1)));
+            pegGame = pegGame.CommitMove(PegGameUtilities.WinningSequence[11]);
             Assert.IsFalse(pegGame.IsGameOver);
             Assert.AreEqual(++emptyPegCount, EmptyPegCount(pegGame));
             Assert.IsFalse(pegGame.WinnersAndLosers.Winners.Any());
@@ -177,7 +177,7 @@
             Assert.IsFalse(pegGame.WinnersAndLosers.Drawers.Any());
 
             // move 13
-            pegGame = pegGame.CommitMove(new PegMove(new PegPosition(4, 0), new PegPosition(4, 2)));
+            pegGame = pegGame.CommitMove(PegGameUtilities.WinningSequence[12]);
 
             Assert.IsTrue(pegGame.IsGameOver);
             Assert.AreEqual(++emptyPegCount, EmptyPegCount(pegGame));

@@ -12,14 +12,14 @@
     public sealed class NullDisplayer<TGame, TBoard, TMove, TPlayer> : IDisplayer<TGame, TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer>
     {
         /// <summary>
-        /// TODO
+        /// Prevents the initialization of the <see cref="NullDisplayer{TGame, TBoard, TMove, TPlayer}"/> class
         /// </summary>
         private NullDisplayer()
         {
         }
 
         /// <summary>
-        /// The singleton instance of the <see cref="NullDisplayer{TGame, TBoard, TMove, TPlayer}"/>
+        /// The singleton instance of <see cref="NullDisplayer{TGame, TBoard, TMove, TPlayer}"/>
         /// </summary>
         public static NullDisplayer<TGame, TBoard, TMove, TPlayer> Instance { get; } = new NullDisplayer<TGame, TBoard, TMove, TPlayer>();
 
