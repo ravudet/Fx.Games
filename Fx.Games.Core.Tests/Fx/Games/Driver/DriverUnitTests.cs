@@ -24,7 +24,10 @@
         {
             var game = new MockGame();
             Assert.ThrowsException<ArgumentNullException>(() => new Driver<MockGame, string[], string, string>(
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                // SUPPRESSION test case for the null validation
                 null,
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                 game.NullDisplayer()));
         }
 
@@ -40,7 +43,11 @@
                 {
                     KeyValuePair.Create("first", MockStrategy.Create(game)),
                 }.ToDb().ToDictionary(),
-                null));
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                // SUPPRESSION test case for the null validation
+                null
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                ));
         }
 
         /// <summary>
@@ -56,7 +63,11 @@
                     KeyValuePair.Create("first", MockStrategy.Create(game)),
                 }.ToDb().ToDictionary(),
                 game.NullDisplayer(),
-                null));
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                // SUPPRESSION test case for the null validation
+                null
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                ));
         }
 
         /// <summary>
@@ -67,7 +78,10 @@
         {
             var game = new MockGame();
             Assert.ThrowsException<ArgumentNullException>(() => Driver.Create(
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                // SUPPRESSION test case for the null validation
                 null,
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                 game.NullDisplayer()));
         }
 
@@ -83,7 +97,11 @@
                 {
                     KeyValuePair.Create("first", MockStrategy.Create(game)),
                 }.ToDb().ToDictionary(),
-                null));
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                // SUPPRESSION test case for the null validation
+                null
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                ));
         }
 
         /// <summary>
@@ -99,7 +117,11 @@
                     KeyValuePair.Create("first", MockStrategy.Create(game)),
                 }.ToDb().ToDictionary(),
                 game.NullDisplayer(),
-                null));
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                // SUPPRESSION test case for the null validation
+                null
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                ));
         }
 
         /// <summary>
@@ -116,7 +138,12 @@
                 }.ToDb().ToDictionary(),
                 game.NullDisplayer());
 
-            Assert.ThrowsException<ArgumentNullException>(() => driver.Run(null));
+            Assert.ThrowsException<ArgumentNullException>(() => driver.Run(
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                // SUPPRESSION test case for the null validation
+                null
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                ));
         }
 
         /// <summary>

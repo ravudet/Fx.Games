@@ -16,9 +16,18 @@
         [TestMethod]
         public void ToDictionarySelectorsNullSequence()
         {
-            IEnumerable<string> enumerable = null;
+            IEnumerable<string> enumerable =
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+                // SUPPRESSION test case for the null validation
+                null;
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 
-            Assert.ThrowsException<global::System.ArgumentNullException>(() => enumerable.ToDictionary(_ => _, _ => _));
+            Assert.ThrowsException<global::System.ArgumentNullException>(() =>
+#pragma warning disable CS8604 // Possible null reference argument.
+                // SUPPRESSION test case for the null validation
+                enumerable
+#pragma warning restore CS8604 // Possible null reference argument.
+                    .ToDictionary(_ => _, _ => _));
         }
 
         /// <summary>
@@ -28,9 +37,18 @@
         public void ToDictionarySelectorsNullKeySelector()
         {
             var enumerable = global::System.Linq.Enumerable.Empty<string>().ToDb();
-            global::System.Func<string, string> keySelector = null;
+            global::System.Func<string, string> keySelector =
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+                // SUPPRESSION test case for the null validation
+                null;
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 
-            Assert.ThrowsException<global::System.ArgumentNullException>(() => enumerable.ToDictionary(keySelector, _ => _));
+            Assert.ThrowsException<global::System.ArgumentNullException>(() => enumerable.ToDictionary(
+#pragma warning disable CS8604 // Possible null reference argument.
+                // SUPPRESSION test case for the null validation
+                keySelector,
+#pragma warning restore CS8604 // Possible null reference argument.
+                _ => _));
         }
 
         /// <summary>
@@ -40,9 +58,18 @@
         public void ToDictionarySelectorsNullValueSelector()
         {
             var enumerable = global::System.Linq.Enumerable.Empty<string>().ToDb();
-            global::System.Func<string, string> valueSelector = null;
+            global::System.Func<string, string> valueSelector =
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+                // SUPPRESSION test case for the null validation
+                null;
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 
-            Assert.ThrowsException<global::System.ArgumentNullException>(() => enumerable.ToDictionary(_ => _, valueSelector));
+            Assert.ThrowsException<global::System.ArgumentNullException>(() => enumerable.ToDictionary(_ => _,
+#pragma warning disable CS8604 // Possible null reference argument.
+                // SUPPRESSION test case for the null validation
+                valueSelector
+#pragma warning restore CS8604 // Possible null reference argument.
+                ));
         }
 
         /// <summary>
@@ -83,9 +110,18 @@
         [TestMethod]
         public void ToDictionaryNullSequence()
         {
-            IEnumerable<global::System.Collections.Generic.KeyValuePair<string, string>> enumerable = null;
+            IEnumerable<global::System.Collections.Generic.KeyValuePair<string, string>> enumerable =
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+                // SUPPRESSION test case for the null validation
+                null;
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 
-            Assert.ThrowsException<global::System.ArgumentNullException>(() => enumerable.ToDictionary());
+            Assert.ThrowsException<global::System.ArgumentNullException>(() =>
+#pragma warning disable CS8604 // Possible null reference argument.
+                // SUPPRESSION test case for the null validation
+                enumerable
+#pragma warning restore CS8604 // Possible null reference argument.
+                    .ToDictionary());
         }
 
         [TestMethod]

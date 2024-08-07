@@ -14,10 +14,19 @@
         [TestMethod]
         public void SampleNullList()
         {
-            List<string> list = null;
+            List<string> list =
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+                // SUPPRESSION test case for the null validation
+                null;
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
             var random = new Random();
 
-            Assert.ThrowsException<ArgumentNullException>(() => list.Sample(random));
+            Assert.ThrowsException<ArgumentNullException>(() =>
+#pragma warning disable CS8604 // Possible null reference argument.
+                // SUPPRESSION test case for the null validation
+                list
+#pragma warning restore CS8604 // Possible null reference argument.
+                    .Sample(random));
         }
 
         /// <summary>
@@ -27,9 +36,18 @@
         public void SampleNullRandom()
         {
             var list = new[] { "asdf" };
-            Random random = null;
+            Random random =
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+                // SUPPRESSION test case for the null validation
+                null;
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 
-            Assert.ThrowsException<ArgumentNullException>(() => list.Sample(random));
+            Assert.ThrowsException<ArgumentNullException>(() => list.Sample(
+#pragma warning disable CS8604 // Possible null reference argument.
+                // SUPPRESSION test case for the null validation
+                random
+#pragma warning restore CS8604 // Possible null reference argument.
+                ));
         }
 
         /// <summary>

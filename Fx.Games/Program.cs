@@ -1,7 +1,6 @@
 ﻿// TODOs
 // should peg position use uint instead of int?
-// productize the console application
-// get rid of warnings
+//
 // add tictactoe back
 // add monty carlo back
 // integrate the v2/qlearning branch
@@ -13,6 +12,7 @@
 // what should db ienumerable + ienumerator actually look like
 // is there a way to leverage the underling struct enumerators in the enumerable and enumerator dbadapters?
 // is it worth it for drvier to require a keyeddictionary just so that it can make a copy of the strategies?
+// productize program class
 
 namespace ConsoleApplication1
 {

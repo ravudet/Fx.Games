@@ -14,7 +14,12 @@
         [TestMethod]
         public void NullEnumerator()
         {
-            Assert.ThrowsException<global::System.ArgumentNullException>(() => new DbEnumeratorAdapter<string>(null));
+            Assert.ThrowsException<global::System.ArgumentNullException>(() => new DbEnumeratorAdapter<string>(
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                // SUPPRESSION test case for the null validation
+                null
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                ));
         }
 
         /// <summary>

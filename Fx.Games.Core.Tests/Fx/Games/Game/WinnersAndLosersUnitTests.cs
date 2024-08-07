@@ -18,7 +18,10 @@
         public void NullWinners()
         {
             Assert.ThrowsException<ArgumentNullException>(() => new WinnersAndLosers<string>(
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                // SUPPRESSION test case for the null validation
                 null,
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                 Enumerable.Empty<string>(),
                 Enumerable.Empty<string>()));
         }
@@ -31,7 +34,10 @@
         {
             Assert.ThrowsException<ArgumentNullException>(() => new WinnersAndLosers<string>(
                 Enumerable.Empty<string>(),
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                // SUPPRESSION test case for the null validation
                 null,
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                 Enumerable.Empty<string>()));
         }
 
@@ -44,7 +50,11 @@
             Assert.ThrowsException<ArgumentNullException>(() => new WinnersAndLosers<string>(
                 Enumerable.Empty<string>(),
                 Enumerable.Empty<string>(),
-                null));
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                // SUPPRESSION test case for the null validation
+                null
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                ));
         }
 
         /// <summary>
