@@ -1,12 +1,16 @@
 ﻿// TODOs
-// should peg position use uint instead of int?
 //
-// add tictactoe console displayer back
 // integrate the v2/qlearning branch
 // add monty carlo back
-// implement a read only list for peggameutilities.winningsequence
+// productize tictactoeconsoledisplayer
+//
 // write a version of game of amazons
 // write perf tests for game of amazons
+//
+// should peg position use uint instead of int?
+// you're not actually testing the peggameconsoledisplayer, you're just running it
+// null checks in peggameconsoledisplayer
+// implement a read only list for peggameutilities.winningsequence
 // what are the correct db namespaces?
 // does it make sense to use structs for the dbadapters? will boxing end up expensive? you can have a default constructor in c# now, so you probably should just use structs
 // what should db ienumerable + ienumerator actually look like
@@ -32,6 +36,8 @@ namespace ConsoleApplication1
         {
             (nameof(PegsRandom), PegsRandom),
             (nameof(PegsHuman), PegsHuman),
+            (nameof(TicTacToeHumanVersusHuman), TicTacToeHumanVersusHuman),
+            (nameof(TicTacToeHumanVersusRandom), TicTacToeHumanVersusRandom),
         };
 
         static void Main(string[] args)
@@ -68,6 +74,40 @@ namespace ConsoleApplication1
                 }
             }
             while (true);
+        }
+
+        private static void TicTacToeHumanVersusRandom()
+        {
+            var displayer = new TicTacToeConsoleDisplayer<string>(_ => _);
+            var exes = "exes";
+            var ohs = "ohs";
+
+            var game = new TicTacToe<string>(exes, ohs);
+            var driver = Driver.Create(
+                new[]
+                {
+                    KeyValuePair.Create(exes, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string>)game.ConsoleStrategy()),
+                    KeyValuePair.Create(ohs, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string>)game.RandomStrategy()),
+                }.ToDb().ToDictionary(),
+                displayer);
+            var result = driver.Run(game);
+        }
+
+        private static void TicTacToeHumanVersusHuman()
+        {
+            var displayer = new TicTacToeConsoleDisplayer<string>(_ => _);
+            var exes = "exes";
+            var ohs = "ohs";
+
+            var game = new TicTacToe<string>(exes, ohs);
+            var driver = Driver.Create(
+                new[]
+                {
+                    KeyValuePair.Create(exes, game.ConsoleStrategy()),
+                    KeyValuePair.Create(ohs, game.ConsoleStrategy()),
+                }.ToDb().ToDictionary(),
+                displayer);
+            var result = driver.Run(game);
         }
 
         private static void PegsHuman()

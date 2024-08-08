@@ -3,10 +3,14 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using Fx.Games.Game;
 
-    //// TODO
-    /*public sealed class TicTacToeConsoleDisplayer<TPlayer> : IDisplayer<TicTacToe<TPlayer>, TicTacToeBoard, TicTacToeMove, TPlayer>
+    /// <summary>
+    /// Writes the state of the board and moves of <see cref="TicTacToe{TPlayer}"/> games to the console
+    /// </summary>
+    /// <typeparam name="TPlayer">The type of the player that is playing the game</typeparam>
+    public sealed class TicTacToeConsoleDisplayer<TPlayer> : IDisplayer<TicTacToe<TPlayer>, TicTacToeBoard, TicTacToeMove, TPlayer>
     {
         private readonly Func<TPlayer, string> playerToString;
 
@@ -18,21 +22,6 @@
             }
 
             this.playerToString = playerToString;
-        }
-
-        private static char FromPiece(TicTacToePiece piece)
-        {
-            switch (piece)
-            {
-                case TicTacToePiece.Empty:
-                    return '*';
-                case TicTacToePiece.Ex:
-                    return 'X';
-                case TicTacToePiece.Oh:
-                    return 'O';
-            }
-
-            throw new InvalidOperationException("TODO");
         }
 
         public void DisplayBoard(TicTacToe<TPlayer> game)
@@ -62,37 +51,47 @@
                 throw new ArgumentNullException(nameof(game));
             }
 
-            game.WinnersAndLosers.Winners.ApplyToEmptyOrPopulated(
-                () => Console.WriteLine("The game was a draw..."),
-                winner => Console.WriteLine($"{playerToString(winner)} wins!"));
+            try
+            {
+                var winner = game.WinnersAndLosers.Winners.First();
+                Console.WriteLine($"{playerToString(winner)} wins!");
+            }
+            catch (InvalidOperationException)
+            {
+                Console.WriteLine("The game was a draw...");
+            }
         }
 
-        public void DisplayMoves(TicTacToe<TPlayer> game)
+        public void DisplayAvailableMoves(TicTacToe<TPlayer> game)
         {
             Console.WriteLine("Select a move (row, column):");
             int i = 0;
             foreach (var move in game.Moves)
             {
-                Console.WriteLine($"{i++}: {move.Row}, {move.Column}");
+                Console.WriteLine($"{i++}: ({move.Row}, {move.Column})");
             }
 
             Console.WriteLine();
         }
 
-        public TicTacToeMove ReadMoveSelection(TicTacToe<TPlayer> game)
+        public void DisplaySelectedMove(TicTacToeMove move)
         {
-            var moves = game.Moves.ToList();
-            while (true)
-            {
-                var input = Console.ReadLine();
-                if (!int.TryParse(input, out var selectedMove) || selectedMove >= moves.Count)
-                {
-                    Console.WriteLine($"The input '{input}' was not the index of a legal move");
-                    continue;
-                }
-
-                return moves[selectedMove];
-            }
+            Console.WriteLine($"({move.Row}, {move.Column})");
         }
-    }*/
+
+        private static char FromPiece(TicTacToePiece piece)
+        {
+            switch (piece)
+            {
+                case TicTacToePiece.Empty:
+                    return '*';
+                case TicTacToePiece.Ex:
+                    return 'X';
+                case TicTacToePiece.Oh:
+                    return 'O';
+            }
+
+            throw new InvalidOperationException("TODO");
+        }
+    }
 }
