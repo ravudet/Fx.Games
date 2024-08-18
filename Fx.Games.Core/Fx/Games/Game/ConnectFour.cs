@@ -23,6 +23,10 @@
             }
         }
 
+        public ConnectFourBoard Drop(int column)
+        {
+        }
+
         public sealed class ConnectFourStack
         {
             private readonly List<ConnectFourBoardSpace> spaces;
@@ -38,6 +42,11 @@
                 {
                     return this.spaces.Count >= 6;
                 }
+            }
+
+            public ConnectFourBoard Drop()
+            {
+
             }
         }
     }
@@ -65,18 +74,18 @@
 
     public sealed class ConnectFour<TPlayer> : IGame<ConnectFour<TPlayer>, ConnectFourBoard, ConnectFourMove, TPlayer>
     {
-        private readonly TPlayer player1;
-
-        private readonly TPlayer player2;
+        private readonly TPlayer opponent;
 
         public ConnectFour(TPlayer player1, TPlayer player2)
+            : this(player1, player2, new ConnectFourBoard())
         {
-            this.player1 = player1;
-            this.player2 = player2;
+        }
 
+        private ConnectFour(TPlayer player1, TPlayer player2, ConnectFourBoard board)
+        {
             this.CurrentPlayer = player1;
-
-            this.Board = new ConnectFourBoard();
+            this.opponent = player2;
+            this.Board = board;
         }
 
         public TPlayer CurrentPlayer { get; }
@@ -114,7 +123,13 @@
 
         public ConnectFour<TPlayer> CommitMove(ConnectFourMove move)
         {
-            
+            var stack = this.Board.Stacks[move.Column];
+            if (stack.IsFull)
+            {
+                throw new IllegalMoveExeption("tODO");
+            }
+
+            return new ConnectFour<TPlayer>(this.opponent, this.CurrentPlayer, stack.Drop());
         }
     }
 }
