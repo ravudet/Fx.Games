@@ -176,6 +176,7 @@
         public ConnectFour(TPlayer player1, TPlayer player2)
             : this(player1, player2, new ConnectFourBoard(), player1, player2)
         {
+            //// TODO what about tplayer red, tplayer yellow, and tplayer first
         }
 
         private ConnectFour(TPlayer player1, TPlayer player2, ConnectFourBoard board, TPlayer redPlayer, TPlayer yellowPlayer)
@@ -338,6 +339,7 @@
                         {
                             if (index == move.Column)
                             {
+                                //// TODO this probably has issuies if boxing happens on tplayer
                                 return stack.Drop(object.ReferenceEquals(this.CurrentPlayer, this.redPlayer) ? ConnectFourBoardSpace.Red : ConnectFourBoardSpace.Yellow);
                             }
                             else
