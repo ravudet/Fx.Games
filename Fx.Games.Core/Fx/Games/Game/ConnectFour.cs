@@ -60,7 +60,7 @@
 
         public void DisplaySelectedMove(ConnectFourMove move)
         {
-            Console.WriteLine($"({move.Column})");
+            Console.WriteLine($"{new string(' ', move.Column * 3)}({move.Column})");
         }
 
         private static char FromPiece(ConnectFourBoardSpace piece)
@@ -199,7 +199,7 @@
                     .Board
                     .Stacks
                     .Select((stack, index) => (!stack.IsFull, index))
-                    .Where(tuple => !tuple.Item1)
+                    .Where(tuple => tuple.Item1)
                     .Select(tuple => new ConnectFourMove(tuple.index));
             }
         }
@@ -208,10 +208,6 @@
         {
             get
             {
-                if (!this.Moves.Any())
-                {
-                    return new WinnersAndLosers<TPlayer>(Enumerable.Empty<TPlayer>(), Enumerable.Empty<TPlayer>(), Enumerable.Empty<TPlayer>());
-                }
 
                 // check if there are vertical wins
                 for (int i = 0; i < this.Board.Stacks.Count; ++i)
@@ -219,6 +215,11 @@
                     for (int j = 0; j < 3; ++j)
                     {
                         var currentPiece = this.Board.Stacks[i].Get(j);
+                        if (currentPiece == ConnectFourBoardSpace.Empty)
+                        {
+                            continue;
+                        }
+
                         if (this.Board.Stacks[i].Get(j + 1) == currentPiece && this.Board.Stacks[i].Get(j + 2) == currentPiece && this.Board.Stacks[i].Get(j + 3) == currentPiece)
                         {
                             var winner = currentPiece == ConnectFourBoardSpace.Red ? this.redPlayer : this.yellowPlayer;
@@ -237,6 +238,11 @@
                     for (int j = 0; j < 6; ++j)
                     {
                         var currentPiece = this.Board.Stacks[i].Get(j);
+                        if (currentPiece == ConnectFourBoardSpace.Empty)
+                        {
+                            continue;
+                        }
+
                         if (this.Board.Stacks[i + 1].Get(j) == currentPiece && this.Board.Stacks[i + 2].Get(j) == currentPiece && this.Board.Stacks[i + 3].Get(j) == currentPiece)
                         {
                             var winner = currentPiece == ConnectFourBoardSpace.Red ? this.redPlayer : this.yellowPlayer;
@@ -255,6 +261,11 @@
                     for (int j = 0; j < 3; ++j)
                     {
                         var currentPiece = this.Board.Stacks[i].Get(j);
+                        if (currentPiece == ConnectFourBoardSpace.Empty)
+                        {
+                            continue;
+                        }
+
                         if (this.Board.Stacks[i + 1].Get(j + 1) == currentPiece && this.Board.Stacks[i + 2].Get(j + 2) == currentPiece && this.Board.Stacks[i + 3].Get(j + 3) == currentPiece)
                         {
                             var winner = currentPiece == ConnectFourBoardSpace.Red ? this.redPlayer : this.yellowPlayer;
@@ -273,6 +284,11 @@
                     for (int j = 5; j >= 3; --j)
                     {
                         var currentPiece = this.Board.Stacks[i].Get(j);
+                        if (currentPiece == ConnectFourBoardSpace.Empty)
+                        {
+                            continue;
+                        }
+
                         if (this.Board.Stacks[i + 1].Get(j - 1) == currentPiece && this.Board.Stacks[i + 2].Get(j - 2) == currentPiece && this.Board.Stacks[i + 3].Get(j - 3) == currentPiece)
                         {
                             var winner = currentPiece == ConnectFourBoardSpace.Red ? this.redPlayer : this.yellowPlayer;
@@ -285,7 +301,12 @@
                     }
                 }
 
-                return new WinnersAndLosers<TPlayer>(Enumerable.Empty<TPlayer>(), Enumerable.Empty<TPlayer>(), new[] { this.CurrentPlayer, this.opponent });
+                if (!this.Moves.Any())
+                {
+                    return new WinnersAndLosers<TPlayer>(Enumerable.Empty<TPlayer>(), Enumerable.Empty<TPlayer>(), new[] { this.CurrentPlayer, this.opponent });
+                }
+
+                return new WinnersAndLosers<TPlayer>(Enumerable.Empty<TPlayer>(), Enumerable.Empty<TPlayer>(), Enumerable.Empty<TPlayer>());
             }
         }
 
@@ -293,7 +314,8 @@
         {
             get
             {
-                return this.WinnersAndLosers.Winners.Any() || !this.Moves.Any();
+                var winnersAndLoser = this.WinnersAndLosers;
+                return winnersAndLoser.Winners.Any() || winnersAndLoser.Losers.Any() || winnersAndLoser.Drawers.Any();
             }
         }
 

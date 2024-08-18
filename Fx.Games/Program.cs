@@ -83,12 +83,15 @@ namespace ConsoleApplication1
             var player1 = "player1";
             var player2 = "player2";
 
+            var random1 = new Random(0);
+            var random2 = new Random(0);
+
             var game = new ConnectFour<string>(player1, player2);
             var driver = Driver.Create(
                 new[]
                 {
-                    KeyValuePair.Create(player1, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>)game.RandomStrategy()),
-                    KeyValuePair.Create(player2, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>)game.RandomStrategy()),
+                    KeyValuePair.Create(player1, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>)new RandomStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>(new RandomStrategySettings<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>.Builder() {Random = random1 }.Build())),
+                    KeyValuePair.Create(player2, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>)new RandomStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>(new RandomStrategySettings<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>.Builder() {Random = random2 }.Build())),
                 }.ToDb().ToDictionary(),
                 displayer);
             var result = driver.Run(game);
