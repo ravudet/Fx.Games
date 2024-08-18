@@ -11,29 +11,37 @@
         private readonly ConnectFourStack[] stacks;
 
         public ConnectFourBoard()
+            : this(Enumerable.Range(0, 7).Select(_ => new ConnectFourStack()).ToArray())
         {
-            this.stacks = new ConnectFourStack[7];
         }
 
-        public ConnectFourStack[] Stacks
+        public ConnectFourBoard(ConnectFourStack[] stacks)
+        {
+            this.stacks = (stacks.Clone() as ConnectFourStack[])!; //// TODO
+        }
+
+        public IReadOnlyList<ConnectFourStack> Stacks
         {
             get
             {
-                return (this.stacks.Clone() as ConnectFourStack[])!; //// TODO wriute a proper clone
+                return this.stacks; //// TODO have an adapter type
             }
-        }
-
-        public ConnectFourBoard Drop(int column)
-        {
         }
 
         public sealed class ConnectFourStack
         {
             private readonly List<ConnectFourBoardSpace> spaces;
 
-            private ConnectFourStack()
+            public ConnectFourStack()
+                : this(new List<ConnectFourBoardSpace>())
             {
-                this.spaces = new List<ConnectFourBoardSpace>();
+                //// TODO hide this constrcutor
+            }
+
+            public ConnectFourStack(List<ConnectFourBoardSpace> spaces)
+            {
+                //// TODO hide this constructor
+                this.spaces = spaces.ToList();
             }
 
             public bool IsFull
@@ -44,9 +52,12 @@
                 }
             }
 
-            public ConnectFourBoard Drop()
+            public ConnectFourStack Drop(ConnectFourBoardSpace space)
             {
+                var newSpaces = this.spaces.ToList();
+                newSpaces.Add(space);
 
+                return new ConnectFourStack(newSpaces);
             }
         }
     }
@@ -74,18 +85,21 @@
 
     public sealed class ConnectFour<TPlayer> : IGame<ConnectFour<TPlayer>, ConnectFourBoard, ConnectFourMove, TPlayer>
     {
+        private readonly TPlayer redPlayer;
+
         private readonly TPlayer opponent;
 
         public ConnectFour(TPlayer player1, TPlayer player2)
-            : this(player1, player2, new ConnectFourBoard())
+            : this(player1, player2, new ConnectFourBoard(), player1)
         {
         }
 
-        private ConnectFour(TPlayer player1, TPlayer player2, ConnectFourBoard board)
+        private ConnectFour(TPlayer player1, TPlayer player2, ConnectFourBoard board, TPlayer redPlayer)
         {
             this.CurrentPlayer = player1;
             this.opponent = player2;
             this.Board = board;
+            this.redPlayer = redPlayer;
         }
 
         public TPlayer CurrentPlayer { get; }
@@ -129,7 +143,26 @@
                 throw new IllegalMoveExeption("tODO");
             }
 
-            return new ConnectFour<TPlayer>(this.opponent, this.CurrentPlayer, stack.Drop());
+            return new ConnectFour<TPlayer>(
+                this.opponent,
+                this.CurrentPlayer,
+                new ConnectFourBoard(
+                    this
+                        .Board
+                        .Stacks
+                        .Select((stack, index) =>
+                        {
+                            if (index == move.Column)
+                            {
+                                return stack.Drop(object.ReferenceEquals(this.CurrentPlayer, this.redPlayer) ? ConnectFourBoardSpace.Red : ConnectFourBoardSpace.Yellow);
+                            }
+                            else
+                            {
+                                return stack;
+                            }
+                        })
+                        .ToArray()),
+                this.redPlayer);
         }
     }
 }
