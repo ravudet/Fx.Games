@@ -1,8 +1,11 @@
-﻿namespace Fx.Games.Game
+﻿using System.Linq;
+
+namespace Fx.Games.Game
 {
     using Fx.Games.Displayer;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Text.Json.Serialization;
 
@@ -205,30 +208,46 @@
             }
         }
 
+        private bool FourOfTheSame((int X, int Y) ix0, (int X, int Y) ix1, (int X, int Y) ix2, (int X, int Y) ix3, [MaybeNullWhen(false)] out WinnersAndLosers<TPlayer> wnl)
+        {
+            var currentPiece = this.Board.Stacks[ix0.X].Get(ix0.Y);
+            if (currentPiece == ConnectFourBoardSpace.Empty)
+            {
+                wnl = default;
+                return false;
+            }
+
+            if (currentPiece == this.Board.Stacks[ix1.X].Get(ix1.Y) &&
+                currentPiece == this.Board.Stacks[ix2.X].Get(ix2.Y) &&
+                currentPiece == this.Board.Stacks[ix3.X].Get(ix3.Y))
+            {
+                var winner = currentPiece == ConnectFourBoardSpace.Red ? this.redPlayer : this.yellowPlayer;
+                var loser = currentPiece == ConnectFourBoardSpace.Red ? this.yellowPlayer : this.redPlayer;
+
+                wnl = new WinnersAndLosers<TPlayer>(
+                    new[] { winner },
+                    new[] { loser },
+                    Enumerable.Empty<TPlayer>());
+
+                return true;
+            }
+            wnl = default;
+            return false;
+        }
+
+
         public WinnersAndLosers<TPlayer> WinnersAndLosers
         {
             get
             {
-
                 // check if there are vertical wins
-                for (int i = 0; i < this.Board.Stacks.Count; ++i)
+                for (int i = 0; i < 7; ++i)
                 {
                     for (int j = 0; j < 3; ++j)
                     {
-                        var currentPiece = this.Board.Stacks[i].Get(j);
-                        if (currentPiece == ConnectFourBoardSpace.Empty)
+                        if (FourOfTheSame((i, j), (i, j + 1), (i, j + 2), (i, j + 3), out var wnl))
                         {
-                            continue;
-                        }
-
-                        if (this.Board.Stacks[i].Get(j + 1) == currentPiece && this.Board.Stacks[i].Get(j + 2) == currentPiece && this.Board.Stacks[i].Get(j + 3) == currentPiece)
-                        {
-                            var winner = currentPiece == ConnectFourBoardSpace.Red ? this.redPlayer : this.yellowPlayer;
-                            var loser = currentPiece == ConnectFourBoardSpace.Red ? this.yellowPlayer : this.redPlayer;
-                            return new WinnersAndLosers<TPlayer>(
-                                new[] { winner },
-                                new[] { loser },
-                                Enumerable.Empty<TPlayer>());
+                            return wnl;
                         }
                     }
                 }
@@ -238,20 +257,9 @@
                 {
                     for (int j = 0; j < 6; ++j)
                     {
-                        var currentPiece = this.Board.Stacks[i].Get(j);
-                        if (currentPiece == ConnectFourBoardSpace.Empty)
+                        if (FourOfTheSame((i, j), (i + 1, j), (i + 2, j), (i + 3, j), out var wnl))
                         {
-                            continue;
-                        }
-
-                        if (this.Board.Stacks[i + 1].Get(j) == currentPiece && this.Board.Stacks[i + 2].Get(j) == currentPiece && this.Board.Stacks[i + 3].Get(j) == currentPiece)
-                        {
-                            var winner = currentPiece == ConnectFourBoardSpace.Red ? this.redPlayer : this.yellowPlayer;
-                            var loser = currentPiece == ConnectFourBoardSpace.Red ? this.yellowPlayer : this.redPlayer;
-                            return new WinnersAndLosers<TPlayer>(
-                                new[] { winner },
-                                new[] { loser },
-                                Enumerable.Empty<TPlayer>());
+                            return wnl;
                         }
                     }
                 }
@@ -261,20 +269,9 @@
                 {
                     for (int j = 0; j < 3; ++j)
                     {
-                        var currentPiece = this.Board.Stacks[i].Get(j);
-                        if (currentPiece == ConnectFourBoardSpace.Empty)
+                        if (FourOfTheSame((i, j), (i + 1, j + 1), (i + 2, j + 2), (i + 3, j + 3), out var wnl))
                         {
-                            continue;
-                        }
-
-                        if (this.Board.Stacks[i + 1].Get(j + 1) == currentPiece && this.Board.Stacks[i + 2].Get(j + 2) == currentPiece && this.Board.Stacks[i + 3].Get(j + 3) == currentPiece)
-                        {
-                            var winner = currentPiece == ConnectFourBoardSpace.Red ? this.redPlayer : this.yellowPlayer;
-                            var loser = currentPiece == ConnectFourBoardSpace.Red ? this.yellowPlayer : this.redPlayer;
-                            return new WinnersAndLosers<TPlayer>(
-                                new[] { winner },
-                                new[] { loser },
-                                Enumerable.Empty<TPlayer>());
+                            return wnl;
                         }
                     }
                 }
@@ -284,20 +281,9 @@
                 {
                     for (int j = 5; j >= 3; --j)
                     {
-                        var currentPiece = this.Board.Stacks[i].Get(j);
-                        if (currentPiece == ConnectFourBoardSpace.Empty)
+                        if (FourOfTheSame((i, j), (i + 1, j - 1), (i + 2, j - 2), (i + 3, j - 3), out var wnl))
                         {
-                            continue;
-                        }
-
-                        if (this.Board.Stacks[i + 1].Get(j - 1) == currentPiece && this.Board.Stacks[i + 2].Get(j - 2) == currentPiece && this.Board.Stacks[i + 3].Get(j - 3) == currentPiece)
-                        {
-                            var winner = currentPiece == ConnectFourBoardSpace.Red ? this.redPlayer : this.yellowPlayer;
-                            var loser = currentPiece == ConnectFourBoardSpace.Red ? this.yellowPlayer : this.redPlayer;
-                            return new WinnersAndLosers<TPlayer>(
-                                new[] { winner },
-                                new[] { loser },
-                                Enumerable.Empty<TPlayer>());
+                            return wnl;
                         }
                     }
                 }
