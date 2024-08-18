@@ -134,6 +134,11 @@
         {
             get
             {
+                if (!this.Moves.Any())
+                {
+                    return new WinnersAndLosers<TPlayer>(Enumerable.Empty<TPlayer>(), Enumerable.Empty<TPlayer>(), Enumerable.Empty<TPlayer>());
+                }
+
                 // check if there are vertical wins
                 for (int i = 0; i < this.Board.Stacks.Count; ++i)
                 {
@@ -191,10 +196,10 @@
                 // check if there are down and right diagonal wins
                 for (int i = 0; i < 4; ++i)
                 {
-                    for (int j = 0; j < 3; ++j)
+                    for (int j = 5; j >= 3; --j)
                     {
                         var currentPiece = this.Board.Stacks[i].Get(j);
-                        if (this.Board.Stacks[i + 1].Get(j + 1) == currentPiece && this.Board.Stacks[i + 2].Get(j + 2) == currentPiece && this.Board.Stacks[i + 3].Get(j + 3) == currentPiece)
+                        if (this.Board.Stacks[i + 1].Get(j - 1) == currentPiece && this.Board.Stacks[i + 2].Get(j - 2) == currentPiece && this.Board.Stacks[i + 3].Get(j - 3) == currentPiece)
                         {
                             var winner = currentPiece == ConnectFourBoardSpace.Red ? this.redPlayer : this.yellowPlayer;
                             var loser = currentPiece == ConnectFourBoardSpace.Red ? this.yellowPlayer : this.redPlayer;
@@ -205,6 +210,8 @@
                         }
                     }
                 }
+
+                return new WinnersAndLosers<TPlayer>(Enumerable.Empty<TPlayer>(), Enumerable.Empty<TPlayer>(), new[] { this.CurrentPlayer, this.opponent });
             }
         }
 
