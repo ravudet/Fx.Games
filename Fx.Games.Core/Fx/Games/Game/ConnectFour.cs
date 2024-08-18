@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.Json.Serialization;
 
     public sealed class ConnectFourBoard
     {
@@ -54,18 +55,25 @@
 
             public ConnectFourStack Drop(ConnectFourBoardSpace space)
             {
+                //// TODO refactor the whole stack thing bcaeuse it currently doesn'ty provide benefits over just using a cloning lists in the calling code
                 var newSpaces = this.spaces.ToList();
                 newSpaces.Add(space);
 
                 return new ConnectFourStack(newSpaces);
+            }
+
+            public ConnectFourBoardSpace Get(int index)
+            {
+                return index >= this.spaces.Count ? ConnectFourBoardSpace.Empty : this.spaces[index];
             }
         }
     }
 
     public enum ConnectFourBoardSpace
     {
-        Red = 0,
-        Yellow = 1,
+        Empty = 0,
+        Red = 1,
+        Yellow = 2,
     }
 
     public sealed class ConnectFourMove
@@ -87,19 +95,22 @@
     {
         private readonly TPlayer redPlayer;
 
+        private readonly TPlayer yellowPlayer;
+
         private readonly TPlayer opponent;
 
         public ConnectFour(TPlayer player1, TPlayer player2)
-            : this(player1, player2, new ConnectFourBoard(), player1)
+            : this(player1, player2, new ConnectFourBoard(), player1, player2)
         {
         }
 
-        private ConnectFour(TPlayer player1, TPlayer player2, ConnectFourBoard board, TPlayer redPlayer)
+        private ConnectFour(TPlayer player1, TPlayer player2, ConnectFourBoard board, TPlayer redPlayer, TPlayer yellowPlayer)
         {
             this.CurrentPlayer = player1;
             this.opponent = player2;
             this.Board = board;
             this.redPlayer = redPlayer;
+            this.yellowPlayer = yellowPlayer;
         }
 
         public TPlayer CurrentPlayer { get; }
@@ -123,7 +134,77 @@
         {
             get
             {
-                throw new Exception("TODO xtofs apparently has the intelligence to do this right but i dont");
+                // check if there are vertical wins
+                for (int i = 0; i < this.Board.Stacks.Count; ++i)
+                {
+                    for (int j = 0; j < 3; ++j)
+                    {
+                        var currentPiece = this.Board.Stacks[i].Get(j);
+                        if (this.Board.Stacks[i].Get(j + 1) == currentPiece && this.Board.Stacks[i].Get(j + 2) == currentPiece && this.Board.Stacks[i].Get(j + 3) == currentPiece)
+                        {
+                            var winner = currentPiece == ConnectFourBoardSpace.Red ? this.redPlayer : this.yellowPlayer;
+                            var loser = currentPiece == ConnectFourBoardSpace.Red ? this.yellowPlayer : this.redPlayer;
+                            return new WinnersAndLosers<TPlayer>(
+                                new[] { winner }, 
+                                new[] { loser }, 
+                                Enumerable.Empty<TPlayer>());
+                        }
+                    }
+                }
+
+                // check if there are horizontal wins
+                for (int i = 0; i < 4; ++i)
+                {
+                    for (int j = 0; j < 6; ++j)
+                    {
+                        var currentPiece = this.Board.Stacks[i].Get(j);
+                        if (this.Board.Stacks[i + 1].Get(j) == currentPiece && this.Board.Stacks[i +2].Get(j) == currentPiece && this.Board.Stacks[i + 3].Get(j) == currentPiece)
+                        {
+                            var winner = currentPiece == ConnectFourBoardSpace.Red ? this.redPlayer : this.yellowPlayer;
+                            var loser = currentPiece == ConnectFourBoardSpace.Red ? this.yellowPlayer : this.redPlayer;
+                            return new WinnersAndLosers<TPlayer>(
+                                new[] { winner },
+                                new[] { loser },
+                                Enumerable.Empty<TPlayer>());
+                        }
+                    }
+                }
+
+                // check if there are up and right diagonal wins
+                for (int i = 0; i < 4; ++i)
+                {
+                    for (int j = 0; j < 3; ++j)
+                    {
+                        var currentPiece = this.Board.Stacks[i].Get(j);
+                        if (this.Board.Stacks[i + 1].Get(j + 1) == currentPiece && this.Board.Stacks[i + 2].Get(j + 2) == currentPiece && this.Board.Stacks[i + 3].Get(j + 3) == currentPiece)
+                        {
+                            var winner = currentPiece == ConnectFourBoardSpace.Red ? this.redPlayer : this.yellowPlayer;
+                            var loser = currentPiece == ConnectFourBoardSpace.Red ? this.yellowPlayer : this.redPlayer;
+                            return new WinnersAndLosers<TPlayer>(
+                                new[] { winner },
+                                new[] { loser },
+                                Enumerable.Empty<TPlayer>());
+                        }
+                    }
+                }
+
+                // check if there are down and right diagonal wins
+                for (int i = 0; i < 4; ++i)
+                {
+                    for (int j = 0; j < 3; ++j)
+                    {
+                        var currentPiece = this.Board.Stacks[i].Get(j);
+                        if (this.Board.Stacks[i + 1].Get(j + 1) == currentPiece && this.Board.Stacks[i + 2].Get(j + 2) == currentPiece && this.Board.Stacks[i + 3].Get(j + 3) == currentPiece)
+                        {
+                            var winner = currentPiece == ConnectFourBoardSpace.Red ? this.redPlayer : this.yellowPlayer;
+                            var loser = currentPiece == ConnectFourBoardSpace.Red ? this.yellowPlayer : this.redPlayer;
+                            return new WinnersAndLosers<TPlayer>(
+                                new[] { winner },
+                                new[] { loser },
+                                Enumerable.Empty<TPlayer>());
+                        }
+                    }
+                }
             }
         }
 
@@ -162,7 +243,8 @@
                             }
                         })
                         .ToArray()),
-                this.redPlayer);
+                this.redPlayer,
+                this.yellowPlayer);
         }
     }
 }
