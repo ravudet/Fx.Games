@@ -38,6 +38,7 @@ namespace ConsoleApplication1
             (nameof(PegsHuman), PegsHuman),
             (nameof(TicTacToeHumanVersusHuman), TicTacToeHumanVersusHuman),
             (nameof(TicTacToeHumanVersusRandom), TicTacToeHumanVersusRandom),
+            (nameof(ConnectFourRandomVersusRandom), ConnectFourRandomVersusRandom),
         };
 
         static void Main(string[] args)
@@ -74,6 +75,23 @@ namespace ConsoleApplication1
                 }
             }
             while (true);
+        }
+
+        private static void ConnectFourRandomVersusRandom()
+        {
+            var displayer = new ConnectFourDisplayer<string>(_ => _);
+            var player1 = "player1";
+            var player2 = "player2";
+
+            var game = new ConnectFour<string>(player1, player2);
+            var driver = Driver.Create(
+                new[]
+                {
+                    KeyValuePair.Create(player1, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>)game.RandomStrategy()),
+                    KeyValuePair.Create(player2, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>)game.RandomStrategy()),
+                }.ToDb().ToDictionary(),
+                displayer);
+            var result = driver.Run(game);
         }
 
         private static void TicTacToeHumanVersusRandom()

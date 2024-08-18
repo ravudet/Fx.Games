@@ -1,9 +1,83 @@
 ﻿namespace Fx.Games.Game
 {
+    using Fx.Games.Displayer;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.Json.Serialization;
+
+    public sealed class ConnectFourDisplayer<TPlayer> : IDisplayer<ConnectFour<TPlayer>, ConnectFourBoard, ConnectFourMove, TPlayer>
+    {
+        private readonly Func<TPlayer, string> playerToString;
+
+        public ConnectFourDisplayer(Func<TPlayer, string> playerToString)
+        {
+            if (playerToString == null)
+            {
+                throw new ArgumentNullException(nameof(playerToString));
+            }
+
+            this.playerToString = playerToString;
+        }
+
+        public void DisplayAvailableMoves(ConnectFour<TPlayer> game)
+        {
+            Console.WriteLine("Select a move (column):");
+            int i = 0;
+            foreach (var move in game.Moves)
+            {
+                Console.WriteLine($"{i++}: ({move.Column})");
+            }
+
+            Console.WriteLine();
+        }
+
+        public void DisplayBoard(ConnectFour<TPlayer> game)
+        {
+            for (int j = 5; j >= 0; --j)
+            {
+                for (int i = 0; i < 7; ++i)
+                {
+                    Console.Write($" {FromPiece(game.Board.Stacks[i].Get(j))} ");
+                }
+
+                Console.WriteLine();
+            }
+        }
+
+        public void DisplayOutcome(ConnectFour<TPlayer> game)
+        {
+            try
+            {
+                var winner = game.WinnersAndLosers.Winners.First();
+                Console.WriteLine($"{playerToString(winner)} wins!");
+            }
+            catch (InvalidOperationException)
+            {
+                Console.WriteLine("The game was a draw...");
+            }
+        }
+
+        public void DisplaySelectedMove(ConnectFourMove move)
+        {
+            Console.WriteLine($"({move.Column})");
+        }
+
+        private static char FromPiece(ConnectFourBoardSpace piece)
+        {
+            switch (piece)
+            {
+                case ConnectFourBoardSpace.Empty:
+                    return '.';
+                case ConnectFourBoardSpace.Red:
+                    return 'X';
+                case ConnectFourBoardSpace.Yellow:
+                    return 'O';
+            }
+
+            throw new InvalidOperationException("TODO");
+        }
+    }
 
     public sealed class ConnectFourBoard
     {
@@ -150,8 +224,8 @@
                             var winner = currentPiece == ConnectFourBoardSpace.Red ? this.redPlayer : this.yellowPlayer;
                             var loser = currentPiece == ConnectFourBoardSpace.Red ? this.yellowPlayer : this.redPlayer;
                             return new WinnersAndLosers<TPlayer>(
-                                new[] { winner }, 
-                                new[] { loser }, 
+                                new[] { winner },
+                                new[] { loser },
                                 Enumerable.Empty<TPlayer>());
                         }
                     }
@@ -163,7 +237,7 @@
                     for (int j = 0; j < 6; ++j)
                     {
                         var currentPiece = this.Board.Stacks[i].Get(j);
-                        if (this.Board.Stacks[i + 1].Get(j) == currentPiece && this.Board.Stacks[i +2].Get(j) == currentPiece && this.Board.Stacks[i + 3].Get(j) == currentPiece)
+                        if (this.Board.Stacks[i + 1].Get(j) == currentPiece && this.Board.Stacks[i + 2].Get(j) == currentPiece && this.Board.Stacks[i + 3].Get(j) == currentPiece)
                         {
                             var winner = currentPiece == ConnectFourBoardSpace.Red ? this.redPlayer : this.yellowPlayer;
                             var loser = currentPiece == ConnectFourBoardSpace.Red ? this.yellowPlayer : this.redPlayer;
