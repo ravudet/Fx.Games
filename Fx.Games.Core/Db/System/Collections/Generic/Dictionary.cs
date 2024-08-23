@@ -49,6 +49,36 @@
             this.nullValue = default;
         }
 
+        public global::System.Collections.Generic.IEnumerable<TKey> Keys
+        {
+            get
+            {
+                //// TODO this whole thing
+                if (this.nullValue.HasValue)
+                {
+                    yield return default;
+                }
+
+                foreach (var key in this.dictionary.Keys)
+                {
+                    yield return key;
+                }
+            }
+        }
+
+        public void Index(TKey key, TValue value) //// TODO remove this or productize, only here for cuelearning poc
+        {
+            if (key == null)
+            {
+                this.nullValue = new Nullable<TValue>(value);
+            }
+            else
+            {
+                this.dictionary[key] = value;
+            }
+        }
+
+
         /// <summary>
         /// Adds <paramref name="value"/> to the collection associated with <paramref name="key"/>
         /// </summary>
