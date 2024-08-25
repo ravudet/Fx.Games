@@ -145,18 +145,18 @@ namespace ConsoleApplication1
 
         private static void AmazonsHumanVsRandom_5x6()
         {
+            var displayer = new Amazons.Displayer<string>(_ => _);
+
             var white = "white";
             var black = "black";
             var game = new Amazons.Game<string>(white, black, (5, 6));
-
-            var displayer = new Amazons.Displayer<string>(_ => _);
-
+            var strategies = new[] {
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(white, game.ConsoleStrategy()),
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(black, game.RandomStrategy()),
+            };
             var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>(
-                            (new[]                             {
-                                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(white, game.ConsoleStrategy()),
-                                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(black, game.RandomStrategy()),
-                            }).ToDb().ToDictionary(),
-                            displayer);
+                strategies.ToDb().ToDictionary(),
+                displayer);
 
             var result = driver.Run(game);
         }
@@ -166,15 +166,14 @@ namespace ConsoleApplication1
             var white = "white";
             var black = "black";
             var game = new Amazons.Game<string>(white, black);
-
             var displayer = new Amazons.Displayer<string>(_ => _);
-
-            var driver = new Driver<Amazons.Game<string>, Fx.Games.Game.Amazons.Board, Fx.Games.Game.Amazons.Move, string>(
-                            (new[]                             {
-                                KeyValuePair.Create(white, game.RandomStrategy()),
-                                KeyValuePair.Create(black, game.RandomStrategy()),
-                            }).ToDb().ToDictionary(),
-                            displayer);
+            var strategies = new[] {
+                KeyValuePair.Create(white, game.RandomStrategy()),
+                KeyValuePair.Create(black, game.RandomStrategy()),
+            };
+            var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>(
+                strategies.ToDb().ToDictionary(),
+                displayer);
 
             var result = driver.Run(game);
         }
