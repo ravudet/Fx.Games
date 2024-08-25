@@ -30,7 +30,7 @@ namespace ConsoleApplication1
     using Fx.Games.Displayer;
     using Fx.Games.Driver;
     using Fx.Games.Game;
-    using Fx.Games.Game.Amazons;
+    using Amazons = Fx.Games.Game.Amazons;
     using Fx.Games.Strategy;
 
     class Program
@@ -41,7 +41,7 @@ namespace ConsoleApplication1
             (nameof(PegsHuman), PegsHuman),
             (nameof(TicTacToeHumanVersusHuman), TicTacToeHumanVersusHuman),
             (nameof(TicTacToeHumanVersusRandom), TicTacToeHumanVersusRandom),
-            (nameof(AmazonsHumanVsRandom), AmazonsHumanVsRandom),
+            (nameof(AmazonsHumanVsRandom_5x6), AmazonsHumanVsRandom_5x6),
             (nameof(AmazonsRandomVsRandom), AmazonsRandomVsRandom),
         };
 
@@ -143,18 +143,18 @@ namespace ConsoleApplication1
             var result = driver.Run(game);
         }
 
-        private static void AmazonsHumanVsRandom()
+        private static void AmazonsHumanVsRandom_5x6()
         {
             var white = "white";
             var black = "black";
-            var game = new GameOfAmazons<string>(white, black);
+            var game = new Amazons.Game<string>(white, black, (5, 6));
 
-            var displayer = new Fx.Games.Game.Amazons.Displayer<string>(_ => _);
+            var displayer = new Amazons.Displayer<string>(_ => _);
 
-            var driver = new Driver<Fx.Games.Game.Amazons.GameOfAmazons<string>, Fx.Games.Game.Amazons.Board, Fx.Games.Game.Amazons.Move, string>(
+            var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>(
                             (new[]                             {
-                                KeyValuePair.Create<string,IStrategy<Fx.Games.Game.Amazons.GameOfAmazons<string>, Fx.Games.Game.Amazons.Board, Fx.Games.Game.Amazons.Move, string>>(white, game.ConsoleStrategy()),
-                                KeyValuePair.Create<string,IStrategy<Fx.Games.Game.Amazons.GameOfAmazons<string>, Fx.Games.Game.Amazons.Board, Fx.Games.Game.Amazons.Move, string>>(black, game.RandomStrategy()),
+                                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(white, game.ConsoleStrategy()),
+                                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(black, game.RandomStrategy()),
                             }).ToDb().ToDictionary(),
                             displayer);
 
@@ -165,11 +165,11 @@ namespace ConsoleApplication1
         {
             var white = "white";
             var black = "black";
-            var game = new GameOfAmazons<string>(white, black);
+            var game = new Amazons.Game<string>(white, black);
 
-            var displayer = new Fx.Games.Game.Amazons.Displayer<string>(_ => _);
+            var displayer = new Amazons.Displayer<string>(_ => _);
 
-            var driver = new Driver<Fx.Games.Game.Amazons.GameOfAmazons<string>, Fx.Games.Game.Amazons.Board, Fx.Games.Game.Amazons.Move, string>(
+            var driver = new Driver<Amazons.Game<string>, Fx.Games.Game.Amazons.Board, Fx.Games.Game.Amazons.Move, string>(
                             (new[]                             {
                                 KeyValuePair.Create(white, game.RandomStrategy()),
                                 KeyValuePair.Create(black, game.RandomStrategy()),

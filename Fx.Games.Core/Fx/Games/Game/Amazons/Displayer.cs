@@ -3,7 +3,7 @@ namespace Fx.Games.Game.Amazons
     using System;
     using System.Linq;
 
-    public sealed class Displayer<TPlayer> : Displayer.IDisplayer<GameOfAmazons<TPlayer>, Board, Move, TPlayer>
+    public sealed class Displayer<TPlayer> : Displayer.IDisplayer<Game<TPlayer>, Board, Move, TPlayer>
         where TPlayer : notnull // neccesary to be able to use a TPlayer as a key in an internal dictionary
     {
         private readonly Func<TPlayer, string> playerToString;
@@ -13,33 +13,14 @@ namespace Fx.Games.Game.Amazons
             this.playerToString = playerToString;
         }
 
-        public void DisplayBoard(GameOfAmazons<TPlayer> game)
+        public void DisplayBoard(Game<TPlayer> game)
         {
             var board = game.Board;
 
-            Console.WriteLine("   a  b  c  d  e  f  g  h  i  j");
-            for (int j = 0; j < Board.BOARD_SIZE.Height; ++j)
-            {
-                Console.Write($"{(Board.BOARD_SIZE.Height - j) % 10} ");
-                for (int i = 0; i < Board.BOARD_SIZE.Width; ++i)
-                {
-                    var str = board[i, j] switch
-                    {
-                        SquareState.Empty => " . ",
-                        SquareState.Black => " B ",
-                        SquareState.White => " W ",
-                        SquareState.Arrow => " * ",
-                        _ => throw new InvalidOperationException("Invalid square")
-                    };
-                    Console.Write(str);
-                }
-                Console.Write($" \x1b[37m{(Board.BOARD_SIZE.Height - j) % 10}\x1b[0m");
-                Console.WriteLine();
-            }
-            Console.WriteLine("   a  b  c  d  e  f  g  h  i  j");
+            Console.WriteLine(board);
         }
 
-        public void DisplayOutcome(GameOfAmazons<TPlayer> game)
+        public void DisplayOutcome(Game<TPlayer> game)
         {
             var (winners, losers, drawers) = game.WinnersAndLosers;
 
@@ -48,10 +29,11 @@ namespace Fx.Games.Game.Amazons
             Console.WriteLine($"{string.Join(", ", from drawer in drawers select playerToString(drawer))} draws!");
         }
 
-        public void DisplayAvailableMoves(GameOfAmazons<TPlayer> game)
+        public void DisplayAvailableMoves(Game<TPlayer> game)
         {
-            var color = game.PlayerPiece[game.CurrentPlayer] == SquareState.Black ? "black" : "white";
-            var hierarchy = game.Moves.GroupBy(move => move.From).Select(f => (From: f.Key, f.GroupBy(move => move.To).Select(t => (To: t.Key, t.Select(move => move.Arrow))))).ToArray();
+            var color = game.PlayerTileMapping[game.CurrentPlayer] == Board.Tile.Black ? "black" : "white";
+
+            var hierarchy = game.Moves.GroupBy(move => move.Amazon).Select(f => (From: f.Key, f.GroupBy(move => move.Destination).Select(t => (To: t.Key, t.Select(move => move.Target))))).ToArray();
 
             var i = 0;
             foreach (var (from, tos) in hierarchy)
@@ -82,7 +64,7 @@ namespace Fx.Games.Game.Amazons
 
         public void DisplaySelectedMove(Move move)
         {
-            Console.WriteLine($"Moving from {move.From} to {move.To} and shooting arrow at {move.Arrow}");
+            Console.WriteLine($"Moving from {move.Amazon} to {move.Destination} and shooting arrow at {move.Target}");
         }
     }
 }
