@@ -33,28 +33,15 @@ namespace Fx.Games.Game.Amazons
         {
             var color = game.PlayerTileMapping[game.CurrentPlayer] == Board.Tile.Black ? "black" : "white";
 
-            var hierarchy = game.Moves.GroupBy(move => move.Amazon).Select(f => (From: f.Key, f.GroupBy(move => move.Destination).Select(t => (To: t.Key, t.Select(move => move.Target))))).ToArray();
+            // var hierarchy = game.Moves.GroupBy(move => move.Amazon).Select(f => (From: f.Key, f.GroupBy(move => move.Destination).Select(t => (To: t.Key, t.Select(move => move.Target))))).ToArray();
 
-            var i = 0;
-            foreach (var (from, tos) in hierarchy)
+
+            Console.WriteLine($"Select a move for {color}:");
+            int i = 0;
+            foreach (var move in game.Moves)
             {
-                Console.WriteLine($"Move {color} Amazon from {Format(from)}");
-                foreach (var (to, arrows) in tos)
-                {
-                    // Console.WriteLine($"    To {Format(to)}");
-                    // Console.Write($"        {i} Arrow");
-                    foreach (var arrow in arrows)
-                    {
-                        // Console.Write($" {Format(arrow)}");
-                        i += 1;
-                    }
-                    // Console.WriteLine();
-                }
+                Console.WriteLine($"{i++}: amazon on {move.Amazon} to {move.Destination} and shoot arrow to {move.Target}");
             }
-            // foreach (var move in game.Moves)
-            // {
-            //     Console.WriteLine($"Move {color} amazon from {move.From} to {move.To} and shoot arrow at {move.Arrow}");
-            // }
         }
 
         private static string Format((int X, int Y) position)
