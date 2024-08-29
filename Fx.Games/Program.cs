@@ -36,8 +36,11 @@ namespace ConsoleApplication1
         {
             (nameof(PegsRandom), PegsRandom),
             (nameof(PegsHuman), PegsHuman),
+            (nameof(PegsMonteCarlo), PegsMonteCarlo),
             (nameof(TicTacToeHumanVersusHuman), TicTacToeHumanVersusHuman),
             (nameof(TicTacToeHumanVersusRandom), TicTacToeHumanVersusRandom),
+            (nameof(TicTacToeMonteCarloVersusRandom), TicTacToeMonteCarloVersusRandom),
+            (nameof(TicTacToeMonteCarloVersusHuman), TicTacToeMonteCarloVersusHuman),
         };
 
         static void Main(string[] args)
@@ -76,6 +79,40 @@ namespace ConsoleApplication1
             while (true);
         }
 
+        private static void TicTacToeMonteCarloVersusHuman()
+        {
+            var displayer = new TicTacToeConsoleDisplayer<string>(_ => _);
+            var exes = "exes";
+            var ohs = "ohs";
+
+            var game = new TicTacToe<string>(exes, ohs);
+            var driver = Driver.Create(
+                new[]
+                {
+                    KeyValuePair.Create(exes, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string>)game.MonteCarloStrategy(exes, 1000, game.MonteCarloStrategySettings())),
+                    KeyValuePair.Create(ohs, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string>)game.ConsoleStrategy()),
+                }.ToDb().ToDictionary(),
+                displayer);
+            var result = driver.Run(game);
+        }
+
+        private static void TicTacToeMonteCarloVersusRandom()
+        {
+            var displayer = new TicTacToeConsoleDisplayer<string>(_ => _);
+            var exes = "exes";
+            var ohs = "ohs";
+
+            var game = new TicTacToe<string>(exes, ohs);
+            var driver = Driver.Create(
+                new[]
+                {
+                    KeyValuePair.Create(exes, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string>)game.MonteCarloStrategy(exes, 1000, game.MonteCarloStrategySettings())),
+                    KeyValuePair.Create(ohs, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string>)game.RandomStrategy()),
+                }.ToDb().ToDictionary(),
+                displayer);
+            var result = driver.Run(game);
+        }
+
         private static void TicTacToeHumanVersusRandom()
         {
             var displayer = new TicTacToeConsoleDisplayer<string>(_ => _);
@@ -105,6 +142,20 @@ namespace ConsoleApplication1
                 {
                     KeyValuePair.Create(exes, game.ConsoleStrategy()),
                     KeyValuePair.Create(ohs, game.ConsoleStrategy()),
+                }.ToDb().ToDictionary(),
+                displayer);
+            var result = driver.Run(game);
+        }
+
+        private static void PegsMonteCarlo()
+        {
+            var displayer = PegGameConsoleDisplayer<string>.Instance;
+            var player = "player";
+            var game = new PegGame<string>(player);
+            var driver = Driver.Create(
+                new[] //// TODO use a fluent builder?
+                {
+                    KeyValuePair.Create(player, game.MonteCarloStrategy(player, 10000, game.MonteCarloStrategySettings())),
                 }.ToDb().ToDictionary(),
                 displayer);
             var result = driver.Run(game);
