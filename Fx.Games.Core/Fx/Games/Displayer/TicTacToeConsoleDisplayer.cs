@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Reflection;
     using Fx.Games.Game;
@@ -12,18 +13,27 @@
     /// <typeparam name="TPlayer">The type of the player that is playing the game</typeparam>
     public sealed class TicTacToeConsoleDisplayer<TPlayer> : IDisplayer<TicTacToe<TPlayer>, TicTacToeBoard, TicTacToeMove, TPlayer>
     {
-        private readonly Func<TPlayer, string> playerToString;
+        /// <summary>
+        /// Converts the given <see cref="TPlayer"/> into a string representation
+        /// </summary>
+        private readonly Func<TPlayer, string> playerTranscriber;
 
-        public TicTacToeConsoleDisplayer(Func<TPlayer, string> playerToString)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TicTacToeConsoleDisplayer{TPlayer}"/> class
+        /// </summary>
+        /// <param name="playerTranscriber">Converts the given <see cref="TPlayer"/> into a string representation</param>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="playerTranscriber"/> is <see langword="null"/></exception>
+        public TicTacToeConsoleDisplayer(Func<TPlayer, string> playerTranscriber)
         {
-            if (playerToString == null)
+            if (playerTranscriber == null)
             {
-                throw new ArgumentNullException(nameof(playerToString));
+                throw new ArgumentNullException(nameof(playerTranscriber));
             }
 
-            this.playerToString = playerToString;
+            this.playerTranscriber = playerTranscriber;
         }
 
+        /// <inheritdoc/>
         public void DisplayBoard(TicTacToe<TPlayer> game)
         {
             if (game == null)
@@ -44,6 +54,7 @@
             }
         }
 
+        /// <inheritdoc/>
         public void DisplayOutcome(TicTacToe<TPlayer> game)
         {
             if (game == null)
@@ -54,7 +65,7 @@
             try
             {
                 var winner = game.WinnersAndLosers.Winners.First();
-                Console.WriteLine($"{playerToString(winner)} wins!");
+                Console.WriteLine($"{playerTranscriber(winner)} wins!");
             }
             catch (InvalidOperationException)
             {
@@ -62,6 +73,7 @@
             }
         }
 
+        /// <inheritdoc/>
         public void DisplayAvailableMoves(TicTacToe<TPlayer> game)
         {
             Console.WriteLine("Select a move (row, column):");
@@ -74,11 +86,19 @@
             Console.WriteLine();
         }
 
+        /// <inheritdoc/>
         public void DisplaySelectedMove(TicTacToeMove move)
         {
             Console.WriteLine($"({move.Row}, {move.Column})");
         }
 
+        /// <summary>
+        /// Tranlates <paramref name="piece"/> into a single character representation of the type of that piece
+        /// </summary>
+        /// <param name="piece">The <see cref="TicTacToePiece"/> to convert</param>
+        /// <returns>The single character representation of the type of <paramref name="piece"/></returns>
+        /// <exception cref="InvalidOperationException">Thrown if <paramref name="piece"/> is not a known <see cref="TicTacToePiece"/></exception>
+        [ExcludeFromCodeCoverage(Justification = "Excluding because there is an unreachable branch")]
         private static char FromPiece(TicTacToePiece piece)
         {
             switch (piece)
@@ -91,7 +111,7 @@
                     return 'O';
             }
 
-            throw new InvalidOperationException("TODO");
+            throw new InvalidOperationException($"'{nameof(piece)}' had an unknown value: '{(int)piece}'");
         }
     }
 }

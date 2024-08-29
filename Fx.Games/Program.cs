@@ -1,25 +1,4 @@
-﻿// TODOs
-//
-// integrate the v2/qlearning branch
-// add monty carlo back
-// productize tictactoeconsoledisplayer
-//
-// write a version of game of amazons
-// write perf tests for game of amazons
-//
-// should peg position use uint instead of int?
-// you're not actually testing the peggameconsoledisplayer, you're just running it
-// null checks in peggameconsoledisplayer
-// implement a read only list for peggameutilities.winningsequence
-// what are the correct db namespaces?
-// does it make sense to use structs for the dbadapters? will boxing end up expensive? you can have a default constructor in c# now, so you probably should just use structs
-// what should db ienumerable + ienumerator actually look like
-// is there a way to leverage the underling struct enumerators in the enumerable and enumerator dbadapters?
-// is it worth it for drvier to require a keyeddictionary just so that it can make a copy of the strategies?
-// add back any games or strategies from the initial commit
-// productize program class
-
-namespace ConsoleApplication1
+﻿namespace ConsoleApplication1
 {
     using System;
     using System.Collections.Generic;
