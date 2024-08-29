@@ -14,6 +14,7 @@ namespace Fx.Games.Game.Chess
             str[0] = value;
             str = str[1..];
         }
+
     }
 }
 

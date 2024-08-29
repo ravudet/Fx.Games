@@ -1,15 +1,16 @@
 namespace Fx.Games.Game.Chess
 {
+    using System;
 
-    public record Square(int X, int Y)
+
+    public record Square(int File, int Rank)
     {
-        override public string ToString() => $"{(char)(X + 'a')}{8 - Y + '1'}";
+        override public string ToString() => $"{(char)(File + 'a')}{(char)(Rank + '1')}";
     }
 
-
-    public record Move(Square From, Square Target)
+    public record Move(Square From, Square Target, bool Capture = false)
     {
-        override public string ToString() => $"{From} -> {Target}";
+        override public string ToString() => $"{From} {Target}{(Capture ? " x" : "")}";
     }
 }
 

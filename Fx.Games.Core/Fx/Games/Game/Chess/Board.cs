@@ -3,22 +3,27 @@ namespace Fx.Games.Game.Chess
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
+    using System.Runtime.CompilerServices;
 
     [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
     public class Board
     {
-        private readonly Tile[,] grid;
+        public Board() : this(new Piece[Size.Width, Size.Height])
+        {
+            InitializeBoard(grid);
+        }
+
+        public Board(Piece[,] grid)
+        {
+            this.grid = grid;
+        }
+        private readonly Piece[,] grid;
 
         static class Size
         {
             public const int Width = 8;
             public const int Height = 8;
-        }
-
-        public Board()
-        {
-            grid = new Tile[Size.Width, Size.Height];
-            InitializeBoard(grid);
         }
 
         /// <summary>
@@ -27,31 +32,17 @@ namespace Fx.Games.Game.Chess
         /// <param name="grid"></param>
         /// <param name="size"></param>
         /// <exception cref="ArgumentException"></exception>
-        private static void InitializeBoard(Tile[,] grid)
+        private static void InitializeBoard(Piece[,] grid)
         {
-            const string pieces = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+            const string init = "rnbqkbnr|pppppppp|........|........|........|........|PPPPPPPP|RNBQKBNR";
+            // const string init = "rnbqkbnr|........|........|........|........|........|........|RNBQKBNR";
+            var pieces = init.Split('|');
 
-            var (x, y) = (0, 0);
-            foreach (var ch in pieces)
+            for (var x = 0; x < 8; x++)
             {
-                switch (ch)
+                for (var y = 0; y < 8; y++)
                 {
-                    case 'R': grid[x, y] = Tile.WhiteRook; x += 1; break;
-                    case 'N': grid[x, y] = Tile.WhiteKnight; x += 1; break;
-                    case 'B': grid[x, y] = Tile.WhiteBishop; x += 1; break;
-                    case 'Q': grid[x, y] = Tile.WhiteQueen; x += 1; break;
-                    case 'K': grid[x, y] = Tile.WhiteKing; x += 1; break;
-                    case 'P': grid[x, y] = Tile.WhitePawn; x += 1; break;
-                    case 'r': grid[x, y] = Tile.BlackRook; x += 1; break;
-                    case 'n': grid[x, y] = Tile.BlackKnight; x += 1; break;
-                    case 'b': grid[x, y] = Tile.BlackBishop; x += 1; break;
-                    case 'q': grid[x, y] = Tile.BlackQueen; x += 1; break;
-                    case 'k': grid[x, y] = Tile.BlackKing; x += 1; break;
-                    case 'p': grid[x, y] = Tile.BlackPawn; x += 1; break;
-                    case '.': grid[x, y] = Tile.Empty; x += 1; break;
-                    case '8': for (var i = 0; i < 8; i++) { grid[x, y] = Tile.Empty; x += 1; } break;
-                    case '/': x = 0; y += 1; break;
-                    default: throw new ArgumentException($"Invalid character '{ch}' in board setup string");
+                    grid[x, y] = pieces[7 - y][x]; // implicit conversion from char to Tile
                 }
             }
         }
@@ -59,72 +50,39 @@ namespace Fx.Games.Game.Chess
         public override string ToString()
         {
             var (w, h) = (grid.GetLength(0), grid.GetLength(1));
-            var len = ((w * 2) + 4) * (h + 2) - 4;
+            var len = ((w * 2) + 6) * (h + 2) - 4
+            ;
             // one row on top and bottom each 
             // and two columns each on the left and right, plus the newlines
             return string.Create(len, grid, (span, grid) =>
             {
+#if DEBUG
                 span.Fill('?');
+#endif
                 Header(ref span, w);
+                span.Append('\n');
                 for (var y = h - 1; y >= 0; y--)
                 {
-                    // var row = (char)(y % 10 + '0');
-                    var row = (y + 1).ToString()[0];
+                    var row = (char)(y + '1');
                     span.Append(row);
+                    span.Append(' ');
                     for (var x = 0; x < w; x++)
                     {
                         span.Append(' ');
-                        span.Append(UnicodeSymbol(grid[x, y]));
+                        span.Append(grid[x, y].ToString());
                     }
-                    span.Append(' ');
+                    span.Append("  ");
                     span.Append(row);
                     span.Append('\n');
                 }
+                span.Append('\n');
                 Header(ref span, w);
             });
         }
 
-        private static char Symbol(Tile tile) => tile switch
-        {
-            Tile.BlackKing => 'k',
-            Tile.BlackQueen => 'q',
-            Tile.BlackRook => 'r',
-            Tile.BlackBishop => 'b',
-            Tile.BlackKnight => 'n',
-            Tile.BlackPawn => 'p',
-            Tile.WhiteKing => 'K',
-            Tile.WhiteQueen => 'Q',
-            Tile.WhiteRook => 'R',
-            Tile.WhiteBishop => 'B',
-            Tile.WhiteKnight => 'N',
-            Tile.WhitePawn => 'P',
-            Tile.Empty => '\u00b7',
-            _ => '?'
-        };
-
-        private static char UnicodeSymbol(Tile tile) => tile switch
-        {
-            Tile.BlackKing => '\u265A',
-            Tile.BlackQueen => '\u265B',
-            Tile.BlackRook => '\u265C',
-            Tile.BlackBishop => '\u265D',
-            Tile.BlackKnight => '\u265E',
-            Tile.BlackPawn => '\u265F',
-
-            Tile.WhiteKing => '\u2654',
-            Tile.WhiteQueen => '\u2655',
-            Tile.WhiteRook => '\u2656',
-            Tile.WhiteBishop => '\u2657',
-            Tile.WhiteKnight => '\u2658',
-            Tile.WhitePawn => '\u2659',
-
-            Tile.Empty => '\u00b7',
-            _ => '?'
-        };
-
         private static Span<char> Header(ref Span<char> span, int w)
         {
-            span.Append(' ');
+            span.Append("  ");
             for (var x = 0; x < w; x++)
             {
                 span.Append(' ');
@@ -134,47 +92,158 @@ namespace Fx.Games.Game.Chess
             return span;
         }
 
-
-
-        public ref Tile this[Square sq] => ref grid[sq.X, sq.Y];
+        public ref Piece this[Square sq] => ref grid[sq.File, sq.Rank];
 
         private string GetDebuggerDisplay() => ToString();
 
         public IEnumerable<Move> GetMoves(Color color)
         {
-            foreach (var square in GetPieces(color))
+            foreach (var square in GetSquaresOfColor(color))
             {
-                foreach (var dest in GetStraightPath(square))
+                var piece = this[square];
+                var moves = piece.Kind switch
+                {
+                    PieceKind.Pawn => GetPawnMoves(square),
+                    PieceKind.Rook => GetRookMoves(square),
+                    PieceKind.Knight => GetKnightMoves(square),
+                    PieceKind.Bishop => GetBishopMoves(square),
+                    PieceKind.Queen => GetQueenMoves(square),
+                    PieceKind.King => GetKingMoves(square),
+                    _ => Enumerable.Empty<Move>()
+                };
+                foreach (var move in moves)
+                {
+                    yield return move;
+                }
+            }
+        }
+
+        private static readonly Dir[] ROOK = new Dir[] { Dir.N, Dir.E, Dir.S, Dir.W };
+        private static readonly Dir[] BISHOP = new Dir[] { Dir.NE, Dir.SE, Dir.SW, Dir.NW };
+        private static readonly Dir[] QUEEN = new Dir[] { Dir.N, Dir.E, Dir.S, Dir.W, Dir.NE, Dir.SE, Dir.SW, Dir.NW };
+        private static readonly Dir[] KING = new Dir[] { Dir.N, Dir.E, Dir.S, Dir.W, Dir.NE, Dir.SE, Dir.SW, Dir.NW };
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private IEnumerable<Move> GetRookMoves(Square square)
+        {
+            return GetMovesInDirs(square, ROOK);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private IEnumerable<Move> GetBishopMoves(Square square)
+        {
+            return GetMovesInDirs(square, BISHOP);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private IEnumerable<Move> GetQueenMoves(Square square)
+        {
+            return GetMovesInDirs(square, QUEEN);
+        }
+
+        private IEnumerable<Move> GetKingMoves(Square square)
+        {
+            var piece = grid[square.File, square.Rank];
+            var color = piece.Color;
+            foreach (var dir in KING)
+            {
+                var dest = square + dir;
+                if (!IsOnBoard(dest)) { continue; } // next dir if off the board
+
+                var destination = grid[dest.File, dest.Rank];
+                if (destination == Piece.Empty)
                 {
                     yield return new Move(square, dest);
                 }
-            }
-        }
-
-        private IEnumerable<Square> GetPieces(Color color)
-        {
-            for (var x = 0; x < Size.Width; x++)
-            {
-                for (var y = 0; y < Size.Height; y++)
+                else if (destination.Color != color)
                 {
-                    var tile = grid[x, y];
-                    if (!tile.IsEmpty() && tile.Color() == color)
-                    {
-                        yield return new Square(x, y);
-                    }
+                    // capture
+                    yield return new Move(square, dest, true);
+                    continue;
                 }
             }
         }
 
-        private IEnumerable<Square> GetStraightPath(Square start, Square? ignore = null)
+        private static readonly Dir[] KNIGHT = new Dir[] { (1, 2), (-1, 2), (1, -2), (-1, -2), (2, 1), (2, -1), (-2, 1), (-2, -1) };
+
+        private IEnumerable<Move> GetKnightMoves(Square square)
         {
-            foreach (var dir in Dir.All)
+            var piece = grid[square.File, square.Rank];
+            var color = piece.Color;
+            foreach (var dir in KNIGHT)
             {
-                foreach (var dest in GetStraightPath(start, dir))
+                var dest = square + dir;
+                if (!IsOnBoard(dest)) { continue; } // skip if off board
+                var destination = grid[dest.File, dest.Rank];
+                if (destination == Piece.Empty)
                 {
-                    if (IsOnBoard(dest) && (grid[dest.X, dest.Y] == Tile.Empty || dest == ignore))
+                    yield return new Move(square, dest);
+                }
+                else if (destination.Color != color) // capture
+                {
+                    yield return new Move(square, dest, true);
+                }
+            }
+        }
+
+        private IEnumerable<Move> GetPawnMoves(Square square)
+        {
+            var color = grid[square.File, square.Rank].Color;
+            var dir = color switch
+            {
+                Color.White => Dir.N,
+                Color.Black => Dir.S,
+                _ => throw new InvalidOperationException("Invalid color")
+            };
+
+            var dest = square + dir;
+            if (IsOnBoard(dest) && grid[dest.File, dest.Rank] == Piece.Empty)
+            {
+                yield return new Move(square, dest);
+
+                // check if pawn can move two squares
+                var initialRow = color == Color.White ? 1 : 6;
+                if (square.Rank == initialRow)
+                {
+                    var two = dest + dir;
+                    if (IsOnBoard(two) && this[two] == Piece.Empty)
                     {
-                        yield return dest;
+                        yield return new Move(square, two);
+                    }
+                }
+            }
+
+            // capture moves
+            var oppositeColor = color == Color.White ? Color.Black : Color.White;
+            var east = dest + Dir.E;
+            if (IsOnBoard(east) && this[east].Color == oppositeColor)
+            {
+                yield return new Move(square, east, true);
+            }
+            var west = dest + Dir.W;
+            if (IsOnBoard(west) && this[west].Color == oppositeColor)
+            {
+                yield return new Move(square, west, true);
+            }
+        }
+        private IEnumerable<Move> GetMovesInDirs(Square square, Dir[] dirs)
+        {
+            var piece = grid[square.File, square.Rank];
+            var color = piece.Color;
+            foreach (var dir in dirs)
+            {
+                foreach (var dest in GetStraightPath(square, dir))
+                {
+                    var tile = grid[dest.File, dest.Rank];
+                    if (tile == Piece.Empty)
+                    {
+                        yield return new Move(square, dest);
+                    }
+                    else if (tile.Color != color) // other player's piece: capture
+                    {
+                        yield return new Move(square, dest, true);
+                        break;
                     }
                     else
                     {
@@ -184,16 +253,42 @@ namespace Fx.Games.Game.Chess
             }
         }
 
-        private IEnumerable<Square> GetStraightPath(Square start, Dir dir)
+        private IEnumerable<Square> GetSquaresOfColor(Color color)
         {
-            for (var sq = start + dir; this.IsOnBoard(sq); sq += dir)
+            bool forward = color == Color.White;
+            for (var y = forward ? 0 : Size.Height - 1; forward ? y < Size.Height : y > 0; y += forward ? 1 : -1)
+            {
+                for (var x = 0; x < Size.Width; x++)
+                {
+                    var tile = grid[x, y];
+                    if (!tile.IsEmpty && tile.Color == color)
+                    {
+                        yield return new Square(x, y);
+                    }
+                }
+            }
+        }
+
+        private static IEnumerable<Square> GetStraightPath(Square start, Dir dir)
+        {
+            for (var sq = start + dir; IsOnBoard(sq); sq += dir)
             {
                 yield return sq;
             }
         }
 
-        private bool IsOnBoard(Square sq) =>
-            sq.X >= 0 && sq.X < Size.Width && sq.Y >= 0 && sq.Y < Size.Height;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsOnBoard(Square sq) =>
+                    sq.File >= 0 && sq.File < Size.Width && sq.Rank >= 0 && sq.Rank < Size.Height;
+
+        internal Board Apply(Move move)
+        {
+            var grid = (this.grid.Clone() as Piece[,])!;
+
+            grid[move.Target.File, move.Target.Rank] = grid[move.From.File, move.From.Rank];
+            grid[move.From.File, move.From.Rank] = Piece.Empty;
+
+            return new Board(grid);
+        }
     }
 }
-

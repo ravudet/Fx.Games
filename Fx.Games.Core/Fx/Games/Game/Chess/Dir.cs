@@ -1,8 +1,5 @@
-using System.Collections.Generic;
-
 namespace Fx.Games.Game.Chess
 {
-
     public record Dir(int X, int Y)
     {
         public static Dir N => new Dir(0, 1);
@@ -17,9 +14,11 @@ namespace Fx.Games.Game.Chess
 
         public static Dir NW => new Dir(-1, 1);
 
-        public static IEnumerable<Dir> All => new[] { Dir.N, Dir.E, Dir.S, Dir.W, Dir.NE, Dir.SE, Dir.SW, Dir.NW };
+        public static IEnumerable<Dir> All => [Dir.N, Dir.E, Dir.S, Dir.W, Dir.NE, Dir.SE, Dir.SW, Dir.NW];
 
-        public static Square operator +(Square sq, Dir dir) => new Square(sq.X + dir.X, sq.Y + dir.Y);
+        public static Square operator +(Square sq, Dir dir) => new Square(sq.File + dir.X, sq.Rank + dir.Y);
+
+        public static implicit operator Dir((int X, int Y) tuple) => new Dir(tuple.X, tuple.Y);
     }
 }
 
