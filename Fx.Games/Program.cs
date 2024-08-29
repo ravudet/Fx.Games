@@ -96,6 +96,7 @@ namespace ConsoleApplication1
             var random1 = new Random();
 
             var game = new ConnectFour<string>(player1, player2);
+            var driverBuilder = game.DriverBuilder();
 
             var driver = Driver.Create(
                 new[]

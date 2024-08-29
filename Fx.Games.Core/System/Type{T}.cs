@@ -20,6 +20,19 @@ namespace System
         {
             return new Driver<TGame, TBoard, TMove, TPlayer>(null, null, null);
         }
+
+        public static DriverBuilder<TGame, TBoard, TMove, TPlayer> DriverBuilder<TGame, TBoard, TMove, TPlayer>(this IGame<TGame, TBoard, TMove, TPlayer> game) where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+        {
+            return new DriverBuilder<TGame, TBoard, TMove, TPlayer>();
+        }
+    }
+
+    public sealed class DriverBuilder<TGame, TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+    {
+        public Driver<TGame, TBoard, TMove, TPlayer> Build()
+        {
+            return new Driver<TGame, TBoard, TMove, TPlayer>(null, null, null);
+        }
     }
 
     public static class Main
