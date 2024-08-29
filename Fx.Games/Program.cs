@@ -100,7 +100,7 @@ namespace ConsoleApplication1
                 new[]
                 {
                     KeyValuePair.Create(player1, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>)new RandomStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>(new RandomStrategySettings<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>.Builder() {Random = random1 }.Build())),
-                    KeyValuePair.Create(player2, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>)game.MontyCarloStrateagy(player2, 1000, game.MontyCarloStrategySettings())),
+                    KeyValuePair.Create(player2, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>)game.MonteCarloStrategy(player2, 1000, game.MonteCarloStrategySettings())),
                 }.ToDb().ToDictionary(),
                 displayer);
             var result = driver.Run(game);
