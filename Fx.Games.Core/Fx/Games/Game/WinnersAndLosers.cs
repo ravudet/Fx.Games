@@ -39,6 +39,14 @@
             Drawers = drawers;
         }
 
+        public void Deconstruct(out IEnumerable<TPlayer> winners, out IEnumerable<TPlayer> losers, out IEnumerable<TPlayer> drawers)
+        {
+            winners = Winners;
+            losers = Losers;
+            drawers = Drawers;
+        }
+
+
         /// <summary>
         /// The players who have won the game
         /// </summary>
@@ -53,5 +61,14 @@
         /// The players who have drawn the game
         /// </summary>
         public IEnumerable<TPlayer> Drawers { get; }
+    }
+
+
+    public static partial class WinnersAndLosers
+    {
+        public static WinnersAndLosers<TPlayer> None<TPlayer>(TPlayer left, TPlayer right) => new WinnersAndLosers<TPlayer>(Array.Empty<TPlayer>(), Array.Empty<TPlayer>(), Array.Empty<TPlayer>());
+        public static WinnersAndLosers<TPlayer> LeftWins<TPlayer>(TPlayer left, TPlayer right) => new WinnersAndLosers<TPlayer>(new[] { left }, new[] { right }, Array.Empty<TPlayer>());
+        public static WinnersAndLosers<TPlayer> RightWins<TPlayer>(TPlayer left, TPlayer right) => new WinnersAndLosers<TPlayer>(new[] { right }, new[] { left }, Array.Empty<TPlayer>());
+        public static WinnersAndLosers<TPlayer> Draw<TPlayer>(TPlayer left, TPlayer right) => new WinnersAndLosers<TPlayer>(Array.Empty<TPlayer>(), Array.Empty<TPlayer>(), new[] { left, right });
     }
 }

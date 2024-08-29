@@ -4,14 +4,16 @@
     using Db.System.Collections.Generic;
     using Fx.Games.Displayer;
     using Fx.Games.Game;
+    using Fx.Games.Game.Amazons;
     using Fx.Games.Strategy;
 
     /// <summary>
     /// Factories for <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/>
     /// </summary>
     /// <threadsafety static="true"/>
-    public static class Driver
+    public static partial class Driver
     {
+
         /// <summary>
         /// Creates a new instance of <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/>
         /// </summary>
@@ -66,4 +68,7 @@
             return new Driver<TGame, TBoard, TMove, TPlayer>(strategies, displayer);
         }
     }
+
+
+
 }

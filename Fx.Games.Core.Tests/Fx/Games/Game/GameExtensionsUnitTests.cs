@@ -29,5 +29,16 @@
 
             Assert.IsNotNull(strategy);
         }
+
+        /// <summary>
+        /// Gets the monte carlo strategy for a game
+        /// </summary>
+        [TestMethod]
+        public void MonteCarloStrategy()
+        {
+            var strategy = NoImplementationGame.Instance.MonteCarloStrategy("player", 100, NoImplementationGame.Instance.MonteCarloStrategySettings());
+
+            Assert.IsNotNull(strategy);
+        }
     }
 }
