@@ -81,6 +81,23 @@
             }
         }
 
+        public global::System.Collections.Generic.IEnumerable<TKey> Keys
+        {
+            get
+            {
+                //// TODO this whole thing
+                if (this.nullValue.HasValue)
+                {
+                    yield return default;
+                }
+
+                foreach (var key in this.dictionary.Keys)
+                {
+                    yield return key;
+                }
+            }
+        }
+
         /// <inheritdoc/>
         public TValue GetValueTry(TKey key, out bool contained)
         {
