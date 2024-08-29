@@ -46,6 +46,7 @@ namespace ConsoleApplication1
             (nameof(TicTacToeMonteCarloVersusHuman), TicTacToeMonteCarloVersusHuman),
             (nameof(AmazonsHumanVsRandom_5x6), AmazonsHumanVsRandom_5x6),
             (nameof(AmazonsRandomVsRandom), AmazonsRandomVsRandom),
+            (nameof(ConnectFourRandomVersusRandom), ConnectFourRandomVersusRandom),
         };
 
         static void Main(string[] args)
@@ -82,6 +83,26 @@ namespace ConsoleApplication1
                 }
             }
             while (true);
+        }
+
+        private static void ConnectFourRandomVersusRandom()
+        {
+            var displayer = new ConnectFourDisplayer<string>(_ => _);
+            var player1 = "player1";
+            var player2 = "player2";
+
+            var random1 = new Random(Environment.TickCount);
+            var random2 = new Random(Environment.TickCount);
+
+            var game = new ConnectFour<string>(player1, player2);
+            var driver = Driver.Create(
+                new[]
+                {
+                    KeyValuePair.Create(player1, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>)new RandomStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>(new RandomStrategySettings<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>.Builder() {Random = random1 }.Build())),
+                    KeyValuePair.Create(player2, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>)new RandomStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>(new RandomStrategySettings<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>.Builder() {Random = random2 }.Build())),
+                }.ToDb().ToDictionary(),
+                displayer);
+            var result = driver.Run(game);
         }
 
         private static void AmazonsRandomVsRandom()
