@@ -48,6 +48,7 @@ namespace ConsoleApplication1
             (nameof(AmazonsRandomVsRandom), AmazonsRandomVsRandom),
             (nameof(ConnectFourRandomVersusRandom), ConnectFourRandomVersusRandom),
             (nameof(ConnectFourRandomVersusMontyCarlo), ConnectFourRandomVersusMontyCarlo),
+            (nameof(ConnectFourHumanVersusMontyCarlo), ConnectFourHumanVersusMontyCarlo),
         };
 
         static void Main(string[] args)
@@ -84,6 +85,26 @@ namespace ConsoleApplication1
                 }
             }
             while (true);
+        }
+
+        private static void ConnectFourHumanVersusMontyCarlo()
+        {
+            var displayer = new ConnectFourDisplayer<string>(_ => _);
+            var player1 = "player1";
+            var player2 = "player2";
+
+            var random1 = new Random();
+
+            var game = new ConnectFour<string>(player1, player2);
+
+            var driver = Driver.Create(
+                new[]
+                {
+                    KeyValuePair.Create(player1, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>) ConsoleStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>.Instance),
+                    KeyValuePair.Create(player2, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>)game.MonteCarloStrategy(player2, 1000000, game.MonteCarloStrategySettings())),
+                }.ToDb().ToDictionary(),
+                displayer);
+            var result = driver.Run(game);
         }
 
         private static void ConnectFourRandomVersusMontyCarlo()
