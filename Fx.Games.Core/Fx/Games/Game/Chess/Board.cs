@@ -48,7 +48,7 @@ namespace Fx.Games.Game.Chess
                     case 'q': grid[x, y] = Tile.BlackQueen; x += 1; break;
                     case 'k': grid[x, y] = Tile.BlackKing; x += 1; break;
                     case 'p': grid[x, y] = Tile.BlackPawn; x += 1; break;
-                    case '.': grid[x, y] = Tile.Empty; break;
+                    case '.': grid[x, y] = Tile.Empty; x += 1; break;
                     case '8': for (var i = 0; i < 8; i++) { grid[x, y] = Tile.Empty; x += 1; } break;
                     case '/': x = 0; y += 1; break;
                     default: throw new ArgumentException($"Invalid character '{ch}' in board setup string");
