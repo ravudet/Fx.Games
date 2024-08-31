@@ -19,6 +19,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Fx.Games.Core\Fx.Games.Core.csproj" />
     <ProjectReference Include="..\Fx.Games.TestCore\Fx.Games.TestCore.csproj" />
+
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="8.0.0" />
+
   </ItemGroup>
 
 </Project>
