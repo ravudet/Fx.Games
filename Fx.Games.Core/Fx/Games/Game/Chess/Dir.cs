@@ -16,7 +16,7 @@ namespace Fx.Games.Game.Chess
 
         public static Dir NW => new Dir(-1, 1);
 
-        public static Dir[] All = { Dir.N, Dir.E, Dir.S, Dir.W, Dir.NE, Dir.SE, Dir.SW, Dir.NW };
+        public readonly static Dir[] All = { Dir.N, Dir.E, Dir.S, Dir.W, Dir.NE, Dir.SE, Dir.SW, Dir.NW };
 
         public static Square operator +(Square sq, Dir dir) => new Square(sq.File + dir.X, sq.Rank + dir.Y);
 
