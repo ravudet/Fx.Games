@@ -172,7 +172,7 @@ namespace ConsoleApplication1
             var black = "black";
             var game = new Amazons.Game<string>(white, black, (5, 6));
             var strategies = new[] {
-                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(white, game.ConsoleStrategy()),
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(white, game.AmazonsConsoleStrategy()),
                 KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(black, game.RandomStrategy()),
             };
             var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>(

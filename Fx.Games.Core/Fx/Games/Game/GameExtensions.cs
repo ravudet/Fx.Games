@@ -92,5 +92,10 @@
         {
             return Fx.Games.Strategy.MonteCarloStrategySettings<TGame, TBoard, TMove, TPlayer>.Default;
         }
+
+        public static GameOfAmazonsConsoleStrategy<TPlayer> AmazonsConsoleStrategy<TPlayer>(this Amazons.Game<TPlayer> self)
+        {
+            return GameOfAmazonsConsoleStrategy<TPlayer>.Instance;
+        }
     }
 }
