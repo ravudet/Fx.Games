@@ -67,7 +67,7 @@ namespace Fx.Games.Game.Amazons
         public override string ToString()
         {
             var (w, h) = (grid.GetLength(0), grid.GetLength(1));
-            var len = ((w * 2) + 4) * (h + 2) - 4;
+            var len = ((w * 3) + 4) * (h + 3) - 4;
             // one row on top and bottom each 
             // and two columns each on the left and right, plus the newlines
             return string.Create(len, grid, (span, grid) =>
@@ -82,6 +82,7 @@ namespace Fx.Games.Game.Amazons
                     for (var x = 0; x < w; x++)
                     {
                         span.Append(' ');
+                        span.Append(' ');
                         span.Append(grid[x, y] switch
                         {
                             Tile.Black => 'B',
@@ -91,7 +92,9 @@ namespace Fx.Games.Game.Amazons
                         });
                     }
                     span.Append(' ');
+                    span.Append(' ');
                     span.Append(row);
+                    span.Append('\n');
                     span.Append('\n');
                 }
                 Header(ref span, w);
@@ -104,8 +107,10 @@ namespace Fx.Games.Game.Amazons
             for (var x = 0; x < w; x++)
             {
                 span.Append(' ');
+                span.Append(' ');
                 span.Append((char)(x % 10 + 'a'));
             }
+            span.Append('\n');
             span.Append('\n');
             return span;
         }
