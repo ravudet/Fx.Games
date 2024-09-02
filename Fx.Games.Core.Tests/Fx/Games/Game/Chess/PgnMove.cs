@@ -35,18 +35,24 @@ namespace Fx.Games.Game.Chess.Tests
         // TODO 19. Bxb5 Rec8    Black Rec8    -> Black Rook O-O-O
         internal readonly bool Matches(Move move, Board board)
         {
-            var tile = board[move.Start];
+
+            var occupancy = board[move.Start];
+            if (!occupancy.HasPiece)
+            {
+                return false;
+            }
             if (this.IsCastle(out var side) && move.IsCastle(out var mside) && side == mside)
             {
                 return true;
             }
-            return End.Equals(move.End) &&
-                Kind == tile.Kind &&
+            var result = End.Equals(move.End) &&
+                Kind == occupancy.Piece.Kind &&
                 Capture == move.Capture &&
                 (Start.File == null || Start.File.Value == move.Start.File) &&
                 (Start.Rank == null || Start.Rank.Value == move.Start.Rank);
+            // System.Diagnostics.Trace.WriteLine($"matching {this} {move} -> {result}");
+            return result;
         }
-
     }
 
     public readonly record struct Source(int? File, int? Rank)

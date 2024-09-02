@@ -1,6 +1,6 @@
 namespace Fx.Games.Game.Chess
 {
-    public record Move(Square Start, Square End, bool Capture = false)
+    public record class Move(Square Start, Square End, bool Capture = false)
     {
         override public string ToString()
         {

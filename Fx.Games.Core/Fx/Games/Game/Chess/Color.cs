@@ -1,5 +1,7 @@
 namespace Fx.Games.Game.Chess
 {
-    public enum Color { Black = 1, White }
-}
+    using System;
 
+    public enum Color : byte { White, Black }
+
+}

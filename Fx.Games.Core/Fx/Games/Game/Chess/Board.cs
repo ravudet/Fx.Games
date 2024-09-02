@@ -3,299 +3,323 @@ namespace Fx.Games.Game.Chess
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.IO;
     using System.Linq;
-    using System.Numerics;
     using System.Runtime.CompilerServices;
 
-
-    [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
     public class Board
     {
-        public Board(Piece[,] grid, ulong blackPieces, ulong whitePieces)
+        readonly private Occupancy[,] grid = new Occupancy[8, 8];
+        ulong whiteBitBoard = 0;
+        ulong blackBitBoard = 0;
+
+        public Board()
         {
-            this._grid = grid;
-            this.blackPieces = blackPieces;
-            this.whitePieces = whitePieces;
-        }
-
-        private readonly Piece[,] _grid;
-
-        private ulong blackPieces;
-        private ulong whitePieces;
-
-        public Board() : this(new Piece[Size.Width, Size.Height], 0UL, 0UL)
-        {
-            const string INIT = "rnbqkbnr|pppppppp|........|........|........|........|PPPPPPPP|RNBQKBNR";
-            var pieces = INIT.Split('|');
-
-            for (var x = 0; x < 8; x++)
+            const string init = "rnbqkbnrpppppppp................................PPPPPPPPRNBQKBNR";
+            var ix = 0;
+            for (int rank = 0; rank < 8; rank++)
             {
-                for (var y = 0; y < 8; y++)
+                for (int file = 0; file < 8; file++)
                 {
-                    this[(x, y)] = (char)pieces[7 - y][x]; // conversion from char to Piece
+                    if (init[ix] != '.') { this[file, rank] = Occupancy.FromChar(init[ix]); }
+                    ix += 1;
                 }
             }
         }
 
-        static class Size
+        public Board(Occupancy[,] grid, ulong whiteBitBoard, ulong blackBitBoard)
         {
-            public const int Width = 8;
-            public const int Height = 8;
+            this.grid = grid;
+            this.whiteBitBoard = whiteBitBoard;
+            this.blackBitBoard = blackBitBoard;
         }
 
-        /// <summary>
-        /// place the pieces on the board for the initial setup
-        /// </summary>
-        /// <param name="grid"></param>
-        /// <param name="size"></param>
-        /// <exception cref="ArgumentException"></exception>
-
-
-
-        public override string ToString()
+        public Board Clone()
         {
-            var (w, h) = (_grid.GetLength(0), _grid.GetLength(1));
-            var len = ((w * 2) + 6) * (h + 2) - 4
-            ;
-            // one row on top and bottom each 
-            // and two columns each on the left and right, plus the newlines
-            return string.Create(len, _grid, (span, grid) =>
+            var grid = (Occupancy[,])this.grid.Clone();
+            return new Board(grid, whiteBitBoard, blackBitBoard);
+        }
+
+        public Occupancy this[Square square]
+        {
+            // delegate to the indexer that takes two ints
+            get => this[square.File, square.Rank];
+            set => this[square.File, square.Rank] = value;
+        }
+
+        public Occupancy this[int file, int rank]
+        {
+            get => grid[file, rank];
+
+            set
             {
-#if DEBUG
-                span.Fill('?');
-#endif
-                Header(ref span, w);
-                span.Append('\n');
-                for (var y = h - 1; y >= 0; y--)
+                grid[file, rank] = value;
+                Debug.Assert(grid[file, rank] == value);
+                if (value.HasPiece)
                 {
-                    var row = (char)(y + '1');
-                    span.Append(row);
+                    ref ulong bitBoard = ref (value.Piece.Color == Color.White ? ref whiteBitBoard : ref blackBitBoard);
+                    bitBoard |= 1UL << (file * 8 + rank);
+                    ref ulong other = ref (value.Piece.Color == Color.White ? ref blackBitBoard : ref whiteBitBoard);
+                    other &= ~(1UL << (file * 8 + rank));
+                }
+                else
+                {
+                    // instead of figuring out which bitboard to clear, we clear both
+                    whiteBitBoard &= ~(1UL << (file * 8 + rank));
+                    blackBitBoard &= ~(1UL << (file * 8 + rank));
+                }
+
+                // ensure invariant: no overlapping bits are set   
+                Debug.Assert((whiteBitBoard & blackBitBoard) == 0);
+            }
+        }
+
+        override public string ToString()
+        {
+            int length = 200;
+            return string.Create(length, grid, (span, grid) =>
+            {
+#if DEBUG 
+                span.Fill('?'); // fill with ! for debugging in case one char is not set. otherwise they are invisible (\0)
+#endif
+                span.Append("  a b c d e f g h  \n");
+                for (int rank = 0; rank < 8; rank++)
+                {
+                    span.Append((char)('0' + (8 - rank)));
                     span.Append(' ');
-                    for (var x = 0; x < w; x++)
+                    for (int file = 0; file < 8; file++)
                     {
+                        var square = grid[file, rank];
+                        span.Append(square.Symbol);
                         span.Append(' ');
-                        span.Append(grid[x, y].ToString());
                     }
-                    span.Append("  ");
-                    span.Append(row);
+                    span.Append((char)('0' + (8 - rank)));
                     span.Append('\n');
                 }
-                span.Append('\n');
-                Header(ref span, w);
+                span.Append("  a b c d e f g h  \n");
             });
         }
 
-        private static Span<char> Header(ref Span<char> span, int w)
+        /// <summary>
+        /// move a piece from start to end square in a straigt line
+        /// either horizontally, vertically or diagonally
+        /// no piece can be in the way
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <exception cref="InvalidOperationException"></exception>
+        internal void MoveStraight(Square start, Square end)
         {
-            span.Append("  ");
-            for (var x = 0; x < w; x++)
+#if DEBUG
+            if (this[start] == Occupancy.Empty)
             {
-                span.Append(' ');
-                span.Append((char)(x % 10 + 'a'));
+                throw new InvalidOperationException("No piece to move");
             }
-            span.Append('\n');
-            return span;
+            if (this[end] != Occupancy.Empty)
+            {
+                throw new InvalidOperationException("Cannot move to an occupied square");
+            }
+            var (dx, dy) = (Math.Abs(end.File - start.File), Math.Abs(end.Rank - start.Rank));
+            if (!(dx == 0 || dy == 0 || dx == dy))
+            {
+                throw new InvalidOperationException("Invalid move, not horizontal, vertical or diagonal");
+            }
+            var Offset = (Math.Sign(end.File - start.File), Math.Sign(end.Rank - start.Rank));
+            for (var sq = start + Offset; sq != end; sq += Offset)
+            {
+                if (this[sq] != Occupancy.Empty)
+                {
+                    throw new InvalidOperationException($"Invalid move, piece in the way: {this[sq].Piece} at {sq}");
+                }
+            }
+#endif
+
+            this[end] = this[start];
+            this[start] = Occupancy.Empty;
         }
 
-        public Piece this[Square sq]
+        // public override string ToString()
+        // {
+        //     var sb = new StringBuilder(20 * 10, 20 * 10);
+        //     var w = new StringWriter();
+        //     w.WriteLine("  a b c d e f g h");
+        //     for (int i = 0; i < 8; i++)
+        //     {
+        //         w.Write("{0} ", 8 - i);
+        //         for (int j = 0; j < 8; j++)
+        //         {
+        //             var square = grid[i, j];
+        //             w.Write(square.Symbol);
+        //             w.Write(" ");
+        //         }
+        //         w.WriteLine(" {0}", 8 - i);
+        //     }
+        //     w.WriteLine("  a b c d e f g h");
+        //     System.Console.WriteLine(w.ToString().Length);
+        //     return w.ToString();
+        // }
+
+        public Board CommitMove(Move move)
         {
-            get => _grid[sq.File, sq.Rank];
-            set
-            {
-                _grid[sq.File, sq.Rank] = value;
-                switch (value.Color)
-                {
-                    case Color.Black:
-                        blackPieces |= 1UL << (sq.File + sq.Rank * 8);
-                        break;
-                    case Color.White:
-                        whitePieces |= 1UL << (sq.File + sq.Rank * 8);
-                        break;
-                    default:
-                        blackPieces &= ~(1UL << (sq.File + sq.Rank * 8));
-                        whitePieces &= ~(1UL << (sq.File + sq.Rank * 8));
-                        break;
-                };
-            }
+            var board = this.Clone() as Board;
+            board.MoveStraight(move.Start, move.End);
+            return board;
         }
-        private string GetDebuggerDisplay() => ToString();
+
+        #region Move generation
 
         public IEnumerable<Move> GetMoves(Color color)
         {
             foreach (var square in GetSquaresOfColor(color))
             {
-                var piece = this[square];
-                var moves = piece.Kind switch
+                if (this[square].HasPiece)
                 {
-                    Kind.Pawn => GetPawnMoves(square),
-                    Kind.Rook => GetRookMoves(square),
-                    Kind.Knight => GetKnightMoves(square),
-                    Kind.Bishop => GetBishopMoves(square),
-                    Kind.Queen => GetQueenMoves(square),
-                    Kind.King => GetKingMoves(square),
-                    _ => Enumerable.Empty<Move>()
-                };
-                foreach (var move in moves)
-                {
-                    yield return move;
+                    var piece = this[square].Piece;
+                    var moves = piece.Kind switch
+                    {
+                        Kind.Pawn => GetPawnMoves(square),
+                        Kind.Knight => GetKnightMoves(square),
+                        Kind.Rook => GetMovesInStraightLines(square, ROOK),
+                        Kind.Bishop => GetMovesInStraightLines(square, BISHOP),
+                        Kind.Queen => GetMovesInStraightLines(square, QUEEN),
+                        Kind.King => GetKingMoves(square),
+                        _ => Enumerable.Empty<Move>()
+                    };
+                    foreach (var move in moves)
+                    {
+                        yield return move;
+                    }
                 }
             }
         }
 
-        private static readonly Dir[] ROOK = { Dir.N, Dir.E, Dir.S, Dir.W };
-        private static readonly Dir[] BISHOP = { Dir.NE, Dir.SE, Dir.SW, Dir.NW
-    };
-        private static readonly Dir[] QUEEN = { Dir.N, Dir.E, Dir.S, Dir.W, Dir.NE, Dir.SE, Dir.SW, Dir.NW };
-        private static readonly Dir[] KING = { Dir.N, Dir.E, Dir.S, Dir.W, Dir.NE, Dir.SE, Dir.SW, Dir.NW };
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IEnumerable<Move> GetRookMoves(Square square)
+        public IEnumerable<Square> GetSquaresOfColor(Color color)
         {
-            return GetMovesInDirs(square, ROOK);
+            // bool forward = color == Color.White;
+            // for (var y = forward ? 0 : 8 - 1; forward ? y < 8 : y > 0; y += forward ? 1 : -1)
+            for (var y = 0; y < 8; y++)
+            {
+                for (var x = 0; x < 8; x++)
+                {
+                    var o = grid[x, y];
+                    if (o.HasPiece && o.Piece.Color == color)
+                    {
+                        yield return new Square(x, y);
+                    }
+                }
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IEnumerable<Move> GetBishopMoves(Square square)
+        private static bool IsOnBoard(Square sq) =>
+                    sq.File >= 0 && sq.File < 8 && sq.Rank >= 0 && sq.Rank < 8;
+
+        private IEnumerable<Move> GetPawnMoves(Square square)
         {
-            return GetMovesInDirs(square, BISHOP);
+            Debug.Assert(this[square].HasPiece && this[square].Piece.Kind == Kind.Pawn);
+            var piece = this[square].Piece;
+            var color = piece.Color;
+            var offset = piece.Color switch
+            {
+                Color.White => Offset.N,
+                Color.Black => Offset.S,
+                _ => throw new InvalidOperationException("Invalid color")
+            };
+
+            var dest = square + offset;
+            if (IsOnBoard(dest) && this[dest] == Occupancy.Empty)
+            {
+                yield return new Move(square, dest);
+
+                // check if pawn can move two squares
+                var initialRow = color == Color.White ? 6 : 1;
+                if (square.Rank == initialRow)
+                {
+                    var two = dest + offset;
+                    if (IsOnBoard(two) && this[two] == Occupancy.Empty)
+                    {
+                        yield return new Move(square, two);
+                    }
+                }
+            }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IEnumerable<Move> GetQueenMoves(Square square)
+        private static readonly Offset[] KNIGHT = new Offset[] { (1, 2), (-1, 2), (1, -2), (-1, -2), (2, 1), (2, -1), (-2, 1), (-2, -1) };
+
+        private IEnumerable<Move> GetKnightMoves(Square square)
         {
-            return GetMovesInDirs(square, QUEEN);
+            Debug.Assert(this[square].HasPiece && this[square].Piece.Kind == Kind.Knight, "Not a Knight at square");
+            var piece = this[square].Piece;
+            var color = piece.Color;
+            foreach (var Offset in KNIGHT)
+            {
+                var dest = square + Offset;
+                if (!IsOnBoard(dest)) { continue; } // skip if off board
+                var destination = grid[dest.File, dest.Rank];
+                if (destination == Occupancy.Empty)
+                {
+                    yield return new Move(square, dest);
+                }
+                else if (destination.Piece.Color != color) // capture
+                {
+                    yield return new Move(square, dest, true);
+                }
+            }
         }
 
         private IEnumerable<Move> GetKingMoves(Square square)
         {
-            var piece = this[square];
+            Debug.Assert(this[square].HasPiece); // && this[square].Piece.Kind == ??
+            var piece = this[square].Piece;
             var color = piece.Color;
+
             foreach (var dir in KING)
             {
                 var dest = square + dir;
                 if (!IsOnBoard(dest)) { continue; } // next dir if off the board
 
-                var destination = this[dest];
-                if (destination == Piece.Empty)
+                var destination = grid[dest.File, dest.Rank];
+                if (destination == Occupancy.Empty)
                 {
                     yield return new Move(square, dest);
                 }
-                else if (destination.Color != color)
+                else if (destination.Piece.Color != color)
                 {
                     // capture
                     yield return new Move(square, dest, true);
                     continue;
                 }
             }
-            if (square.File == 4 && square.Rank == 0)
-            {
-                // white king side castle
-                if (_grid[5, 0] == Piece.Empty && _grid[6, 0] == Piece.Empty)
-                {
-                    yield return new Move(square, new Square(6, 0));
-                }
-                // white queen side castle
-                if (_grid[3, 0] == Piece.Empty && _grid[2, 0] == Piece.Empty && _grid[1, 0] == Piece.Empty)
-                {
-                    yield return new Move(square, new Square(2, 0));
-                }
-            }
-            else if (square.File == 4 && square.Rank == 7)
-            {
-                // black king side castle
-                if (_grid[5, 7] == Piece.Empty && _grid[6, 7] == Piece.Empty)
-                {
-                    yield return new Move(square, new Square(6, 7));
-                }
-                // black queen side castle
-                if (_grid[3, 7] == Piece.Empty && _grid[2, 7] == Piece.Empty && _grid[1, 7] == Piece.Empty)
-                {
-                    yield return new Move(square, new Square(2, 7));
-                }
-            }
         }
 
-        private static readonly Dir[] KNIGHT = { (1, 2), (-1, 2), (1, -2), (-1, -2), (2, 1), (2, -1), (-2, 1), (-2, -1) };
+        private static readonly Offset[] ROOK = new Offset[] { Offset.N, Offset.E, Offset.S, Offset.W };
+        private static readonly Offset[] BISHOP = new Offset[] { Offset.NE, Offset.SE, Offset.SW, Offset.NW };
+        private static readonly Offset[] QUEEN = new Offset[] { Offset.N, Offset.E, Offset.S, Offset.W, Offset.NE, Offset.SE, Offset.SW, Offset.NW };
+        private static readonly Offset[] KING = new Offset[] { Offset.N, Offset.E, Offset.S, Offset.W, Offset.NE, Offset.SE, Offset.SW, Offset.NW };
 
-        private IEnumerable<Move> GetKnightMoves(Square square)
+
+        private IEnumerable<Move> GetMovesInStraightLines(Square square, Offset[] Offsets)
         {
-            var piece = _grid[square.File, square.Rank];
+            Debug.Assert(this[square].HasPiece); // && this[square].Piece.Kind == ??
+            var piece = this[square].Piece;
             var color = piece.Color;
-            foreach (var dir in KNIGHT)
+            foreach (var Offset in Offsets)
             {
-                var dest = square + dir;
-                if (!IsOnBoard(dest)) { continue; } // skip if off board
-                var destPiece = this[dest];
-                if (destPiece == Piece.Empty)
+                foreach (var dest in GetSquaresOfStraightLines(square, Offset))
                 {
-                    yield return new Move(square, dest);
-                }
-                else if (destPiece.Color != color) // capture
-                {
-                    yield return new Move(square, dest, true);
-                }
-            }
-        }
-
-        private IEnumerable<Move> GetPawnMoves(Square square)
-        {
-            var color = this[square].Color;
-            var dir = color switch
-            {
-                Color.White => Dir.N,
-                Color.Black => Dir.S,
-                _ => throw new InvalidOperationException("Invalid color")
-            };
-
-            var dest = square + dir;
-            if (IsOnBoard(dest) && this[dest] == Piece.Empty)
-            {
-                yield return new Move(square, dest);
-
-                // check if pawn can move two squares
-                var initialRow = color == Color.White ? 1 : 6;
-                if (square.Rank == initialRow)
-                {
-                    var two = dest + dir;
-                    if (IsOnBoard(two) && this[two] == Piece.Empty)
-                    {
-                        yield return new Move(square, two);
-                    }
-                }
-            }
-
-            // capture moves
-            var oppositeColor = color == Color.White ? Color.Black : Color.White;
-            var east = dest + Dir.E;
-            if (IsOnBoard(east) && this[east].Color == oppositeColor)
-            {
-                yield return new Move(square, east, true);
-            }
-            var west = dest + Dir.W;
-            if (IsOnBoard(west) && this[west].Color == oppositeColor)
-            {
-                yield return new Move(square, west, true);
-            }
-        }
-        private IEnumerable<Move> GetMovesInDirs(Square square, Dir[] dirs)
-        {
-            var piece = this[square];
-            var color = piece.Color;
-            foreach (var dir in dirs)
-            {
-                foreach (var dest in GetStraightPath(square, dir))
-                {
-                    var tile = this[dest];
-                    if (tile == Piece.Empty)
+                    var occupancy = grid[dest.File, dest.Rank];
+                    // step to empty square
+                    if (occupancy == Occupancy.Empty)
                     {
                         yield return new Move(square, dest);
                     }
-                    else if (tile.Color != color) // other player's piece: capture
+                    // capture opposing color and stop
+                    else if (occupancy.HasPiece && occupancy.Piece.Color != color)
                     {
                         yield return new Move(square, dest, true);
                         break;
                     }
+                    // stop iterating
                     else
                     {
                         break;
@@ -304,170 +328,16 @@ namespace Fx.Games.Game.Chess
             }
         }
 
-        /// <summary>
-        ///     see <see cref="this[Square]">this[Square]</see> for bitboard calculation 
-        /// </summary>
-        /// <param name="color"></param>
-        /// <returns></returns>
-        private IEnumerable<Square> GetSquaresOfColor(Color color)
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static IEnumerable<Square> GetSquaresOfStraightLines(Square start, Offset offset)
         {
-            // TODO: implement using bitboard
-            // bool forward = color == Color.White;
-            // for (var y = forward ? 0 : Size.Height - 1; forward ? y < Size.Height : y > 0; y += forward ? 1 : -1)
-            // {
-            //     for (var x = 0; x < Size.Width; x++)
-            //     {
-            //         var tile = _grid[x, y];
-            //         if (!tile.IsEmpty && tile.Color == color)
-            //         {
-            //             yield return new Square(x, y);
-            //         }
-            //     }
-            // }
-
-
-            var bitboard = color == Color.White ? whitePieces : blackPieces;
-            while (true)
-            {
-                var bit = BitOperations.TrailingZeroCount(bitboard);
-                if (bit == 64) { break; }
-                bitboard &= ~(1UL << bit);
-                yield return new Square(bit % 8, bit / 8);
-            }
-        }
-
-        private static IEnumerable<Square> GetStraightPath(Square start, Dir dir)
-        {
-            for (var sq = start + dir; IsOnBoard(sq); sq += dir)
+            for (var sq = start + offset; IsOnBoard(sq); sq += offset)
             {
                 yield return sq;
             }
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsOnBoard(Square sq) =>
-                    sq.File >= 0 && sq.File < Size.Width && sq.Rank >= 0 && sq.Rank < Size.Height;
-
-        public Board Apply(Move move)
-        {
-            var board = this.Clone();
-
-            board[move.End] = board[move.Start];
-            board[move.Start] = Piece.Empty;
-
-            // also move the rook if it's a castle
-            if (move.IsCastle(out var side))
-            {
-                var (src, tgt) = move.End.File switch
-                {
-                    2 => (new Square(0, move.End.Rank), new Square(3, move.End.Rank)),
-                    6 => (new Square(7, move.End.Rank), new Square(5, move.End.Rank)),
-                    _ => throw new InvalidOperationException("Invalid castle move")
-                };
-                board[tgt] = board[src];
-                board[src] = Piece.Empty;
-            }
-
-            return board;
-        }
-
-        private Board Clone()
-        {
-            return new Board((Piece[,])_grid.Clone(), blackPieces, whitePieces);
-        }
-
-        public readonly struct Piece : IFormattable
-        {
-            public Piece(Color color, Kind kind)
-            {
-                this.Color = color;
-                this.Kind = kind;
-            }
-            /// <summary>
-            /// color of the piece on the tile, (Color)0 if it's empty
-            /// </summary>
-            public readonly Color Color { get; }
-
-            /// <summary>
-            /// Piece type of the piece on the tile, (Piece)0 if tile is empty
-            /// </summary>
-            public readonly Kind Kind { get; }
-
-            public readonly bool IsEmpty => Color == 0 && Kind == 0;
-
-            public static bool operator ==(Piece a, Piece b) => a.Kind == b.Kind && a.Color == b.Color;
-
-            public static bool operator !=(Piece a, Piece b) => !(a == b);
-
-            public override readonly bool Equals(object? obj) => obj is Piece piece && this == piece;
-
-            public override readonly int GetHashCode() => HashCode.Combine(Color, Kind);
-
-            public override readonly string ToString() => ToChar().ToString();
-
-            public static Piece Empty => default;
-            public static Piece BlackKing => new Piece(Color.Black, Kind.King);
-            public static Piece BlackQueen => new Piece(Color.Black, Kind.Queen);
-            public static Piece BlackRook => new Piece(Color.Black, Kind.Rook);
-            public static Piece BlackBishop => new Piece(Color.Black, Kind.Bishop);
-            public static Piece BlackKnight => new Piece(Color.Black, Kind.Knight);
-            public static Piece BlackPawn => new Piece(Color.Black, Kind.Pawn);
-            public static Piece WhiteKing => new Piece(Color.White, Kind.King);
-            public static Piece WhiteQueen => new Piece(Color.White, Kind.Queen);
-            public static Piece WhiteRook => new Piece(Color.White, Kind.Rook);
-            public static Piece WhiteBishop => new Piece(Color.White, Kind.Bishop);
-            public static Piece WhiteKnight => new Piece(Color.White, Kind.Knight);
-            public static Piece WhitePawn => new Piece(Color.White, Kind.Pawn);
-
-            public static implicit operator Piece(char ch) => ch switch
-            {
-                '.' => Empty,
-                ' ' => Empty,
-                '\u00B7' => Empty,
-                'k' => BlackKing,
-                'q' => BlackQueen,
-                'r' => BlackRook,
-                'b' => BlackBishop,
-                'n' => BlackKnight,
-                'p' => BlackPawn,
-                'K' => WhiteKing,
-                'Q' => WhiteQueen,
-                'R' => WhiteRook,
-                'B' => WhiteBishop,
-                'N' => WhiteKnight,
-                'P' => WhitePawn,
-                _ => throw new ArgumentException($"Invalid character '{ch}'"),
-            };
-
-            public readonly char ToChar() => (this.Color, this.Kind) switch
-            {
-                ((Color)0, (Kind)0) => '\u00B7', // · middle dot
-                (Color.Black, Kind.King) => 'k',  // ♚
-                (Color.Black, Kind.Queen) => 'q',  // ♛
-                (Color.Black, Kind.Rook) => 'r',  // ♜
-                (Color.Black, Kind.Bishop) => 'b',  // ♝
-                (Color.Black, Kind.Knight) => 'n',  // ♞
-                (Color.Black, Kind.Pawn) => 'p',  // ♟
-                (Color.White, Kind.King) => 'K',  // ♔
-                (Color.White, Kind.Queen) => 'Q',  // ♕
-                (Color.White, Kind.Rook) => 'R',  // ♖
-                (Color.White, Kind.Bishop) => 'B',  // ♗
-                (Color.White, Kind.Knight) => 'N',  // ♘
-                (Color.White, Kind.Pawn) => 'P',  // ♙
-                _ => throw new InvalidDataException($"Invalid piece {this.Color} {this.Kind}"),
-            };
-
-            public static implicit operator char(Piece tile) => tile.ToChar();
-
-            public string ToString(string? format, IFormatProvider? formatProvider)
-            {
-                return format switch
-                {
-                    "L" => $"{Color} {Kind}",
-                    _ => ToChar().ToString(),
-                };
-            }
-        }
+        #endregion
     }
 }
 

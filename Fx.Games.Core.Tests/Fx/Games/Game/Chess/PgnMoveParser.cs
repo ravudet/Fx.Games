@@ -37,7 +37,7 @@ namespace Fx.Games.Game.Chess.Tests
         static readonly TryParse<Square> target =
             from file in Parser.OneOf("abcdefgh")
             from rank in Parser.OneOf("12345678")
-            select new Square((int)(file - 'a'), (int)(rank - '1'));
+            select new Square((int)(file - 'a'), (int)('9' - rank));
 
 
         static readonly TryParse<PgnMove> kingSideCastle = Parser
