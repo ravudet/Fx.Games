@@ -31,17 +31,15 @@ namespace Fx.Games.Game.Amazons
 
         public void DisplayAvailableMoves(Game<TPlayer> game)
         {
-            var color = game.PlayerTileMapping[game.CurrentPlayer] == Board.Tile.Black ? "black" : "white";
+            /*var color = game.PlayerTileMapping[game.CurrentPlayer] == Board.Tile.Black ? "black" : "white";
 
             // var hierarchy = game.Moves.GroupBy(move => move.Amazon).Select(f => (From: f.Key, f.GroupBy(move => move.Destination).Select(t => (To: t.Key, t.Select(move => move.Target))))).ToArray();
 
-
-            Console.WriteLine($"Select a move for {color}:");
             int i = 0;
             foreach (var move in game.Moves)
             {
                 Console.WriteLine($"{i++}: amazon on {move.Amazon} to {move.Destination} and shoot arrow to {move.Target}");
-            }
+            }*/
         }
 
         private static string Format((int X, int Y) position)

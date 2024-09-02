@@ -7,7 +7,6 @@ namespace Fx.Games.Game.Amazons
     using System.Linq;
 
     public class Game<TPlayer> : IGame<Game<TPlayer>, Board, Move, TPlayer>
-        where TPlayer : notnull
     {
 
         public Game(TPlayer whitePlayer, TPlayer blackPlayer) :
