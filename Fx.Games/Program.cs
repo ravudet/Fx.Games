@@ -11,6 +11,7 @@
     using Fx.Games.Game;
     using Amazons = Fx.Games.Game.Amazons;
     using Fx.Games.Strategy;
+    using Snake = Fx.Games.Game.Snake;
 
     class Program
     {
@@ -33,6 +34,7 @@
             (nameof(ConnectFourRandomVersusMontyCarlo), ConnectFourRandomVersusMontyCarlo),
             (nameof(ConnectFourHumanVersusMontyCarlo), ConnectFourHumanVersusMontyCarlo),
             (nameof(ConnectFourHumanVersusHuman), ConnectFourHumanVersusHuman),
+            (nameof(SnakeHuman), SnakeHuman),
         };
 
         static void Main(string[] args)
@@ -69,6 +71,22 @@
                 }
             }
             while (true);
+        }
+
+        private static void SnakeHuman()
+        {
+            var displayer = new Snake.Displayer<string>();
+            var player1 = "player1";
+
+            var game = new Snake.Game<string>(player1);
+
+            var driver = Driver.Create(
+                new[]
+                {
+                    KeyValuePair.Create(player1, (IStrategy<Snake.Game<string>, Snake.Board, Snake.Move, string>) ConsoleStrategy<Snake.Game<string>, Snake.Board, Snake.Move, string>.Instance),
+                }.ToDb().ToDictionary(),
+                displayer);
+            var result = driver.Run(game);
         }
 
         private static void ConnectFourHumanVersusHuman()
