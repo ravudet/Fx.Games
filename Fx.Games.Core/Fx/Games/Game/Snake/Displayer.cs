@@ -39,7 +39,7 @@
                     }
                     else if (game.Board.Grid[i][j] == Space.DownHead)
                     {
-                        Console.Write("!");
+                        Console.Write("v");
                     }
                     else if (game.Board.Grid[i][j] == Space.LeftHead)
                     {
