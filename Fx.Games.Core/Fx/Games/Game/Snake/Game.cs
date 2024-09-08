@@ -13,6 +13,10 @@
 
         private readonly IEnumerable<(int row, int column)> snake;
 
+        private readonly int snakeLength;
+
+        private readonly (int row, int column) foodPosition;
+
         public Game(TPlayer player)
             : this(player, new Random())
         {
@@ -22,10 +26,12 @@
             : this(
                   player, 
                   random,
-                  GenerateBoard(20, 40, random, new[] { (10, 20), (11, 20) }, true, Space.UpHead),
+                  GenerateBoard(20, 40, random, new[] { (10, 20), (11, 20) }, Space.UpHead, (17, 30)).Item1,
                   new WinnersAndLosers<TPlayer>(Enumerable.Empty<TPlayer>(), Enumerable.Empty<TPlayer>(), Enumerable.Empty<TPlayer>()),
                   false,
-                  new[] { (10, 20), (11, 20) })
+                  new[] { (10, 20), (11, 20) },
+                  2,
+                  (17, 30))
         {
         }
 
@@ -35,7 +41,9 @@
             Board board, 
             WinnersAndLosers<TPlayer> winnersAndLosers, 
             bool isGameOver,
-            IEnumerable<(int row, int column)> snake)
+            IEnumerable<(int row, int column)> snake,
+            int snakeLength,
+            (int row, int column) foodPosition)
         {
             this.CurrentPlayer = player;
             this.random = random;
@@ -43,6 +51,8 @@
             this.WinnersAndLosers = winnersAndLosers;
             this.IsGameOver = isGameOver;
             this.snake = snake;
+            this.snakeLength = snakeLength;
+            this.foodPosition = foodPosition;
         }
 
         public TPlayer CurrentPlayer { get; }
@@ -111,12 +121,14 @@
             {
                 // we ran into a wall
                 return new Game<TPlayer>(
-                    this.CurrentPlayer, 
+                    this.CurrentPlayer,
                     this.random,
-                    null, 
-                    new WinnersAndLosers<TPlayer>(Enumerable.Empty<TPlayer>(), new[] { this.CurrentPlayer }, Enumerable.Empty<TPlayer>()), 
+                    null,
+                    new WinnersAndLosers<TPlayer>(Enumerable.Empty<TPlayer>(), new[] { this.CurrentPlayer }, Enumerable.Empty<TPlayer>()),
                     true,
-                    this.snake);
+                    this.snake,
+                    this.snakeLength,
+                    this.foodPosition);
             }
 
             (int row, int column) direction;
@@ -149,44 +161,57 @@
             var targetSpace = this.Board.Grid[snakeHead.row + direction.row][snakeHead.column + direction.column];
             if (targetSpace >= Space.Snake && targetSpace <= Space.RightHead)
             {
+                var newBoard = GenerateBoard(this.Board.Rows, this.Board.Columns, this.random, this.snake, orientation, this.foodPosition);
+
                 // we ran into a ourselves
                 return new Game<TPlayer>(
                     this.CurrentPlayer,
                     this.random,
-                    GenerateBoard(this.Board.Rows, this.Board.Columns, this.random, this.snake, false, orientation),
+                    newBoard.Item1,
                     new WinnersAndLosers<TPlayer>(Enumerable.Empty<TPlayer>(), new[] { this.CurrentPlayer }, Enumerable.Empty<TPlayer>()),
                     true,
-                    this.snake);
+                    this.snake,
+                    this.snakeLength,
+                    newBoard.Item2);
             }
 
             if (targetSpace == Space.Empty)
             {
-                var newSnake = this.snake.Select(position => (position.row + direction.row, position.column + direction.column));
+                var newSnake = this.snake
+                    .Prepend((snakeHead.row + direction.row, snakeHead.column + direction.column))
+                    .Take(this.snakeLength);
+                var newBoard = GenerateBoard(this.Board.Rows, this.Board.Columns, this.random, newSnake, orientation, this.foodPosition);
                 return new Game<TPlayer>(
                     this.CurrentPlayer,
                     this.random,
-                    GenerateBoard(this.Board.Rows, this.Board.Columns, this.random, newSnake, false, orientation),
+                    newBoard.Item1,
                     new WinnersAndLosers<TPlayer>(Enumerable.Empty<TPlayer>(), Enumerable.Empty<TPlayer>(), Enumerable.Empty<TPlayer>()),
                     false,
-                    newSnake);
+                    newSnake,
+                    this.snakeLength,
+                    newBoard.Item2);
             }
 
             if (targetSpace == Space.Food)
             {
                 var newSnake = this.snake.Prepend((snakeHead.row + direction.row, snakeHead.column + direction.column));
+                var newBoard = GenerateBoard(this.Board.Rows, this.Board.Columns, this.random, newSnake, orientation,
+                    null);
                 return new Game<TPlayer>(
                     this.CurrentPlayer,
                     this.random,
-                    GenerateBoard(this.Board.Rows, this.Board.Columns, this.random, newSnake, true, orientation),
+                    newBoard.Item1,
                     new WinnersAndLosers<TPlayer>(Enumerable.Empty<TPlayer>(), Enumerable.Empty<TPlayer>(), Enumerable.Empty<TPlayer>()),
                     false,
-                    newSnake);
+                    newSnake,
+                    this.snakeLength + 1,
+                    newBoard.Item2);
             }
 
             throw new Exception("TODO");
         }
 
-        private static Board GenerateBoard(int rows, int columns, Random random, IEnumerable<(int row, int column)> snake, bool newFood, Space snakeOrientation)
+        private static (Board, (int row, int column)) GenerateBoard(int rows, int columns, Random random, IEnumerable<(int row, int column)> snake, Space snakeOrientation, (int row, int column)? foodPosition)
         {
             var spaces = new Space[rows][];
             for (int i = 0; i < rows; ++i)
@@ -202,7 +227,7 @@
             var snakeHead = snake.First();
             spaces[snakeHead.row][snakeHead.column] = snakeOrientation;
 
-            if (newFood)
+            if (foodPosition == null)
             {
                 while (true)
                 {
@@ -211,12 +236,17 @@
                     if (spaces[row][column] == Space.Empty)
                     {
                         spaces[row][column] = Space.Food;
+                        foodPosition = (row, column);
                         break;
                     }
                 }
             }
+            else
+            {
+                spaces[foodPosition.Value.row][foodPosition.Value.column] = Space.Food;
+            }
 
-            return new Board(rows, columns, spaces);
+            return (new Board(rows, columns, spaces), foodPosition.Value);
         }
     }
 }
