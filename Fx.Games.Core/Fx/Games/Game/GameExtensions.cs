@@ -97,5 +97,10 @@
         {
             return GameOfAmazonsConsoleStrategy<TPlayer>.Instance;
         }
+
+        public static MinimizeMovesStrategy<TGame, TBoard, TMove, TPlayer> MinimizeMovesStrategy<TGame, TBoard, TMove, TPlayer>(this IGame<TGame, TBoard, TMove, TPlayer> self) where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+        {
+            return Fx.Games.Strategy.MinimizeMovesStrategy<TGame, TBoard, TMove, TPlayer>.Instance;
+        }
     }
 }

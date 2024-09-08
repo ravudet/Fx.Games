@@ -1,25 +1,4 @@
-﻿// TODOs
-//
-// integrate the v2/qlearning branch
-// add monty carlo back
-// productize tictactoeconsoledisplayer
-//
-// write a version of game of amazons
-// write perf tests for game of amazons
-//
-// should peg position use uint instead of int?
-// you're not actually testing the peggameconsoledisplayer, you're just running it
-// null checks in peggameconsoledisplayer
-// implement a read only list for peggameutilities.winningsequence
-// what are the correct db namespaces?
-// does it make sense to use structs for the dbadapters? will boxing end up expensive? you can have a default constructor in c# now, so you probably should just use structs
-// what should db ienumerable + ienumerator actually look like
-// is there a way to leverage the underling struct enumerators in the enumerable and enumerator dbadapters?
-// is it worth it for drvier to require a keyeddictionary just so that it can make a copy of the strategies?
-// add back any games or strategies from the initial commit
-// productize program class
-
-namespace ConsoleApplication1
+﻿namespace ConsoleApplication1
 {
     using System;
     using System.Collections.Generic;
@@ -44,11 +23,14 @@ namespace ConsoleApplication1
             (nameof(TicTacToeHumanVersusRandom), TicTacToeHumanVersusRandom),
             (nameof(TicTacToeMonteCarloVersusRandom), TicTacToeMonteCarloVersusRandom),
             (nameof(TicTacToeMonteCarloVersusHuman), TicTacToeMonteCarloVersusHuman),
-            (nameof(AmazonsHumanVsRandom_5x6), AmazonsHumanVsRandom_5x6),
-            (nameof(AmazonsRandomVsRandom), AmazonsRandomVsRandom),
+            (nameof(AmazonsHumanVersusRandom_5x6), AmazonsHumanVersusRandom_5x6),
+            (nameof(AmazonsHumanVersusMonteCarlo), AmazonsHumanVersusMonteCarlo),
+            (nameof(AmazonsHumanVersusMinimizeMoves), AmazonsHumanVersusMinimizeMoves),
+            (nameof(AmazonsRandomVersusRandom), AmazonsRandomVersusRandom),
             (nameof(ConnectFourRandomVersusRandom), ConnectFourRandomVersusRandom),
             (nameof(ConnectFourRandomVersusMontyCarlo), ConnectFourRandomVersusMontyCarlo),
             (nameof(ConnectFourHumanVersusMontyCarlo), ConnectFourHumanVersusMontyCarlo),
+            (nameof(ConnectFourHumanVersusHuman), ConnectFourHumanVersusHuman),
         };
 
         static void Main(string[] args)
@@ -85,6 +67,26 @@ namespace ConsoleApplication1
                 }
             }
             while (true);
+        }
+
+        private static void ConnectFourHumanVersusHuman()
+        {
+            var displayer = new ConnectFourDisplayer<string>(_ => _);
+            var player1 = "player1";
+            var player2 = "player2";
+
+            var random1 = new Random();
+
+            var game = new ConnectFour<string>(player1, player2);
+
+            var driver = Driver.Create(
+                new[]
+                {
+                    KeyValuePair.Create(player1, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>) ConsoleStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>.Instance),
+                    KeyValuePair.Create(player2, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>) ConsoleStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>.Instance),
+                }.ToDb().ToDictionary(),
+                displayer);
+            var result = driver.Run(game);
         }
 
         private static void ConnectFourHumanVersusMontyCarlo()
@@ -147,7 +149,7 @@ namespace ConsoleApplication1
             var result = driver.Run(game);
         }
 
-        private static void AmazonsRandomVsRandom()
+        private static void AmazonsRandomVersusRandom()
         {
             var white = "white";
             var black = "black";
@@ -164,7 +166,43 @@ namespace ConsoleApplication1
             var result = driver.Run(game);
         }
 
-        private static void AmazonsHumanVsRandom_5x6()
+        private static void AmazonsHumanVersusMinimizeMoves()
+        {
+            var displayer = new Amazons.Displayer<string>(_ => _);
+
+            var white = "white";
+            var black = "black";
+            var game = new Amazons.Game<string>(white, black, (5, 6));
+            var strategies = new[] {
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(white, game.AmazonsConsoleStrategy()),
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(black, game.MinimizeMovesStrategy()),
+            };
+            var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>(
+                strategies.ToDb().ToDictionary(),
+                displayer);
+
+            var result = driver.Run(game);
+        }
+
+        private static void AmazonsHumanVersusMonteCarlo()
+        {
+            var displayer = new Amazons.Displayer<string>(_ => _);
+
+            var white = "white";
+            var black = "black";
+            var game = new Amazons.Game<string>(white, black, (5, 6));
+            var strategies = new[] {
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(white, game.AmazonsConsoleStrategy()),
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(black, game.MonteCarloStrategy(black, 100000, game.MonteCarloStrategySettings())),
+            };
+            var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>(
+                strategies.ToDb().ToDictionary(),
+                displayer);
+
+            var result = driver.Run(game);
+        }
+
+        private static void AmazonsHumanVersusRandom_5x6()
         {
             var displayer = new Amazons.Displayer<string>(_ => _);
 
