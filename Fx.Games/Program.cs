@@ -27,6 +27,8 @@
             (nameof(AmazonsHumanVersusMonteCarlo), AmazonsHumanVersusMonteCarlo),
             (nameof(AmazonsHumanVersusMinimizeMoves), AmazonsHumanVersusMinimizeMoves),
             (nameof(AmazonsRandomVersusRandom), AmazonsRandomVersusRandom),
+            (nameof(AmazonsMonteCarloVersusMinimizeMoves_5x6), AmazonsMonteCarloVersusMinimizeMoves_5x6),
+            (nameof(AmazonsMonteCarloVersusMinimizeMoves_8x8), AmazonsMonteCarloVersusMinimizeMoves_8x8),
             (nameof(ConnectFourRandomVersusRandom), ConnectFourRandomVersusRandom),
             (nameof(ConnectFourRandomVersusMontyCarlo), ConnectFourRandomVersusMontyCarlo),
             (nameof(ConnectFourHumanVersusMontyCarlo), ConnectFourHumanVersusMontyCarlo),
@@ -146,6 +148,40 @@
                     KeyValuePair.Create(player2, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>)new RandomStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>(new RandomStrategySettings<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>.Builder() {Random = random2 }.Build())),
                 }.ToDb().ToDictionary(),
                 displayer);
+            var result = driver.Run(game);
+        }
+
+        private static void AmazonsMonteCarloVersusMinimizeMoves_8x8()
+        {
+            var white = "white";
+            var black = "black";
+            var game = new Amazons.Game<string>(white, black, (8, 8));
+            var displayer = new Amazons.Displayer<string>(_ => _);
+            var strategies = new[] {
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(white, game.MonteCarloStrategy(white, 100000, game.MonteCarloStrategySettings())),
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(black, game.MinimizeMovesStrategy()),
+            };
+            var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>(
+                strategies.ToDb().ToDictionary(),
+                displayer);
+
+            var result = driver.Run(game);
+        }
+
+        private static void AmazonsMonteCarloVersusMinimizeMoves_5x6()
+        {
+            var white = "white";
+            var black = "black";
+            var game = new Amazons.Game<string>(white, black, (5, 6));
+            var displayer = new Amazons.Displayer<string>(_ => _);
+            var strategies = new[] {
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(white, game.MonteCarloStrategy(white, 100000, game.MonteCarloStrategySettings())),
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(black, game.MinimizeMovesStrategy()),
+            };
+            var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>(
+                strategies.ToDb().ToDictionary(),
+                displayer);
+
             var result = driver.Run(game);
         }
 

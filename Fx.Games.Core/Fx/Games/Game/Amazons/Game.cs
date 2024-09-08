@@ -24,7 +24,6 @@ namespace Fx.Games.Game.Amazons
         {
             Board = board;
             CurrentPlayer = currentPlayer;
-            WinnersAndLosers = new WinnersAndLosers<TPlayer>(Array.Empty<TPlayer>(), Array.Empty<TPlayer>(), Array.Empty<TPlayer>());
             playerTileMaping = map;
         }
 
@@ -47,7 +46,20 @@ namespace Fx.Games.Game.Amazons
 
         public IEnumerable<Move> Moves => Board.GetMoves(playerTileMaping[CurrentPlayer]);
 
-        public WinnersAndLosers<TPlayer> WinnersAndLosers { get; private set; }
+        public WinnersAndLosers<TPlayer> WinnersAndLosers
+        {
+            get
+            {
+                if (!this.IsGameOver)
+                {
+                    return new WinnersAndLosers<TPlayer>(Array.Empty<TPlayer>(), Array.Empty<TPlayer>(), Array.Empty<TPlayer>());
+                }
+                else
+                {
+                    return new WinnersAndLosers<TPlayer>(new[] { playerTileMaping.Keys.First(key => !object.ReferenceEquals(key, this.CurrentPlayer)) }, new[] { this.CurrentPlayer }, Array.Empty<TPlayer>());
+                }
+            }
+        }
 
         public bool IsGameOver { get => !Moves.Any(); }
 
