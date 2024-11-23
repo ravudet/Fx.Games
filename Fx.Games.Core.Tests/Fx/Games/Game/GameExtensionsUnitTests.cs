@@ -8,6 +8,20 @@
     [TestClass]
     public sealed class GameExtensionsUnitTests
     {
+        [TestMethod]
+        public void Portion()
+        {
+            var portion = PortionV2.Some(
+                "ASdf", uint.MaxValue >> 1,
+                PortionV2.Some(
+                    "qwer", uint.MaxValue >> 1,
+                    PortionV2.Some(
+                        "1234", uint.MaxValue >> 1,
+                        PortionV2.All("zxcv"))));
+
+            var weights = PortionV2Playground.ConvertToWeights(portion);
+        }
+
         /// <summary>
         /// Gets the random strategy for a game
         /// </summary>

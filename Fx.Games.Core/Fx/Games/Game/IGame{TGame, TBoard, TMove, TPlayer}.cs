@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// A turn-based game engine at a specific state within the game it represents
@@ -13,7 +14,7 @@
     /// <typeparam name="TMove">The type of the moves that the <typeparamref name="TGame"/> uses</typeparam>
     /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
     /// <threadsafety instance="true"/>
-    public interface IGame<out TGame, out TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+    public interface IGame<TGame, out TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer>
     {
         /// <summary>
         /// The <typeparamref name="TPlayer"/> whose turn it currently is
@@ -28,6 +29,8 @@
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="move"/> is <see langword="null"></exception>
         /// <exception cref="IllegalMoveExeption">Thrown if <paramref name="move"/> is not a legal move for the current board state of the game</exception>
         TGame CommitMove(TMove move);
+
+        ////IEnumerable<(double, TGame)> ExploreMove(TMove move);
 
         /// <summary>
         /// The legal moves in the current board state
@@ -49,4 +52,125 @@
         /// </summary>
         bool IsGameOver { get; }
     }
+
+    public sealed class Portion<TValue, TRemainder>
+    {
+        public Portion(TValue value, uint likelihood, TRemainder remainder)
+        {
+            this.Value = value;
+            this.Likelihood = likelihood;
+            this.Remainder = remainder;
+        }
+
+        public TValue Value { get; }
+        public uint Likelihood { get; }
+        public TRemainder Remainder { get; }
+    }
+
+    public abstract class PortionV2<TValue>
+    {
+        private PortionV2()
+        {
+        }
+
+        public sealed class Some : PortionV2<TValue>
+        {
+            public Some(TValue value, uint likelihood, PortionV2<TValue> remainder)
+            {
+                this.Value = value;
+                this.Likelihood = likelihood;
+                this.Remainder = remainder;
+            }
+
+            public TValue Value { get; }
+            public uint Likelihood { get; }
+            public PortionV2<TValue> Remainder { get; }
+        }
+
+        public sealed class All : PortionV2<TValue>
+        {
+            public All(TValue value)
+            {
+                this.Value = value;
+            }
+
+            public TValue Value { get; }
+        }
+    }
+
+    public static class PortionV2
+    {
+        public static PortionV2<TValue> Some<TValue>(TValue value, uint likelihood, PortionV2<TValue> remainder)
+        {
+            return new PortionV2<TValue>.Some(value, likelihood, remainder);
+        }
+
+        public static PortionV2<TValue> All<TValue>(TValue value)
+        {
+            return new PortionV2<TValue>.All(value);
+        }
+
+        public static TResult Visit<TValue, TResult>(
+            this PortionV2<TValue> portion, 
+            Func<PortionV2<TValue>.Some, TResult> someDispatch, 
+            Func<PortionV2<TValue>.All, TResult> allDispatch)
+        {
+            if (portion is PortionV2<TValue>.Some some)
+            {
+                return someDispatch(some);
+            }
+            else if (portion is PortionV2<TValue>.All all)
+            {
+                return allDispatch(all);
+            }
+            else
+            {
+                throw new Exception("TODO use visitor");
+            }
+        }
+    }
+
+    public static class PortionV2Playground
+    {
+        public static IEnumerable<(double, TValue)> ConvertToWeights<TValue>(PortionV2<TValue> portion)
+        {
+            return portion.Visit(SomeDispatch, AllDispatch);
+        }
+
+        private static IEnumerable<(double, TValue)> SomeDispatch<TValue>(PortionV2<TValue>.Some some)
+        {
+            var weight = ((double)some.Likelihood) / uint.MaxValue;
+            var value = some.Value;
+            return some.Remainder.Visit(SomeDispatch, AllDispatch).Prepend((weight, value));
+        }
+
+        private static IEnumerable<(double, TValue)> AllDispatch<TValue>(PortionV2<TValue>.All all)
+        {
+            var weight = 1.0;
+            var value = all.Value;
+            
+            return new[] { (weight, value) };
+        }
+    }
+
+    /*public static class SpikeExtensions
+    {
+        public static TGame CommitMove<TGame, TBoard, TMove, TPlayer>(
+            this IGame<TGame, TBoard, TMove, TPlayer> game,
+            TMove move)
+            where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+        {
+            var random = new Random();
+            var next = random.NextDouble();
+            using (var enumerator = game.ExploreMove(move).GetEnumerator())
+            {
+                while (enumerator.MoveNext() && next > 0)
+                {
+                    next -= enumerator.Current.Item1;
+                }
+
+                return enumerator.Current.Item2;
+            }
+        }
+    }*/
 }
