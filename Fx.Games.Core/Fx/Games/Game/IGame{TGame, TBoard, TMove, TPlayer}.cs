@@ -152,6 +152,45 @@
             
             return new[] { (weight * remainingWeight, value) };
         }
+
+        public static PortionV2<TValue> ConvertToPortion<TValue>(IEnumerable<(double, TValue)> weights)
+        {
+            using (var enumerator = weights.GetEnumerator())
+            {
+                if (!enumerator.MoveNext())
+                {
+                    throw new Exception("tODO empty");
+                }
+
+                return ConvertToPortion(enumerator, 1.0);
+            }
+        }
+
+        private static PortionV2<TValue> ConvertToPortion<TValue>(IEnumerator<(double, TValue)> weights, double remainingWeight)
+        {
+            var current = weights.Current;
+
+            var newRemainder = remainingWeight - current.Item1;
+            var normalizedWeight = current.Item1 / (1.0 - remainingWeight);
+            if (newRemainder < 0)
+            {
+                throw new Exception("TODO weights are 100");
+            }
+
+            if (!weights.MoveNext())
+            {
+                if (newRemainder != 0)
+                {
+                    //// TODO
+                }
+
+                return PortionV2.All(current.Item2);
+            }
+            else
+            {
+                return PortionV2.Some(current.Item2, (uint)(uint.MaxValue * normalizedWeight), ConvertToPortion(weights, newRemainder));
+            }
+        }
     }
 
     /*public static class SpikeExtensions
