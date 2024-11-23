@@ -110,18 +110,19 @@
             return new PortionV2<TValue>.All(value);
         }
 
-        public static TResult Visit<TValue, TResult>(
+        public static TResult Visit<TValue, TResult, TContext>(
             this PortionV2<TValue> portion, 
-            Func<PortionV2<TValue>.Some, TResult> someDispatch, 
-            Func<PortionV2<TValue>.All, TResult> allDispatch)
+            Func<PortionV2<TValue>.Some, TContext, TResult> someDispatch, 
+            Func<PortionV2<TValue>.All, TContext, TResult> allDispatch,
+            TContext context)
         {
             if (portion is PortionV2<TValue>.Some some)
             {
-                return someDispatch(some);
+                return someDispatch(some, context);
             }
             else if (portion is PortionV2<TValue>.All all)
             {
-                return allDispatch(all);
+                return allDispatch(all, context);
             }
             else
             {
@@ -134,22 +135,22 @@
     {
         public static IEnumerable<(double, TValue)> ConvertToWeights<TValue>(PortionV2<TValue> portion)
         {
-            return portion.Visit(SomeDispatch, AllDispatch);
+            return portion.Visit(SomeDispatch, AllDispatch, 1.0);
         }
 
-        private static IEnumerable<(double, TValue)> SomeDispatch<TValue>(PortionV2<TValue>.Some some)
+        private static IEnumerable<(double, TValue)> SomeDispatch<TValue>(PortionV2<TValue>.Some some, double remainingWeight)
         {
             var weight = ((double)some.Likelihood) / uint.MaxValue;
             var value = some.Value;
-            return some.Remainder.Visit(SomeDispatch, AllDispatch).Prepend((weight, value));
+            return some.Remainder.Visit(SomeDispatch, AllDispatch, remainingWeight * (1.0 - weight)).Prepend((weight * remainingWeight, value));
         }
 
-        private static IEnumerable<(double, TValue)> AllDispatch<TValue>(PortionV2<TValue>.All all)
+        private static IEnumerable<(double, TValue)> AllDispatch<TValue>(PortionV2<TValue>.All all, double remainingWeight)
         {
             var weight = 1.0;
             var value = all.Value;
             
-            return new[] { (weight, value) };
+            return new[] { (weight * remainingWeight, value) };
         }
     }
 
