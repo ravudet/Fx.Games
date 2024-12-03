@@ -35,7 +35,7 @@
 
             var weights = PortionV2Playground.ConvertToWeights(portion);
 
-            //// TODO implement a decision tree
+            //// TODO implement a decision tree; the current implementation is not working for tictactoe
             //// TODO you have a model for idistribution in the /distribution branch; but, do you really want that? you won't be able to have a decision tree; you would still be able to have a monte carlo strategy; do you want to parameterize the tdistribution?
             //// TODO idistribution.sample(...) should take in a subsequent idistribution for composability
             //// TODO update weighted distribution to use "portions"

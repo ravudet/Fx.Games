@@ -1,0 +1,228 @@
+﻿namespace Fx.Games.Strategy
+{
+    using Fx.Games.Game;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    public sealed class DecisionTreeStrategy<TGame, TBoard, TMove, TPlayer> : IStrategy<TGame, TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+    {
+        private readonly TPlayer desiredWinner;
+
+        private readonly IEqualityComparer<TPlayer> playerComparer;
+
+        private readonly double drawWeight;
+
+        public DecisionTreeStrategy(TPlayer desiredWinner, IEqualityComparer<TPlayer> playerComparer, double drawWeight)
+        {
+            this.desiredWinner = desiredWinner;
+            this.playerComparer = playerComparer;
+            this.drawWeight = drawWeight;
+        }
+
+        public TMove SelectMove(TGame game)
+        {
+            var moves = game.Moves.ToList();
+            var move = moves.MaxBy(move => PlayMove(game, move), new OutcomeComparer(this.drawWeight));
+            return move;
+        }
+
+        private Outcome PlayMove(TGame game, TMove moveToPlay)
+        {
+            var newGame = game.CommitMove(moveToPlay);
+            if (newGame.IsGameOver)
+            {
+                if (newGame.WinnersAndLosers.Winners.Contains(this.desiredWinner, this.playerComparer))
+                {
+                    return Outcome.Win.Instance;
+                }
+                else if (newGame.WinnersAndLosers.Losers.Contains(this.desiredWinner, this.playerComparer))
+                {
+                    return Outcome.Loss.Instance;
+                }
+                else if (newGame.WinnersAndLosers.Drawers.Contains(this.desiredWinner, this.playerComparer))
+                {
+                    return Outcome.Draw.Instance;
+                }
+                else
+                {
+                    throw new System.Exception("TODO the game engine lost track of the player...");
+                }
+            }
+
+            var moves = newGame.Moves.ToList(); //// TODO something like queryresult could be used here where, when done enumerating, we know the count
+            var allWins = true;
+            var allLosses = true;
+            var probability = 0.0;
+            foreach (var move in moves)
+            {
+                var outcome = PlayMove(newGame, move);
+                if (outcome is Outcome.Win)
+                {
+                    allLosses = false;
+
+                    probability += 1.0;
+                }
+                else if (outcome is Outcome.Loss)
+                {
+                    allWins = false;
+
+                    probability += 0.0;
+                }
+                else if (outcome is Outcome.Draw)
+                {
+                    allWins = false;
+                    allLosses = false;
+
+                    probability += this.drawWeight;
+                }
+                else if (outcome is Outcome.Probability liklihood)
+                {
+                    allWins = false;
+                    allLosses = false;
+
+                    probability += liklihood.Liklihood;
+                }
+                else
+                {
+                    throw new System.Exception("TODO use visitor");
+                }
+            }
+
+            if (allWins)
+            {
+                return Outcome.Win.Instance;
+            }
+
+            if (allLosses)
+            {
+                return Outcome.Loss.Instance;
+            }
+
+            //// TODO check for draws specifically?
+
+            return new Outcome.Probability(probability / moves.Count);
+        }
+
+        private sealed class OutcomeComparer : IComparer<Outcome>
+        {
+            private readonly double drawWeight;
+
+            public OutcomeComparer(double drawWeight)
+            {
+                this.drawWeight = drawWeight;
+            }
+
+            public int Compare(Outcome? x, Outcome? y)
+            {
+                if (x == null)
+                {
+                    return -1;
+                }
+
+                if (y == null)
+                {
+                    return 1;
+                }
+
+                if (object.ReferenceEquals(x, y))
+                {
+                    return 0;
+                }
+
+                if (x is Outcome.Win)
+                {
+                    return 1;
+                }
+
+                if (x is Outcome.Loss)
+                {
+                    return -1;
+                }
+
+                if (y is Outcome.Win)
+                {
+                    return -1;
+                }
+
+                if (y is Outcome.Loss)
+                {
+                    return 1;
+                }
+
+                double xProbability;
+                if (x is Outcome.Draw)
+                {
+                    xProbability = this.drawWeight;
+                }
+                else if (x is Outcome.Probability probability)
+                {
+                    xProbability = probability.Liklihood;
+                }
+                else
+                {
+                    throw new System.Exception("tODO use visitor");
+                }
+
+                double yProbability;
+                if (y is Outcome.Draw)
+                {
+                    yProbability = this.drawWeight;
+                }
+                else if (y is Outcome.Probability probability)
+                {
+                    yProbability = probability.Liklihood;
+                }
+                else
+                {
+                    throw new System.Exception("tODO use visitor");
+                }
+
+                return xProbability.CompareTo(yProbability);
+            }
+        }
+
+        private abstract class Outcome
+        {
+            private Outcome()
+            {
+            }
+
+            public sealed class Win : Outcome
+            {
+                private Win()
+                {
+                }
+
+                public static Win Instance { get; } = new Win();
+            }
+
+            public sealed class Draw : Outcome
+            {
+                private Draw()
+                {
+                }
+
+                public static Draw Instance { get; } = new Draw();
+            }
+
+            public sealed class Loss : Outcome
+            {
+                private Loss()
+                {
+                }
+
+                public static Loss Instance { get; } = new Loss();
+            }
+
+            public sealed class Probability : Outcome
+            {
+                public Probability(double liklihood)
+                {
+                    Liklihood = liklihood;
+                }
+
+                public double Liklihood { get; }
+            }
+        }
+    }
+}

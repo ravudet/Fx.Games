@@ -19,10 +19,12 @@
             (nameof(PegsRandom), PegsRandom),
             (nameof(PegsHuman), PegsHuman),
             (nameof(PegsMonteCarlo), PegsMonteCarlo),
+            (nameof(PegsDecision), PegsDecision),
             (nameof(TicTacToeHumanVersusHuman), TicTacToeHumanVersusHuman),
             (nameof(TicTacToeHumanVersusRandom), TicTacToeHumanVersusRandom),
             (nameof(TicTacToeMonteCarloVersusRandom), TicTacToeMonteCarloVersusRandom),
             (nameof(TicTacToeMonteCarloVersusHuman), TicTacToeMonteCarloVersusHuman),
+            (nameof(TicTacToeDecisionVersusHuman), TicTacToeDecisionVersusHuman),
             (nameof(AmazonsHumanVersusRandom_5x6), AmazonsHumanVersusRandom_5x6),
             (nameof(AmazonsHumanVersusMonteCarlo), AmazonsHumanVersusMonteCarlo),
             (nameof(AmazonsHumanVersusMinimizeMoves), AmazonsHumanVersusMinimizeMoves),
@@ -256,6 +258,25 @@
             var result = driver.Run(game);
         }
 
+        private static void TicTacToeDecisionVersusHuman()
+        {
+            var displayer = new TicTacToeConsoleDisplayer<string>(_ => _);
+            var exes = "computer";
+            var ohs = "ohs";
+
+            var game = new TicTacToe<string>(exes, ohs);
+            var strategy = new DecisionTreeStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string>(exes, StringComparer.OrdinalIgnoreCase, 0.5);
+
+            var driver = Driver.Create(
+                new[]
+                {
+                    KeyValuePair.Create(exes, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string>)strategy),
+                    KeyValuePair.Create(ohs, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string>)game.ConsoleStrategy()),
+                }.ToDb().ToDictionary(),
+                displayer);
+            var result = driver.Run(game);
+        }
+
         private static void TicTacToeMonteCarloVersusHuman()
         {
             var displayer = new TicTacToeConsoleDisplayer<string>(_ => _);
@@ -320,6 +341,23 @@
                     KeyValuePair.Create(exes, game.ConsoleStrategy()),
                     KeyValuePair.Create(ohs, game.ConsoleStrategy()),
                 }).ToDb().ToDictionary(),
+                displayer);
+            var result = driver.Run(game);
+        }
+
+        private static void PegsDecision()
+        {
+            var displayer = PegGameConsoleDisplayer<string>.Instance;
+            var player = "player";
+            var game = new PegGame<string>(player);
+
+            var strategy = new DecisionTreeStrategy<PegGame<string>, PegBoard, PegMove, string>(player, StringComparer.OrdinalIgnoreCase, 0.5);
+
+            var driver = Driver.Create(
+                new[] //// TODO use a fluent builder?
+                {
+                    KeyValuePair.Create(player, strategy),
+                }.ToDb().ToDictionary(),
                 displayer);
             var result = driver.Run(game);
         }
