@@ -53,20 +53,6 @@
         bool IsGameOver { get; }
     }
 
-    public sealed class Portion<TValue, TRemainder>
-    {
-        public Portion(TValue value, uint likelihood, TRemainder remainder)
-        {
-            this.Value = value;
-            this.Likelihood = likelihood;
-            this.Remainder = remainder;
-        }
-
-        public TValue Value { get; }
-        public uint Likelihood { get; }
-        public TRemainder Remainder { get; }
-    }
-
     public abstract class PortionV2<TValue>
     {
         private PortionV2()

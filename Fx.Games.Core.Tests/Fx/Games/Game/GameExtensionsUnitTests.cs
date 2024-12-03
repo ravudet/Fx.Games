@@ -35,10 +35,11 @@
 
             var weights = PortionV2Playground.ConvertToWeights(portion);
 
-            //// TODO ConvertToPortion doesn't work
-            //// TODO you are dealing with "portions" because they should let you use a weighted distribution
+            //// TODO implement a decision tree
             //// TODO you have a model for idistribution in the /distribution branch; but, do you really want that? you won't be able to have a decision tree; you would still be able to have a monte carlo strategy; do you want to parameterize the tdistribution?
             //// TODO idistribution.sample(...) should take in a subsequent idistribution for composability
+            //// TODO update weighted distribution to use "portions"
+            //// TODO update decision tree to use weighted distribution (or a mapping from Tdistribution to portions?)
             var convertedPortion = PortionV2Playground.ConvertToPortion(weights);
 
             var convertedWeights = PortionV2Playground.ConvertToWeights(convertedPortion);
