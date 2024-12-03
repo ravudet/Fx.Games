@@ -40,6 +40,7 @@
             //// TODO idistribution.sample(...) should take in a subsequent idistribution for composability
             //// TODO update weighted distribution to use "portions"
             //// TODO update decision tree to use weighted distribution (or a mapping from Tdistribution to portions?)
+            //// TODO implement battleship
             var convertedPortion = PortionV2Playground.ConvertToPortion(weights);
 
             var convertedWeights = PortionV2Playground.ConvertToWeights(convertedPortion);
