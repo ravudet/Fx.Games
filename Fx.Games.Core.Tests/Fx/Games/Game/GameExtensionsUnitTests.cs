@@ -44,6 +44,21 @@
             var convertedWeights = PortionV2Playground.ConvertToWeights(convertedPortion);
         }
 
+        [TestMethod]
+        public void Portion3()
+        {
+            var weights = new[]
+            {
+                ((double)1 / 6, "asdf"),
+                ((double)1 / 5, "qwer"),
+                ((double)3 / 20, "1234"),
+                ((double)29 / 60, "zxcv"),
+            };
+            var portions = PortionV2Playground.ConvertToPortion(weights);
+
+            var convertedWeights = PortionV2Playground.ConvertToWeights(portions);
+        }
+
         /// <summary>
         /// Gets the random strategy for a game
         /// </summary>

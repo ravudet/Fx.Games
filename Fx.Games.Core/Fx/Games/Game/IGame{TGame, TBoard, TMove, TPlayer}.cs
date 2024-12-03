@@ -170,25 +170,15 @@
         {
             var current = weights.Current;
 
-            var newRemainder = remainingWeight - current.Item1;
-            var normalizedWeight = current.Item1 / (1.0 - remainingWeight);
-            if (newRemainder < 0)
-            {
-                throw new Exception("TODO weights are 100");
-            }
+            //// TODO are there some double inaccuracies to check for?
 
             if (!weights.MoveNext())
             {
-                if (newRemainder != 0)
-                {
-                    //// TODO
-                }
-
                 return PortionV2.All(current.Item2);
             }
             else
             {
-                return PortionV2.Some(current.Item2, (uint)(uint.MaxValue * normalizedWeight), ConvertToPortion(weights, newRemainder));
+                return PortionV2.Some(current.Item2, (uint)((current.Item1 / remainingWeight) * uint.MaxValue), ConvertToPortion(weights, remainingWeight - current.Item1));
             }
         }
     }
