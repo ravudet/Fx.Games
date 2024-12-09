@@ -35,6 +35,7 @@
             (nameof(ConnectFourRandomVersusMontyCarlo), ConnectFourRandomVersusMontyCarlo),
             (nameof(ConnectFourHumanVersusMontyCarlo), ConnectFourHumanVersusMontyCarlo),
             (nameof(ConnectFourHumanVersusHuman), ConnectFourHumanVersusHuman),
+            (nameof(ConnectFourDecisionVersusHuman), ConnectFourDecisionVersusHuman),
         };
 
         static void Main(string[] args)
@@ -71,6 +72,27 @@
                 }
             }
             while (true);
+        }
+
+        private static void ConnectFourDecisionVersusHuman()
+        {
+            var displayer = new ConnectFourDisplayer<string>(_ => _);
+            var player1 = "player1";
+            var player2 = "player2";
+
+            var random1 = new Random();
+
+            var game = new ConnectFour<string>(player1, player2);
+            var strategy = new DecisionTreeStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>(player1, StringComparer.OrdinalIgnoreCase, -1.0);
+
+            var driver = Driver.Create(
+                new[]
+                {
+                    KeyValuePair.Create(player1, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>) strategy),
+                    KeyValuePair.Create(player2, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>) ConsoleStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>.Instance),
+                }.ToDb().ToDictionary(),
+                displayer);
+            var result = driver.Run(game);
         }
 
         private static void ConnectFourHumanVersusHuman()

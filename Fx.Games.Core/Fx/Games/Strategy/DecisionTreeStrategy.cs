@@ -1,6 +1,7 @@
 ﻿namespace Fx.Games.Strategy
 {
     using Fx.Games.Game;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -16,13 +17,15 @@
         {
             this.desiredWinner = desiredWinner;
             this.playerComparer = playerComparer;
-            this.drawWeight = drawWeight;
+            this.drawWeight = drawWeight; //// TODO parameterize all weights? //// TODO use settings for everything except `desiredWinner`
         }
 
         public TMove SelectMove(TGame game)
         {
+            System.Console.WriteLine(DateTime.UtcNow);
             var moves = game.Moves.ToList();
             var move = moves.MaxBy(move => PlayMove(game, move), new OutcomeComparer(this.drawWeight));
+            System.Console.WriteLine(DateTime.UtcNow);
             return move;
         }
 
