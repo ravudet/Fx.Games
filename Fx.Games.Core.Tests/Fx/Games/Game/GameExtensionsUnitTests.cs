@@ -41,6 +41,7 @@
             //// TODO the game interface will need both `exploremove` *and* `commitmove` so that you don't leak hidden information to players
             //// TODO update weighted distribution to use "portions"
             //// TODO update decision tree to use weighted distribution (or a mapping from Tdistribution to portions?)
+            //// TODO tdistribution should be covariant
             //// TODO implement battleship
             var convertedPortion = PortionV2Playground.ConvertToPortion(weights);
 

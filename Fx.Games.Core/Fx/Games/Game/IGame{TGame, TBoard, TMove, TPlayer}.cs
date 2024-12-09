@@ -1,5 +1,6 @@
 ﻿namespace Fx.Games.Game
 {
+    using Fx.Distribution;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -14,7 +15,7 @@
     /// <typeparam name="TMove">The type of the moves that the <typeparamref name="TGame"/> uses</typeparam>
     /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
     /// <threadsafety instance="true"/>
-    public interface IGame<TGame, out TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+    public interface IGame<TGame, out TBoard, TMove, TPlayer, out TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame, TDistribution>
     {
         /// <summary>
         /// The <typeparamref name="TPlayer"/> whose turn it currently is
@@ -30,7 +31,7 @@
         /// <exception cref="IllegalMoveExeption">Thrown if <paramref name="move"/> is not a legal move for the current board state of the game</exception>
         TGame CommitMove(TMove move);
 
-        ////IEnumerable<(double, TGame)> ExploreMove(TMove move);
+        TDistribution ExploreMove(TMove move);
 
         /// <summary>
         /// The legal moves in the current board state
