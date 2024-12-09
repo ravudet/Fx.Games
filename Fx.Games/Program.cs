@@ -265,7 +265,7 @@
             var ohs = "ohs";
 
             var game = new TicTacToe<string>(exes, ohs);
-            var strategy = new DecisionTreeStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string>(exes, StringComparer.OrdinalIgnoreCase, 0.5);
+            var strategy = new DecisionTreeStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string>(exes, StringComparer.OrdinalIgnoreCase, -1.0);
 
             var driver = Driver.Create(
                 new[]

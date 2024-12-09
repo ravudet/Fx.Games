@@ -52,6 +52,7 @@
             var moves = newGame.Moves.ToList(); //// TODO something like queryresult could be used here where, when done enumerating, we know the count
             var allWins = true;
             var allLosses = true;
+            var allDraws = true;
             var probability = 0.0;
             foreach (var move in moves)
             {
@@ -59,14 +60,16 @@
                 if (outcome is Outcome.Win)
                 {
                     allLosses = false;
+                    allDraws = false;
 
                     probability += 1.0;
                 }
                 else if (outcome is Outcome.Loss)
                 {
                     allWins = false;
+                    allDraws = false;
 
-                    probability += 0.0;
+                    probability += -1.0;
                 }
                 else if (outcome is Outcome.Draw)
                 {
@@ -79,6 +82,7 @@
                 {
                     allWins = false;
                     allLosses = false;
+                    allDraws = false;
 
                     probability += liklihood.Liklihood;
                 }
@@ -98,7 +102,10 @@
                 return Outcome.Loss.Instance;
             }
 
-            //// TODO check for draws specifically?
+            if (allDraws)
+            {
+                return Outcome.Draw.Instance;
+            }
 
             return new Outcome.Probability(probability / moves.Count);
         }
