@@ -2,6 +2,7 @@
 {
     using Fx.Distribution;
     using Fx.Games.Game;
+    using Fx.Games.Game.Amazons;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -10,13 +11,20 @@
     {
         private readonly TPlayer desiredWinner;
 
+        private readonly Func<TDistribution, PortionV2<TGame>> weightedDistributionAdapter;
+
         private readonly IEqualityComparer<TPlayer> playerComparer;
 
         private readonly double drawWeight;
 
-        public DecisionTreeStrategy(TPlayer desiredWinner, IEqualityComparer<TPlayer> playerComparer, double drawWeight)
+        public DecisionTreeStrategy(
+            TPlayer desiredWinner, 
+            Func<TDistribution, PortionV2<TGame>> weightedDistributionAdapter,
+            IEqualityComparer<TPlayer> playerComparer, 
+            double drawWeight)
         {
             this.desiredWinner = desiredWinner;
+            this.weightedDistributionAdapter = weightedDistributionAdapter;
             this.playerComparer = playerComparer;
             this.drawWeight = drawWeight; //// TODO parameterize all weights? //// TODO use settings for everything except `desiredWinner`
         }
@@ -25,25 +33,89 @@
         {
             System.Console.WriteLine(DateTime.UtcNow);
             var moves = game.Moves.ToList();
-            var move = moves.MaxBy(move => PlayMove(game, move), new OutcomeComparer(this.drawWeight));
+            var move = moves.MaxBy(move => PlayMoves(game, move), new OutcomeComparer(this.drawWeight));
             System.Console.WriteLine(DateTime.UtcNow);
             return move;
         }
 
-        private Outcome PlayMove(TGame game, TMove moveToPlay)
+        private Outcome PlayMoves(TGame game, TMove move)
         {
-            var newGame = game.CommitMove(moveToPlay);
-            if (newGame.IsGameOver)
+            var newGames = game.ExploreMove(move);
+            var newGameProbabilities = PortionV2Playground.ConvertToWeights(this.weightedDistributionAdapter(newGames)).ToList();
+
+            var allWins = true;
+            var allLosses = true;
+            var allDraws = true;
+            var probability = 0.0;
+            foreach (var newGameProbability in newGameProbabilities)
             {
-                if (newGame.WinnersAndLosers.Winners.Contains(this.desiredWinner, this.playerComparer))
+                var outcome = PlayMove(newGameProbability.Item2);
+                if (outcome is Outcome.Win)
+                {
+                    allLosses = false;
+                    allDraws = false;
+
+                    probability += 1.0;
+                }
+                else if (outcome is Outcome.Loss)
+                {
+                    allWins = false;
+                    allDraws = false;
+
+                    probability += -1.0;
+                }
+                else if (outcome is Outcome.Draw)
+                {
+                    allWins = false;
+                    allLosses = false;
+
+                    probability += this.drawWeight;
+                }
+                else if (outcome is Outcome.Probability liklihood)
+                {
+                    allWins = false;
+                    allLosses = false;
+                    allDraws = false;
+
+                    probability += liklihood.Liklihood;
+                }
+                else
+                {
+                    throw new System.Exception("TODO use visitor");
+                }
+            }
+
+            if (allWins)
+            {
+                return Outcome.Win.Instance;
+            }
+
+            if (allLosses)
+            {
+                return Outcome.Loss.Instance;
+            }
+
+            if (allDraws)
+            {
+                return Outcome.Draw.Instance;
+            }
+
+            return new Outcome.Probability(probability / newGameProbabilities.Count);
+        }
+
+        private Outcome PlayMove(TGame game)
+        {
+            if (game.IsGameOver)
+            {
+                if (game.WinnersAndLosers.Winners.Contains(this.desiredWinner, this.playerComparer))
                 {
                     return Outcome.Win.Instance;
                 }
-                else if (newGame.WinnersAndLosers.Losers.Contains(this.desiredWinner, this.playerComparer))
+                else if (game.WinnersAndLosers.Losers.Contains(this.desiredWinner, this.playerComparer))
                 {
                     return Outcome.Loss.Instance;
                 }
-                else if (newGame.WinnersAndLosers.Drawers.Contains(this.desiredWinner, this.playerComparer))
+                else if (game.WinnersAndLosers.Drawers.Contains(this.desiredWinner, this.playerComparer))
                 {
                     return Outcome.Draw.Instance;
                 }
@@ -53,14 +125,14 @@
                 }
             }
 
-            var moves = newGame.Moves.ToList(); //// TODO something like queryresult could be used here where, when done enumerating, we know the count
+            var moves = game.Moves.ToList(); //// TODO something like queryresult could be used here where, when done enumerating, we know the count
             var allWins = true;
             var allLosses = true;
             var allDraws = true;
             var probability = 0.0;
             foreach (var move in moves)
             {
-                var outcome = PlayMove(newGame, move);
+                var outcome = PlayMoves(game, move);
                 if (outcome is Outcome.Win)
                 {
                     allLosses = false;
