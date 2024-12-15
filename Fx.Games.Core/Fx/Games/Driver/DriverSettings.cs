@@ -1,13 +1,13 @@
 ﻿namespace Fx.Games.Driver
 {
     using System;
-
+    using Fx.Distribution;
     using Fx.Games.Game;
 
     /// <summary>
     /// The settings used to instantiate a <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/>
     /// </summary>
-    public sealed class DriverSettings<TGame, TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+    public sealed class DriverSettings<TGame, TBoard, TMove, TPlayer, TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame>
     {
         /// <summary>
         /// Prevents the initialization of the <see cref="DriverSettings{TGame, TBoard, TMove, TPlayer}"/> class
@@ -21,8 +21,8 @@
         /// <summary>
         /// The default instance of <see cref="DriverSettings{TGame, TBoard, TMove, TPlayer}"/>
         /// </summary>
-        public static DriverSettings<TGame, TBoard, TMove, TPlayer> Default { get; } = 
-            new DriverSettings<TGame, TBoard, TMove, TPlayer>(
+        public static DriverSettings<TGame, TBoard, TMove, TPlayer, TDistribution> Default { get; } = 
+            new DriverSettings<TGame, TBoard, TMove, TPlayer, TDistribution>(
                 player => $"{player}");
 
         /// <summary>
@@ -45,14 +45,14 @@
             /// </summary>
             /// <returns>The new instance of <see cref="DriverSettings{TGame, TBoard, TMove, TPlayer}"/></returns>
             /// <exception cref="ArgumentNullException">Thrown if <see cref="Builder.PlayerTranscriber"/> is <see langword="null"/></exception>
-            public DriverSettings<TGame, TBoard, TMove, TPlayer> Build()
+            public DriverSettings<TGame, TBoard, TMove, TPlayer, TDistribution> Build()
             {
                 if (this.PlayerTranscriber == null)
                 {
                     throw new ArgumentNullException(nameof(this.PlayerTranscriber));
                 }
 
-                return new DriverSettings<TGame, TBoard, TMove, TPlayer>(this.PlayerTranscriber);
+                return new DriverSettings<TGame, TBoard, TMove, TPlayer, TDistribution>(this.PlayerTranscriber);
             }
         }
     }

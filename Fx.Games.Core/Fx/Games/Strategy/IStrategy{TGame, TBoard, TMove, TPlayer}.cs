@@ -12,7 +12,7 @@
     /// <typeparam name="TMove">The type of the moves that the <typeparamref name="TGame"/> uses</typeparam>
     /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
     /// <threadsafety instance="true"/>
-    public interface IStrategy<in TGame, out TBoard, out TMove, TPlayer, TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame, TDistribution>
+    public interface IStrategy<in TGame, out TBoard, out TMove, TPlayer, TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame>
     {
         /// <summary>
         /// Determine which move of <paramref name="game"/> should be committed next

@@ -1,6 +1,7 @@
 ﻿namespace Fx.Games.Displayer
 {
     using System;
+    using Fx.Distribution;
     using Fx.Games.Game;
 
     /// <summary>
@@ -12,7 +13,7 @@
     /// <typeparam name="TMove">The type of the moves that the <typeparamref name="TGame"/> uses</typeparam>
     /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
     /// <threadsafety instance="true"/>
-    public interface IDisplayer<in TGame, out TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+    public interface IDisplayer<in TGame, out TBoard, TMove, TPlayer, TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame>
     {
         /// <summary>
         /// Outputs the board for current state of <paramref name="game"/>

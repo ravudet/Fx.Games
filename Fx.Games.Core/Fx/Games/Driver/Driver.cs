@@ -2,6 +2,7 @@
 {
     using System;
     using Db.System.Collections.Generic;
+    using Fx.Distribution;
     using Fx.Games.Displayer;
     using Fx.Games.Game;
     using Fx.Games.Game.Amazons;
@@ -25,12 +26,12 @@
         /// <param name="displayer">The <see cref="IDisplayer{TGame, TBoard, TMove, TPlayer}"/> that represents the input/output interactions between a user and the game that this <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> coordinates</param>
         /// <returns>The new instance of <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/></returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="strategies"/> or <paramref name="displayer"/> is <see langword="null"/></exception>
-        public static Driver<TGame, TBoard, TMove, TPlayer> Create<TGame, TBoard, TMove, TPlayer>(
-            IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies,
-            IDisplayer<TGame, TBoard, TMove, TPlayer> displayer)
-            where TGame : IGame<TGame, TBoard, TMove, TPlayer> where TPlayer : notnull
+        public static Driver<TGame, TBoard, TMove, TPlayer, TDistribution> Create<TGame, TBoard, TMove, TPlayer, TDistribution>(
+            IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer, TDistribution>> strategies,
+            IDisplayer<TGame, TBoard, TMove, TPlayer, TDistribution> displayer)
+            where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TPlayer : notnull where TDistribution : IDistribution<TGame>
         {
-            return Driver.Create(strategies, displayer, DriverSettings<TGame, TBoard, TMove, TPlayer>.Default);
+            return Driver.Create(strategies, displayer, DriverSettings<TGame, TBoard, TMove, TPlayer, TDistribution>.Default);
         }
 
         /// <summary>
@@ -44,11 +45,11 @@
         /// <param name="displayer">The <see cref="IDisplayer{TGame, TBoard, TMove, TPlayer}"/> that represents the input/output interactions between a user and the game that this <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> coordinates</param>
         /// <returns>The new instance of <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/></returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="strategies"/> or <paramref name="displayer"/> <paramref name="settings"/> is <see langword="null"/></exception>
-        public static Driver<TGame, TBoard, TMove, TPlayer> Create<TGame, TBoard, TMove, TPlayer>(
-            IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies,
-            IDisplayer<TGame, TBoard, TMove, TPlayer> displayer,
-            DriverSettings<TGame, TBoard, TMove, TPlayer> settings)
-            where TGame : IGame<TGame, TBoard, TMove, TPlayer> where TPlayer : notnull
+        public static Driver<TGame, TBoard, TMove, TPlayer, TDistribution> Create<TGame, TBoard, TMove, TPlayer, TDistribution>(
+            IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer, TDistribution>> strategies,
+            IDisplayer<TGame, TBoard, TMove, TPlayer, TDistribution> displayer,
+            DriverSettings<TGame, TBoard, TMove, TPlayer, TDistribution> settings)
+            where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TPlayer : notnull where TDistribution : IDistribution<TGame>
         {
             if (strategies == null)
             {
@@ -65,7 +66,7 @@
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            return new Driver<TGame, TBoard, TMove, TPlayer>(strategies, displayer);
+            return new Driver<TGame, TBoard, TMove, TPlayer, TDistribution>(strategies, displayer);
         }
     }
 

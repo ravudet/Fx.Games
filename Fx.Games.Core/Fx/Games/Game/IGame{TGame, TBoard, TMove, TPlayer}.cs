@@ -15,7 +15,7 @@
     /// <typeparam name="TMove">The type of the moves that the <typeparamref name="TGame"/> uses</typeparam>
     /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
     /// <threadsafety instance="true"/>
-    public interface IGame<TGame, out TBoard, TMove, TPlayer, out TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame, TDistribution>
+    public interface IGame<TGame, out TBoard, TMove, TPlayer, out TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame> //// TODO for some reason you were going down the path of using idistribution<tvalue, tdistribution>; however, you can't use univariate if that's the case (or maybe you can, but i can't seem to figure out how)
     {
         /// <summary>
         /// The <typeparamref name="TPlayer"/> whose turn it currently is

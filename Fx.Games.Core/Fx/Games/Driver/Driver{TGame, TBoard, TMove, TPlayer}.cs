@@ -2,6 +2,7 @@
 {
     using System;
     using Db.System.Collections.Generic;
+    using Fx.Distribution;
     using Fx.Games.Displayer;
     using Fx.Games.Game;
     using Fx.Games.Strategy;
@@ -14,17 +15,17 @@
     /// <typeparam name="TMove">The type of the moves that the <typeparamref name="TGame"/> uses</typeparam>
     /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
     /// <threadsafety static="true" instance="true"/>
-    public sealed class Driver<TGame, TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+    public sealed class Driver<TGame, TBoard, TMove, TPlayer, TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame>
     {
         /// <summary>
         /// The strategy that is assigned to each player of the game
         /// </summary>
-        private readonly IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies;
+        private readonly IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer, TDistribution>> strategies;
 
         /// <summary>
         /// The <see cref="IDisplayer{TGame, TBoard, TMove, TPlayer}"/> that represents the input/output interactions between a user and the game that this <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> coordinates
         /// </summary>
-        private readonly IDisplayer<TGame, TBoard, TMove, TPlayer> displayer;
+        private readonly IDisplayer<TGame, TBoard, TMove, TPlayer, TDistribution> displayer;
 
         /// <summary>
         /// Converts a <see cref="TPlayer"/> to a string for logging and error handling
@@ -37,8 +38,8 @@
         /// <param name="strategies">The strategy that is assigned to each player of the game</param>
         /// <param name="displayer">The <see cref="IDisplayer{TGame, TBoard, TMove, TPlayer}"/> that represents the input/output interactions between a user and the game that this <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> coordinates</param>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="strategies"/> or <paramref name="displayer"/> is <see langword="null"/></exception>
-        public Driver(IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies, IDisplayer<TGame, TBoard, TMove, TPlayer> displayer)
-            : this(strategies, displayer, DriverSettings<TGame, TBoard, TMove, TPlayer>.Default)
+        public Driver(IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer, TDistribution>> strategies, IDisplayer<TGame, TBoard, TMove, TPlayer, TDistribution> displayer)
+            : this(strategies, displayer, DriverSettings<TGame, TBoard, TMove, TPlayer, TDistribution>.Default)
         {
         }
 
@@ -49,7 +50,7 @@
         /// <param name="displayer">The <see cref="IDisplayer{TGame, TBoard, TMove, TPlayer}"/> that represents the input/output interactions between a user and the game that this <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> coordinates</param>
         /// <param name="settings">The settings to use to configure the driver</param>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="strategies"/> or <paramref name="displayer"/> or <paramref name="settings"/> is <see langword="null"/></exception>
-        public Driver(IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer>> strategies, IDisplayer<TGame, TBoard, TMove, TPlayer> displayer, DriverSettings<TGame, TBoard, TMove, TPlayer> settings)
+        public Driver(IReadOnlyDictionary<TPlayer, IStrategy<TGame, TBoard, TMove, TPlayer, TDistribution>> strategies, IDisplayer<TGame, TBoard, TMove, TPlayer, TDistribution> displayer, DriverSettings<TGame, TBoard, TMove, TPlayer, TDistribution> settings)
         {
             if (strategies == null)
             {

@@ -1,5 +1,6 @@
 ﻿namespace Fx.Games.Game
 {
+    using Fx.Distribution;
     using Fx.Games.Displayer;
     using Fx.Games.Driver;
     using Fx.Games.Strategy;
@@ -18,9 +19,9 @@
         /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
         /// <param name="game">The game to be displayed</param>
         /// <returns>The <see cref="Fx.Games.Displayer.NullDisplayer{TGame, TBoard, TMove, TPlayer}"/> for <paramref name="game"/></returns>
-        public static NullDisplayer<TGame, TBoard, TMove, TPlayer> NullDisplayer<TGame, TBoard, TMove, TPlayer>(this IGame<TGame, TBoard, TMove, TPlayer> game) where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+        public static NullDisplayer<TGame, TBoard, TMove, TPlayer, TDistribution> NullDisplayer<TGame, TBoard, TMove, TPlayer, TDistribution>(this IGame<TGame, TBoard, TMove, TPlayer, TDistribution> game) where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame>
         {
-            return Fx.Games.Displayer.NullDisplayer<TGame, TBoard, TMove, TPlayer>.Instance;
+            return Fx.Games.Displayer.NullDisplayer<TGame, TBoard, TMove, TPlayer, TDistribution>.Instance;
         }
 
         /// <summary>
@@ -32,9 +33,9 @@
         /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
         /// <param name="game">The game that the <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> will play</param>
         /// <returns>A builder instance for the <see cref="DriverSettings{TGame, TBoard, TMove, TPlayer}(IGame{TGame, TBoard, TMove, TPlayer})"/> that would be used to configure a <see cref="Driver{TGame, TBoard, TMove, TPlayer}"/> that plays <paramref name="game"/></returns>
-        public static DriverSettings<TGame, TBoard, TMove, TPlayer>.Builder DriverSettings<TGame, TBoard, TMove, TPlayer>(this IGame<TGame, TBoard, TMove, TPlayer> game) where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+        public static DriverSettings<TGame, TBoard, TMove, TPlayer, TDistribution>.Builder DriverSettings<TGame, TBoard, TMove, TPlayer, TDistribution>(this IGame<TGame, TBoard, TMove, TPlayer, TDistribution> game) where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame>
         {
-            return new DriverSettings<TGame, TBoard, TMove, TPlayer>.Builder();
+            return new DriverSettings<TGame, TBoard, TMove, TPlayer, TDistribution>.Builder();
         }
 
         /// <summary>
@@ -46,9 +47,9 @@
         /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
         /// <param name="self">The game that the <see cref="Fx.Games.Strategy.RandomStrategy{TGame, TBoard, TMove, TPlayer}"/> will play</param>
         /// <returns>A <see cref="Fx.Games.Strategy.RandomStrategy{TGame, TBoard, TMove, TPlayer}"/> that can be used to play <paramref name="self"/></returns>
-        public static RandomStrategy<TGame, TBoard, TMove, TPlayer> RandomStrategy<TGame, TBoard, TMove, TPlayer>(this IGame<TGame, TBoard, TMove, TPlayer> self) where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+        public static RandomStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> RandomStrategy<TGame, TBoard, TMove, TPlayer, TDistribution>(this IGame<TGame, TBoard, TMove, TPlayer, TDistribution> self) where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame>
         {
-            return new RandomStrategy<TGame, TBoard, TMove, TPlayer>();
+            return new RandomStrategy<TGame, TBoard, TMove, TPlayer, TDistribution>();
         }
 
         /// <summary>

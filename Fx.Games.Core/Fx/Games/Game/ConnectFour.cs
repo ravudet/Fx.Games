@@ -1,12 +1,13 @@
 ﻿namespace Fx.Games.Game
 {
+    using Fx.Distribution;
     using Fx.Games.Displayer;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.Json.Serialization;
 
-    public sealed class ConnectFourDisplayer<TPlayer> : IDisplayer<ConnectFour<TPlayer>, ConnectFourBoard, ConnectFourMove, TPlayer>
+    public sealed class ConnectFourDisplayer<TPlayer> : IDisplayer<ConnectFour<TPlayer>, ConnectFourBoard, ConnectFourMove, TPlayer, Univariate<ConnectFour<TPlayer>>>
     {
         private readonly Func<TPlayer, string> playerToString;
 
@@ -165,7 +166,7 @@
         public int Column { get; }
     }
 
-    public sealed class ConnectFour<TPlayer> : IGame<ConnectFour<TPlayer>, ConnectFourBoard, ConnectFourMove, TPlayer>
+    public sealed class ConnectFour<TPlayer> : IGame<ConnectFour<TPlayer>, ConnectFourBoard, ConnectFourMove, TPlayer, Univariate<ConnectFour<TPlayer>>>
     {
         private readonly TPlayer redPlayer;
 
@@ -350,6 +351,11 @@
                         .ToArray()),
                 this.redPlayer,
                 this.yellowPlayer);
+        }
+
+        public Univariate<ConnectFour<TPlayer>> ExploreMove(ConnectFourMove move)
+        {
+            return new Univariate<ConnectFour<TPlayer>>(this.CommitMove(move));
         }
     }
 }

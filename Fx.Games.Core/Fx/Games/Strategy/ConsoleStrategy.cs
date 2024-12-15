@@ -4,6 +4,7 @@
     using System;
 
     using Fx.Games.Game;
+    using Fx.Distribution;
 
     /// <summary>
     /// A <see cref="IStrategy{TGame, TBoard, TMove, TPlayer}"/> that requests user input from the console to select a move for each game state
@@ -12,7 +13,7 @@
     /// <typeparam name="TBoard">The type of the board that the <typeparamref name="TGame"/> uses</typeparam>
     /// <typeparam name="TMove">The type of the moves that the <typeparamref name="TGame"/> uses</typeparam>
     /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
-    public sealed class ConsoleStrategy<TGame, TBoard, TMove, TPlayer> : IStrategy<TGame, TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+    public sealed class ConsoleStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> : IStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame>
     {
         /// <summary>
         /// Prevents the initialization of the <see cref="ConsoleStrategy{TGame, TBoard, TMove, TPlayer}"/> class
@@ -24,7 +25,7 @@
         /// <summary>
         /// Gets the singleton instance of <see cref="ConsoleStrategy{TGame, TBoard, TMove, TPlayer}"/>
         /// </summary>
-        public static ConsoleStrategy<TGame, TBoard, TMove, TPlayer> Instance { get; } = new ConsoleStrategy<TGame, TBoard, TMove, TPlayer>();
+        public static ConsoleStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> Instance { get; } = new ConsoleStrategy<TGame, TBoard, TMove, TPlayer, TDistribution>();
 
         /// <inheritdoc/>
         public TMove SelectMove(TGame game)

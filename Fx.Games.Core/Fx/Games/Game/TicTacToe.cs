@@ -1,5 +1,6 @@
 ﻿namespace Fx.Games.Game
 {
+    using Fx.Distribution;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -8,7 +9,7 @@
     /// An implementation of a game of tic-tac-toe
     /// </summary>
     /// <typeparam name="TPlayer">The type of the players that are playing the game</typeparam>
-    public sealed class TicTacToe<TPlayer> : IGame<TicTacToe<TPlayer>, TicTacToeBoard, TicTacToeMove, TPlayer>
+    public sealed class TicTacToe<TPlayer> : IGame<TicTacToe<TPlayer>, TicTacToeBoard, TicTacToeMove, TPlayer, Univariate<TicTacToe<TPlayer>>>
     {
         /// <summary>
         /// The players who are playing the game
@@ -195,6 +196,11 @@
             newBoard[move.Row, move.Column] = (TicTacToePiece)(this.currentPlayerIndex + 1);
 
             return new TicTacToe<TPlayer>(this.players, (this.currentPlayerIndex + 1) % 2, new TicTacToeBoard(newBoard));
+        }
+
+        public Univariate<TicTacToe<TPlayer>> ExploreMove(TicTacToeMove move)
+        {
+            return new Univariate<TicTacToe<TPlayer>>(this.CommitMove(move));
         }
 
         /// <summary>
