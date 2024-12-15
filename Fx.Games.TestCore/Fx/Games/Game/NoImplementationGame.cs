@@ -1,11 +1,12 @@
 ﻿namespace Fx.Games.Game
 {
+    using Fx.Distribution;
     using System.Collections.Generic;
 
     /// <summary>
     /// A mock implementation of <see cref="IGame{TGame, TBoard, TMove, TPlayer}"/> that is not implemented
     /// </summary>
-    public sealed class NoImplementationGame : IGame<NoImplementationGame, string[], string, string>
+    public sealed class NoImplementationGame : IGame<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>
     {
         /// <summary>
         /// The singleton instance of <see cref="NoImplementationGame"/>
@@ -29,6 +30,11 @@
 
         /// <inheritdoc/>
         public NoImplementationGame CommitMove(string move)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Univariate<NoImplementationGame> ExploreMove(string move)
         {
             throw new System.NotImplementedException();
         }
