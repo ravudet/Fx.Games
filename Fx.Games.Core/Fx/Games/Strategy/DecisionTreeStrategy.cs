@@ -29,6 +29,54 @@
             this.drawWeight = drawWeight; //// TODO parameterize all weights? //// TODO use settings for everything except `desiredWinner`
         }
 
+        private interface ITree<TValue>
+        {
+            TValue Value { get; }
+
+            IEnumerable<ITree<TValue>> Children { get; }
+        }
+
+        private sealed class Tree<TValue> : ITree<TValue>
+        {
+            public Tree(TValue value)
+                : this(value, Enumerable.Empty<Tree<TValue>>())
+            {
+            }
+
+            public Tree(TValue value, IEnumerable<ITree<TValue>> children)
+            {
+                this.Value = value;
+                this.Children = children;
+            }
+
+            public TValue Value { get; }
+
+            public IEnumerable<ITree<TValue>> Children { get; }
+        }
+
+        private static Tree<(TMove, Outcome)> CreateGameTree(TGame game, TPlayer player)
+        {
+            var moves = game.Moves.ToList();
+            if (!moves.Any())
+            {
+                
+            }
+
+            var children = new List<Tree<(TMove, Outcome)>>();
+
+            
+            foreach (var move in moves)
+            {
+                var exploredGame = game.ExploreMove(move);
+
+            }
+        }
+
+        private static TMove WinningMove(Tree<(TMove, Outcome)> gameTree, double drawWeight)
+        {
+            return gameTree.Children.MaxBy(child => child.Value.Item2, new OutcomeComparer(drawWeight))!.Value.Item1;
+        }
+
         public TMove SelectMove(TGame game)
         {
             System.Console.WriteLine(DateTime.UtcNow);
