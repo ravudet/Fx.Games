@@ -1,15 +1,16 @@
 ﻿namespace Fx.Games.Strategy
 {
+    using Fx.Distribution;
     using Fx.Games.Game;
     using System.Linq;
 
-    public sealed class MinimizeMovesStrategy<TGame, TBoard, TMove, TPlayer> : IStrategy<TGame, TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+    public sealed class MinimizeMovesStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> : IStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame>
     {
         private MinimizeMovesStrategy()
         {
         }
 
-        public static MinimizeMovesStrategy<TGame, TBoard, TMove, TPlayer> Instance { get; } = new MinimizeMovesStrategy<TGame, TBoard, TMove, TPlayer>();
+        public static MinimizeMovesStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> Instance { get; } = new MinimizeMovesStrategy<TGame, TBoard, TMove, TPlayer, TDistribution>();
 
         public TMove SelectMove(TGame game)
         {

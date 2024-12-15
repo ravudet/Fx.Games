@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Xml;
+    using Fx.Distribution;
     using Fx.Games.Game;
 
     /// <summary>
@@ -13,7 +14,7 @@
     /// <typeparam name="TBoard">The type of the board that the <typeparamref name="TGame"/> uses</typeparam>
     /// <typeparam name="TMove">The type of the moves that the <typeparamref name="TGame"/> uses</typeparam>
     /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
-    public sealed class MonteCarloStrategy<TGame, TBoard, TMove, TPlayer> : IStrategy<TGame, TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+    public sealed class MonteCarloStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> : IStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame>
     {
         /// <summary>
         /// The player of the <see cref="TGame"/> that is using the Monte Carlo method
@@ -42,7 +43,7 @@
         /// <param name="maxDecisionCount">The maximum number of "decisions" that the strategy should use when running the simulation</param>
         /// <param name="settings">The settings to use to configure the strategy</param>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="settings"/> is <see langword="null"/></exception>
-        public MonteCarloStrategy(TPlayer player, int maxDecisionCount, MonteCarloStrategySettings<TGame, TBoard, TMove, TPlayer> settings)
+        public MonteCarloStrategy(TPlayer player, int maxDecisionCount, MonteCarloStrategySettings<TGame, TBoard, TMove, TPlayer, TDistribution> settings)
         {
             // we are not checking 'player' because it's possible that the caller is legitimately using 'null' for a TPlayer of the game
             // we are not checking maxDecisionCount because nothing technically goes wrong if a negative or 0 value is provided, the simulation will just not actually run; this might be wrong from a usability standpoint

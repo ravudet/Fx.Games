@@ -61,9 +61,9 @@
         /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
         /// <param name="self">The game that the <see cref="Fx.Games.Strategy.ConsoleStrategy{TGame, TBoard, TMove, TPlayer}"/> will play</param>
         /// <returns>A <see cref="Fx.Games.Strategy.ConsoleStrategy{TGame, TBoard, TMove, TPlayer}"/> that can be used to play <paramref name="self"/></returns>
-        public static ConsoleStrategy<TGame, TBoard, TMove, TPlayer> ConsoleStrategy<TGame, TBoard, TMove, TPlayer>(this IGame<TGame, TBoard, TMove, TPlayer> self) where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+        public static ConsoleStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> ConsoleStrategy<TGame, TBoard, TMove, TPlayer, TDistribution>(this IGame<TGame, TBoard, TMove, TPlayer, TDistribution> self) where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame>
         {
-            return Fx.Games.Strategy.ConsoleStrategy<TGame, TBoard, TMove, TPlayer>.Instance;
+            return Fx.Games.Strategy.ConsoleStrategy<TGame, TBoard, TMove, TPlayer, TDistribution>.Instance;
         }
 
         /// <summary>
@@ -75,9 +75,9 @@
         /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
         /// <param name="self">The game that the <see cref="Fx.Games.Strategy.MonteCarloStrategy{TGame, TBoard, TMove, TPlayer}"/> will play</param>
         /// <returns>A <see cref="Fx.Games.Strategy.MonteCarloStrategy{TGame, TBoard, TMove, TPlayer}"/> that can be used to play <paramref name="self"/></returns>
-        public static MonteCarloStrategy<TGame, TBoard, TMove, TPlayer> MonteCarloStrategy<TGame, TBoard, TMove, TPlayer>(this IGame<TGame, TBoard, TMove, TPlayer> self, TPlayer player, int maxDecisionCount, MonteCarloStrategySettings<TGame, TBoard, TMove, TPlayer> settings) where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+        public static MonteCarloStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> MonteCarloStrategy<TGame, TBoard, TMove, TPlayer, TDistribution>(this IGame<TGame, TBoard, TMove, TPlayer, TDistribution> self, TPlayer player, int maxDecisionCount, MonteCarloStrategySettings<TGame, TBoard, TMove, TPlayer, TDistribution> settings) where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame>
         {
-            return new MonteCarloStrategy<TGame, TBoard, TMove, TPlayer>(player, maxDecisionCount, settings);
+            return new MonteCarloStrategy<TGame, TBoard, TMove, TPlayer, TDistribution>(player, maxDecisionCount, settings);
         }
 
         /// <summary>
@@ -89,9 +89,9 @@
         /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
         /// <param name="self">The game that the <see cref="Fx.Games.Strategy.MonteCarloStrategy{TGame, TBoard, TMove, TPlayer}"/> will play</param>
         /// <returns>A <see cref="Fx.Games.Strategy.MonteCarloStrategySettings{TGame, TBoard, TMove, TPlayer}"/> that can be used create a <see cref="Fx.Games.Strategy.MonteCarloStrategy{TGame, TBoard, TMove, TPlayer}"/> to play <paramref name="self"/></returns>
-        public static MonteCarloStrategySettings<TGame, TBoard, TMove, TPlayer> MonteCarloStrategySettings<TGame, TBoard, TMove, TPlayer>(this IGame<TGame, TBoard, TMove, TPlayer> self) where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+        public static MonteCarloStrategySettings<TGame, TBoard, TMove, TPlayer, TDistribution> MonteCarloStrategySettings<TGame, TBoard, TMove, TPlayer, TDistribution>(this IGame<TGame, TBoard, TMove, TPlayer, TDistribution> self) where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame>
         {
-            return Fx.Games.Strategy.MonteCarloStrategySettings<TGame, TBoard, TMove, TPlayer>.Default;
+            return Fx.Games.Strategy.MonteCarloStrategySettings<TGame, TBoard, TMove, TPlayer, TDistribution>.Default;
         }
 
         public static GameOfAmazonsConsoleStrategy<TPlayer> AmazonsConsoleStrategy<TPlayer>(this Amazons.Game<TPlayer> self)
@@ -99,9 +99,9 @@
             return GameOfAmazonsConsoleStrategy<TPlayer>.Instance;
         }
 
-        public static MinimizeMovesStrategy<TGame, TBoard, TMove, TPlayer> MinimizeMovesStrategy<TGame, TBoard, TMove, TPlayer>(this IGame<TGame, TBoard, TMove, TPlayer> self) where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+        public static MinimizeMovesStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> MinimizeMovesStrategy<TGame, TBoard, TMove, TPlayer, TDistribution>(this IGame<TGame, TBoard, TMove, TPlayer, TDistribution> self) where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame>
         {
-            return Fx.Games.Strategy.MinimizeMovesStrategy<TGame, TBoard, TMove, TPlayer>.Instance;
+            return Fx.Games.Strategy.MinimizeMovesStrategy<TGame, TBoard, TMove, TPlayer, TDistribution>.Instance;
         }
     }
 }

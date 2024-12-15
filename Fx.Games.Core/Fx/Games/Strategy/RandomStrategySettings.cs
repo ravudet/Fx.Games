@@ -9,7 +9,7 @@
     /// <typeparam name="TBoard">The type of the board that the <typeparamref name="TGame"/> uses</typeparam>
     /// <typeparam name="TMove">The type of the moves that the <typeparamref name="TGame"/> uses</typeparam>
     /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
-    public sealed class RandomStrategySettings<TGame, TBoard, TMove, TPlayer>
+    public sealed class RandomStrategySettings<TGame, TBoard, TMove, TPlayer, TDistribution>
     {
         /// <summary>
         /// Prevents the initialization of the <see cref="RandomStrategySettings{TGame, TBoard, TMove, TPlayer}"/> class
@@ -23,7 +23,7 @@
         /// <summary>
         /// The default instance of <see cref="RandomStrategySettings{TGame, TBoard, TMove, TPlayer}"/>
         /// </summary>
-        public static RandomStrategySettings<TGame, TBoard, TMove, TPlayer> Default { get; } = new RandomStrategySettings<TGame, TBoard, TMove, TPlayer>(new Random());
+        public static RandomStrategySettings<TGame, TBoard, TMove, TPlayer, TDistribution> Default { get; } = new RandomStrategySettings<TGame, TBoard, TMove, TPlayer, TDistribution>(new Random());
 
         /// <summary>
         /// The distribution to use when selecting a random move
@@ -45,14 +45,14 @@
             /// </summary>
             /// <returns>The new instance of <see cref="RandomStrategySettings{TGame, TBoard, TMove, TPlayer}"/></returns>
             /// <exception cref="ArgumentNullException">Thrown if <see cref="Builder.Random"/> is <see langword="null"/></exception>
-            public RandomStrategySettings<TGame, TBoard, TMove, TPlayer> Build()
+            public RandomStrategySettings<TGame, TBoard, TMove, TPlayer, TDistribution> Build()
             {
                 if (this.Random == null)
                 {
                     throw new ArgumentNullException(nameof(this.Random));
                 }
 
-                return new RandomStrategySettings<TGame, TBoard, TMove, TPlayer>(this.Random);
+                return new RandomStrategySettings<TGame, TBoard, TMove, TPlayer, TDistribution>(this.Random);
             }
         }
     }

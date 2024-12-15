@@ -24,7 +24,7 @@ namespace Fx.Games.Strategy
         /// Initializes a new instance of the <see cref="RandomStrategy{TGame, TBoard, TMove, TPlayer}"/> class
         /// </summary>
         public RandomStrategy()
-            : this(RandomStrategySettings<TGame, TBoard, TMove, TPlayer>.Default)
+            : this(RandomStrategySettings<TGame, TBoard, TMove, TPlayer, TDistribution>.Default)
         {
         }
 
@@ -33,7 +33,7 @@ namespace Fx.Games.Strategy
         /// </summary>
         /// <param name="settings">The settings to use to configure the strategy</param>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="settings"/> is <see langword="null"></exception>
-        public RandomStrategy(RandomStrategySettings<TGame, TBoard, TMove, TPlayer> settings)
+        public RandomStrategy(RandomStrategySettings<TGame, TBoard, TMove, TPlayer, TDistribution> settings)
         {
             if (settings == null)
             {
