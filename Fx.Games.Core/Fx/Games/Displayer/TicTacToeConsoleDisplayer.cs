@@ -4,13 +4,14 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using Fx.Distribution;
     using Fx.Games.Game;
 
     /// <summary>
     /// Writes the state of the board and moves of <see cref="TicTacToe{TPlayer}"/> games to the console
     /// </summary>
     /// <typeparam name="TPlayer">The type of the player that is playing the game</typeparam>
-    public sealed class TicTacToeConsoleDisplayer<TPlayer> : IDisplayer<TicTacToe<TPlayer>, TicTacToeBoard, TicTacToeMove, TPlayer>
+    public sealed class TicTacToeConsoleDisplayer<TPlayer> : IDisplayer<TicTacToe<TPlayer>, TicTacToeBoard, TicTacToeMove, TPlayer, Univariate<TicTacToe<TPlayer>>>
     {
         private readonly Func<TPlayer, string> playerToString;
 

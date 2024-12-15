@@ -5,12 +5,13 @@
 
     using Fx.Games.Game;
     using Fx.Games.Game.Amazons;
+    using Fx.Distribution;
 
     /// <summary>
     /// A strategy specific to <see cref="Game{TPlayer}"/> that reads the details of the next move from the console
     /// </summary>
     /// <typeparam name="TPlayer">The type of the player playing <see cref="Game{TPlayer}"/></typeparam>
-    public sealed class GameOfAmazonsConsoleStrategy<TPlayer> : IStrategy<Game<TPlayer>, Board, Move, TPlayer>
+    public sealed class GameOfAmazonsConsoleStrategy<TPlayer> : IStrategy<Game<TPlayer>, Board, Move, TPlayer, Univariate<Game<TPlayer>>
     {
         private GameOfAmazonsConsoleStrategy()
         {

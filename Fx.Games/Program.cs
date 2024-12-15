@@ -173,8 +173,8 @@
             var driver = Driver.Create(
                 new[]
                 {
-                    KeyValuePair.Create(player1, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>)new RandomStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>(new RandomStrategySettings<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>.Builder() {Random = random1 }.Build())),
-                    KeyValuePair.Create(player2, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>)new RandomStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>(new RandomStrategySettings<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string>.Builder() {Random = random2 }.Build())),
+                    KeyValuePair.Create(player1, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string, Univariate<ConnectFour<string>>>)new RandomStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string, Univariate<ConnectFour<string>>>(new RandomStrategySettings<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string, Univariate<ConnectFour<string>>>.Builder() {Random = random1 }.Build())),
+                    KeyValuePair.Create(player2, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string, Univariate<ConnectFour<string>>>)new RandomStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string, Univariate<ConnectFour<string>>>(new RandomStrategySettings<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string, Univariate<ConnectFour<string>>>.Builder() {Random = random2 }.Build())),
                 }.ToDb().ToDictionary(),
                 displayer);
             var result = driver.Run(game);
@@ -187,10 +187,10 @@
             var game = new Amazons.Game<string>(white, black, (8, 8));
             var displayer = new Amazons.Displayer<string>(_ => _);
             var strategies = new[] {
-                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(white, game.MonteCarloStrategy(white, 100000, game.MonteCarloStrategySettings())),
-                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(black, game.MinimizeMovesStrategy()),
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string, Univariate<Amazons.Game<string>>>>(white, game.MonteCarloStrategy(white, 100000, game.MonteCarloStrategySettings())),
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string, Univariate<Amazons.Game<string>>>>(black, game.MinimizeMovesStrategy()),
             };
-            var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>(
+            var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string, Univariate<Amazons.Game<string>>>(
                 strategies.ToDb().ToDictionary(),
                 displayer);
 
@@ -204,10 +204,10 @@
             var game = new Amazons.Game<string>(white, black, (5, 6));
             var displayer = new Amazons.Displayer<string>(_ => _);
             var strategies = new[] {
-                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(white, game.MonteCarloStrategy(white, 100000, game.MonteCarloStrategySettings())),
-                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(black, game.MinimizeMovesStrategy()),
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string, Univariate<Amazons.Game<string>>>>(white, game.MonteCarloStrategy(white, 100000, game.MonteCarloStrategySettings())),
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string, Univariate<Amazons.Game<string>>>>(black, game.MinimizeMovesStrategy()),
             };
-            var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>(
+            var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string, Univariate<Amazons.Game<string>>>(
                 strategies.ToDb().ToDictionary(),
                 displayer);
 
@@ -224,7 +224,7 @@
                 KeyValuePair.Create(white, game.RandomStrategy()),
                 KeyValuePair.Create(black, game.RandomStrategy()),
             };
-            var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>(
+            var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string, Univariate<Amazons.Game<string>>>(
                 strategies.ToDb().ToDictionary(),
                 displayer);
 
@@ -239,10 +239,10 @@
             var black = "black";
             var game = new Amazons.Game<string>(white, black, (5, 6));
             var strategies = new[] {
-                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(white, game.AmazonsConsoleStrategy()),
-                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(black, game.MinimizeMovesStrategy()),
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string, Univariate<Amazons.Game<string>>>>(white, game.AmazonsConsoleStrategy()),
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string, Univariate<Amazons.Game<string>>>>(black, game.MinimizeMovesStrategy()),
             };
-            var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>(
+            var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string, Univariate<Amazons.Game<string>>>(
                 strategies.ToDb().ToDictionary(),
                 displayer);
 
@@ -257,10 +257,10 @@
             var black = "black";
             var game = new Amazons.Game<string>(white, black, (5, 6));
             var strategies = new[] {
-                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(white, game.AmazonsConsoleStrategy()),
-                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(black, game.MonteCarloStrategy(black, 100000, game.MonteCarloStrategySettings())),
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string, Univariate<Amazons.Game<string>>>>(white, game.AmazonsConsoleStrategy()),
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string, Univariate<Amazons.Game<string>>>>(black, game.MonteCarloStrategy(black, 100000, game.MonteCarloStrategySettings())),
             };
-            var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>(
+            var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string, Univariate<Amazons.Game<string>>>(
                 strategies.ToDb().ToDictionary(),
                 displayer);
 
@@ -275,10 +275,10 @@
             var black = "black";
             var game = new Amazons.Game<string>(white, black, (5, 6));
             var strategies = new[] {
-                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(white, game.AmazonsConsoleStrategy()),
-                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>>(black, game.RandomStrategy()),
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string, Univariate<Amazons.Game<string>>>>(white, game.AmazonsConsoleStrategy()),
+                KeyValuePair.Create<string,IStrategy<Amazons.Game<string>, Amazons.Board, Amazons.Move, string, Univariate<Amazons.Game<string>>>>(black, game.RandomStrategy()),
             };
-            var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string>(
+            var driver = new Driver<Amazons.Game<string>, Amazons.Board, Amazons.Move, string, Univariate<Amazons.Game<string>>>(
                 strategies.ToDb().ToDictionary(),
                 displayer);
 
@@ -318,8 +318,8 @@
             var driver = Driver.Create(
                 new[]
                 {
-                    KeyValuePair.Create(exes, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string>)game.MonteCarloStrategy(exes, 1000, game.MonteCarloStrategySettings())),
-                    KeyValuePair.Create(ohs, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string>)game.ConsoleStrategy()),
+                    KeyValuePair.Create(exes, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string, Univariate<TicTacToe<string>>>)game.MonteCarloStrategy(exes, 1000, game.MonteCarloStrategySettings())),
+                    KeyValuePair.Create(ohs, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string, Univariate<TicTacToe<string>>>)game.ConsoleStrategy()),
                 }.ToDb().ToDictionary(),
                 displayer);
             var result = driver.Run(game);
@@ -335,8 +335,8 @@
             var driver = Driver.Create(
                 new[]
                 {
-                    KeyValuePair.Create(exes, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string>)game.MonteCarloStrategy(exes, 1000, game.MonteCarloStrategySettings())),
-                    KeyValuePair.Create(ohs, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string>)game.RandomStrategy()),
+                    KeyValuePair.Create(exes, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string, Univariate<TicTacToe<string>>>)game.MonteCarloStrategy(exes, 1000, game.MonteCarloStrategySettings())),
+                    KeyValuePair.Create(ohs, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string, Univariate<TicTacToe<string>>>)game.RandomStrategy()),
                 }.ToDb().ToDictionary(),
                 displayer);
             var result = driver.Run(game);
@@ -352,8 +352,8 @@
             var driver = Fx.Games.Driver.Driver.Create(
                 (new[]
                 {
-                    KeyValuePair.Create(exes, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string>)game.ConsoleStrategy()),
-                    KeyValuePair.Create(ohs, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string>)game.RandomStrategy()),
+                    KeyValuePair.Create(exes, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string, Univariate<TicTacToe<string>>>)game.ConsoleStrategy()),
+                    KeyValuePair.Create(ohs, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string, Univariate<TicTacToe<string>>>)game.RandomStrategy()),
                 }).ToDb().ToDictionary(),
                 displayer);
             var result = driver.Run(game);
@@ -382,7 +382,11 @@
             var player = "player";
             var game = new PegGame<string>(player);
 
-            var strategy = new DecisionTreeStrategy<PegGame<string>, PegBoard, PegMove, string>(player, StringComparer.OrdinalIgnoreCase, 0.5);
+            var strategy = new DecisionTreeStrategy<PegGame<string>, PegBoard, PegMove, string, Univariate<PegGame<string>>>(
+                player,
+                univariate => univariate.ToPortion(),
+                StringComparer.OrdinalIgnoreCase,
+                0.5);
 
             var driver = Driver.Create(
                 new[] //// TODO use a fluent builder?

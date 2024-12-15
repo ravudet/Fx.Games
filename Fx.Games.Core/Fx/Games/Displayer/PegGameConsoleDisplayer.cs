@@ -2,14 +2,14 @@
 {
     using System;
     using System.Linq;
-
+    using Fx.Distribution;
     using Fx.Games.Game;
 
     /// <summary>
     /// Writes the state of the board and moves of <see cref="PegGame{TPlayer}"/>s to the console
     /// </summary>
     /// <typeparam name="TPlayer">The type of the player that is playing the game</typeparam>
-    public sealed class PegGameConsoleDisplayer<TPlayer> : IDisplayer<PegGame<TPlayer>, PegBoard, PegMove, TPlayer>
+    public sealed class PegGameConsoleDisplayer<TPlayer> : IDisplayer<PegGame<TPlayer>, PegBoard, PegMove, TPlayer, Univariate<PegGame<TPlayer>>>
     {
         /// <summary>
         /// Prevents the initialization of the <see cref="PegGameConsoleDisplayer{TPlayer}"/> class

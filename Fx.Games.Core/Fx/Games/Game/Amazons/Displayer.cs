@@ -1,9 +1,10 @@
 namespace Fx.Games.Game.Amazons
 {
+    using Fx.Distribution;
     using System;
     using System.Linq;
 
-    public sealed class Displayer<TPlayer> : Displayer.IDisplayer<Game<TPlayer>, Board, Move, TPlayer>
+    public sealed class Displayer<TPlayer> : Displayer.IDisplayer<Game<TPlayer>, Board, Move, TPlayer, Univariate<Game<TPlayer>>>
         where TPlayer : notnull // neccesary to be able to use a TPlayer as a key in an internal dictionary
     {
         private readonly Func<TPlayer, string> playerToString;

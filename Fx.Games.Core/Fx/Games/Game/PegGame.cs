@@ -1,5 +1,6 @@
 ﻿namespace Fx.Games.Game
 {
+    using Fx.Distribution;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -7,7 +8,7 @@
     /// An implementation of the peg game: http://www.thepeggame.com/
     /// </summary>
     /// <typeparam name="TPlayer">The type of the player that is playing the game</typeparam>
-    public sealed class PegGame<TPlayer> : IGame<PegGame<TPlayer>, PegBoard, PegMove, TPlayer>
+    public sealed class PegGame<TPlayer> : IGame<PegGame<TPlayer>, PegBoard, PegMove, TPlayer, Univariate<PegGame<TPlayer>>>
     {
         /// <summary>
         /// The current player of the game
@@ -187,6 +188,11 @@
             }
 
             return new PegGame<TPlayer>(this.player, new PegBoard(blanks));
+        }
+
+        public Univariate<PegGame<TPlayer>> ExploreMove(PegMove move)
+        {
+            return new Univariate<PegGame<TPlayer>>(this.CommitMove(move));
         }
     }
 }

@@ -1,12 +1,13 @@
 namespace Fx.Games.Game.Amazons
 {
+    using Fx.Distribution;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Linq;
 
-    public class Game<TPlayer> : IGame<Game<TPlayer>, Board, Move, TPlayer>
+    public class Game<TPlayer> : IGame<Game<TPlayer>, Board, Move, TPlayer, Univariate<Game<TPlayer>>>
     {
 
         public Game(TPlayer whitePlayer, TPlayer blackPlayer) :
@@ -101,6 +102,11 @@ namespace Fx.Games.Game.Amazons
             var nextPlayer = CurrentPlayer.Equals(playerTileMaping.Keys.ElementAt(0)) ? playerTileMaping.Keys.ElementAt(1) : playerTileMaping.Keys.ElementAt(0);
 
             return new Game<TPlayer>(board, nextPlayer, playerTileMaping);
+        }
+
+        public Univariate<Game<TPlayer>> ExploreMove(Move move)
+        {
+            return new Univariate<Game<TPlayer>>(this.CommitMove(move));
         }
     }
 
