@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
+    using Fx.Distribution;
     using Fx.Games.Game;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -19,7 +19,7 @@
         [TestMethod]
         public void NullSettings()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => new RandomStrategy<NoImplementationGame, string[], string, string>(
+            Assert.ThrowsException<ArgumentNullException>(() => new RandomStrategy<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>(
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 // SUPPRESSION test case for the null validation
                 null
@@ -33,7 +33,7 @@
         [TestMethod]
         public void SelectMoveNullGame()
         {
-            var strategy = new RandomStrategy<NoImplementationGame, string[], string, string>();
+            var strategy = new RandomStrategy<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>();
 
             Assert.ThrowsException<ArgumentNullException>(() => strategy.SelectMove(
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -49,7 +49,7 @@
         [TestMethod]
         public void SelectMoveNoMoves()
         {
-            var strategy = new RandomStrategy<MovelessGame, string[], string, string>();
+            var strategy = new RandomStrategy<MovelessGame, string[], string, string, Univariate<MovelessGame>>();
             var game = new MovelessGame();
 
             Assert.ThrowsException<InvalidGameException>(() => strategy.SelectMove(game));
@@ -61,7 +61,7 @@
         [TestMethod]
         public void SelectMove()
         {
-            var strategy = new RandomStrategy<SingleMoveGame, string[], string, string>();
+            var strategy = new RandomStrategy<SingleMoveGame, string[], string, string, Univariate<SingleMoveGame>>();
             var game = new SingleMoveGame();
 
             var move = strategy.SelectMove(game);
@@ -72,7 +72,7 @@
         /// <summary>
         /// A <see cref="IGame{TGame, TBoard, TMove, TPlayer}"/> that has a single legal move
         /// </summary>
-        private sealed class SingleMoveGame : IGame<SingleMoveGame, string[], string, string>
+        private sealed class SingleMoveGame : IGame<SingleMoveGame, string[], string, string, Univariate<SingleMoveGame>>
         {
             /// <summary>
             /// The single move that this game always has available
@@ -105,12 +105,17 @@
             {
                 throw new NotImplementedException();
             }
+
+            public Univariate<SingleMoveGame> ExploreMove(string move)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         /// <summary>
         /// A <see cref="IGame{TGame, TBoard, TMove, TPlayer}"/> that never has any legal moves
         /// </summary>
-        private sealed class MovelessGame : IGame<MovelessGame, string[], string, string>
+        private sealed class MovelessGame : IGame<MovelessGame, string[], string, string, Univariate<MovelessGame>>
         {
             /// <inheritdoc/>
             public string CurrentPlayer => throw new NotImplementedException();
@@ -135,6 +140,11 @@
 
             /// <inheritdoc/>
             public MovelessGame CommitMove(string move)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Univariate<MovelessGame> ExploreMove(string move)
             {
                 throw new NotImplementedException();
             }
