@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-
+    using Fx.Distribution;
     using Fx.Games.Game;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -22,7 +22,7 @@
         {
             var player = "player";
             var numberOfDecisions = 150;
-            Assert.ThrowsException<ArgumentNullException>(() => new MonteCarloStrategy<NoImplementationGame, string[], string, string>(
+            Assert.ThrowsException<ArgumentNullException>(() => new MonteCarloStrategy<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>(
                 player,
                 numberOfDecisions,
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -39,7 +39,7 @@
         {
             var player = "player";
             var numberOfDecisions = 150;
-            var strategy = new MonteCarloStrategy<NoImplementationGame, string[], string, string>(player, numberOfDecisions, MonteCarloStrategySettings<NoImplementationGame, string[], string, string>.Default);
+            var strategy = new MonteCarloStrategy<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>(player, numberOfDecisions, MonteCarloStrategySettings<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>.Default);
 
             Assert.ThrowsException<ArgumentNullException>(() => strategy.SelectMove(
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -56,7 +56,7 @@
         {
             var player = "player";
             var numberOfDecisions = 150;
-            var strategy = new MonteCarloStrategy<MovelessGame, string[], string, string>(player, numberOfDecisions, MonteCarloStrategySettings<MovelessGame, string[], string, string>.Default);
+            var strategy = new MonteCarloStrategy<MovelessGame, string[], string, string, Univariate<MovelessGame>>(player, numberOfDecisions, MonteCarloStrategySettings<MovelessGame, string[], string, string, Univariate<MovelessGame>>.Default);
             var game = new MovelessGame();
 
             Assert.ThrowsException<InvalidGameException>(() => strategy.SelectMove(game));
@@ -70,7 +70,7 @@
         {
             var player = "player";
             var numberOfDecisions = 150;
-            var strategy = new MonteCarloStrategy<SingleMoveGame, string[], string, string>(player, numberOfDecisions, MonteCarloStrategySettings<SingleMoveGame, string[], string, string>.Default);
+            var strategy = new MonteCarloStrategy<SingleMoveGame, string[], string, string, Univariate<SingleMoveGame>>(player, numberOfDecisions, MonteCarloStrategySettings<SingleMoveGame, string[], string, string, Univariate<SingleMoveGame>>.Default);
             var game = new SingleMoveGame(player, numberOfDecisions / 3);
 
             var move = strategy.SelectMove(game);
@@ -81,7 +81,7 @@
         /// <summary>
         /// A <see cref="IGame{TGame, TBoard, TMove, TPlayer}"/> that has a single legal move
         /// </summary>
-        private sealed class SingleMoveGame : IGame<SingleMoveGame, string[], string, string>
+        private sealed class SingleMoveGame : IGame<SingleMoveGame, string[], string, string, Univariate<SingleMoveGame>>
         {
             private readonly int numberOfMoves;
 
@@ -151,12 +151,17 @@
             {
                 return new SingleMoveGame(this.CurrentPlayer, this.numberOfMoves - 1);
             }
+
+            public Univariate<SingleMoveGame> ExploreMove(string move)
+            {
+                return new Univariate<SingleMoveGame>(this.CommitMove(move));
+            }
         }
 
         /// <summary>
         /// A <see cref="IGame{TGame, TBoard, TMove, TPlayer}"/> that never has any legal moves
         /// </summary>
-        private sealed class MovelessGame : IGame<MovelessGame, string[], string, string>
+        private sealed class MovelessGame : IGame<MovelessGame, string[], string, string, Univariate<MovelessGame>>
         {
             /// <inheritdoc/>
             public string CurrentPlayer => throw new NotImplementedException();
@@ -181,6 +186,11 @@
 
             /// <inheritdoc/>
             public MovelessGame CommitMove(string move)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Univariate<MovelessGame> ExploreMove(string move)
             {
                 throw new NotImplementedException();
             }
