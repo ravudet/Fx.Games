@@ -29,52 +29,265 @@
             this.drawWeight = drawWeight; //// TODO parameterize all weights? //// TODO use settings for everything except `desiredWinner`
         }
 
-        private interface ITree<TValue>
+        public TMove DoWork(TGame game)
         {
-            TValue Value { get; }
-
-            IEnumerable<ITree<TValue>> Children { get; }
+            return game
+                .Moves
+                .Select(move => (move, game.ExploreMove(move)))
+                .Select(distribution => (distribution.move, ComputeOutcome(distribution.Item2)))
+                .MaxBy(outcome => outcome.Item2, new OutcomeComparer(this.drawWeight))
+                .move;
         }
 
-        private sealed class Tree<TValue> : ITree<TValue>
+        private Outcome ComputeOutcome(TDistribution distribution)
         {
-            public Tree(TValue value)
-                : this(value, Enumerable.Empty<Tree<TValue>>())
+            var portions = this.weightedDistributionAdapter(distribution);
+            var weights = PortionV2Playground.ConvertToWeights(portions);
+
+            var allWins = true;
+            var allLosses = true;
+            var allDraws = true;
+            var probability = 0.0;
+            foreach (var weight in weights)
             {
-            }
-
-            public Tree(TValue value, IEnumerable<ITree<TValue>> children)
-            {
-                this.Value = value;
-                this.Children = children;
-            }
-
-            public TValue Value { get; }
-
-            public IEnumerable<ITree<TValue>> Children { get; }
-        }
-
-        private static Tree<(TMove, Outcome)> CreateGameTree(TGame game, TPlayer player)
-        {
-            var moves = game.Moves.ToList();
-            if (!moves.Any())
-            {
-                
-            }
-
-            var children = new List<Tree<(TMove, Outcome)>>();
-
-            
-            foreach (var move in moves)
-            {
-                var exploredGame = game.ExploreMove(move);
+                var outcome = ComputeOutcome(weight.Item2);
 
             }
         }
 
-        private static TMove WinningMove(Tree<(TMove, Outcome)> gameTree, double drawWeight)
+        private static Outcome AverageOfOutcomes(IEnumerable<(double Weight, Outcome Outcome)> outcomes)
         {
-            return gameTree.Children.MaxBy(child => child.Value.Item2, new OutcomeComparer(drawWeight))!.Value.Item1;
+            //// TODO this would be great to levarege mixins
+            var allWins = true;
+            var allLosses = true;
+            var allDraws = true;
+            var probability = 0.0;
+            var count = 0;
+            foreach (var outcome in outcomes)
+            {
+                if (outcome.Outcome is Outcome.Win)
+                {
+                    probability += outcome.Weight * 1.0;
+                    allLosses = false;
+                    allDraws = false;
+                }
+                else if (outcome.Outcome is Outcome.Loss)
+                {
+                    probability += outcome.Weight * -1.0;
+                    allWins = false;
+                    allDraws = false;
+                }
+                else if (outcome.Outcome is Outcome.Draw)
+                {
+                    probability += outcome.Weight * 0.0; //// TODO parameterize all of these literals
+                    allWins = false;
+                    allLosses = false;
+                }
+                else if (outcome.Outcome is Outcome.Probability likelihood)
+                {
+                    probability += outcome.Weight * likelihood.Liklihood;
+                    allWins = false;
+                    allLosses = false;
+                    allDraws = false;
+                }
+                else
+                {
+                    throw new Exception("TODO visitor");
+                }
+
+                ++count;
+            }
+
+            if (allWins)
+            {
+                return Outcome.Win.Instance;
+            }
+
+            if (allLosses)
+            {
+                return Outcome.Loss.Instance;
+            }
+
+            if (allDraws)
+            {
+                return Outcome.Draw.Instance;
+            }
+
+            if (count == 0)
+            {
+                throw new Exception("TODO no outcomes to average");
+            }
+
+            return new Outcome.Probability(probability /* TODO do you need the count if you're already weighted? / count*/);
+        }
+
+        private Outcome ComputeOutcome(TGame game)
+        {
+        }
+
+
+        private interface ITreeNode<TNode, TEdge>
+        {
+            TNode Value { get; }
+
+            IEnumerable<ITreeEdge<TNode, TEdge>> Edges { get; }
+        }
+
+        private interface ITreeEdge<TNode, TEdge>
+        {
+            TEdge Value { get; }
+
+            IEnumerable<ITreeNode<TNode, TEdge>> Nodes { get; }
+        }
+
+        private sealed class TreeNode<TNode, TEdge> : ITreeNode<TNode, TEdge>
+        {
+            public TreeNode(TNode value, IEnumerable<ITreeEdge<TNode, TEdge>> edges)
+            {
+                Value = value;
+                Edges = edges;
+            }
+
+            public TNode Value { get; }
+            public IEnumerable<ITreeEdge<TNode, TEdge>> Edges { get; }
+        }
+
+        private sealed class TreeEdge<TNode, TEdge> : ITreeEdge<TNode, TEdge>
+        {
+            public TreeEdge(TEdge value, IEnumerable<ITreeNode<TNode, TEdge>> nodes)
+            {
+                Value = value;
+                Nodes = nodes;
+            }
+
+            public TEdge Value { get; }
+            public IEnumerable<ITreeNode<TNode, TEdge>> Nodes { get; }
+        }
+
+        private static TreeNode<TGame, TMove> CreateGameTree(TGame game)
+        {
+            return new TreeNode<TGame, TMove>(game, CreateGameTreeEdges(game));
+        }
+
+        private static IEnumerable<TreeEdge<TGame, TMove>> CreateGameTreeEdges(TGame game)
+        {
+            foreach (var move in game.Moves)
+            {
+                yield return new TreeEdge<TGame, TMove>(move, new[] { CreateGameTree(game.CommitMove(move)) });
+            }
+        }
+
+        private static TreeNode<TNodeResult, TEdgeResult> Select<TNode, TEdge, TNodeResult, TEdgeResult>(ITreeNode<TNode, TEdge> tree, Func<TNode, TNodeResult> nodeSelector, Func<TEdge, TEdgeResult> edgeSelector)
+        {
+            return new TreeNode<TNodeResult, TEdgeResult>(
+                nodeSelector(tree.Value),
+                Select(tree.Edges, nodeSelector, edgeSelector));
+        }
+
+        private static IEnumerable<ITreeEdge<TNodeResult, TEdgeResult>> Select<TNode, TEdge, TNodeResult, TEdgeResult>(IEnumerable<ITreeEdge<TNode, TEdge>> edges, Func<TNode, TNodeResult> nodeSelector, Func<TEdge, TEdgeResult> edgeSelector)
+        {
+            foreach (var edge in edges)
+            {
+                yield return new TreeEdge<TNodeResult, TEdgeResult>(
+                    edgeSelector(edge.Value),
+                    edge.Nodes.Select(node => Select(node, nodeSelector, edgeSelector)));
+            }
+        }
+
+        private static TreeNode<Outcome?, TMove> CreateDecisionTree(TreeNode<TGame, TMove> gameTree, TPlayer player)
+        {
+            //// TODO parameterize playercomparer
+            return Select(gameTree, node => node.IsGameOver ? node.WinnersAndLosers.Winners.Contains(player) ? Outcome.Win.Instance : node.WinnersAndLosers.Losers.Contains(player) ? Outcome.Loss.Instance : Outcome.Draw.Instance : (Outcome?)null, _ => _);
+        }
+
+        private static IEnumerable<(TMove, Outcome)> CreateOutcomes(IEnumerable<TreeEdge<Outcome?, TMove>> edges)
+        {
+        }
+
+        private static TMove WinningMove(TreeNode<Outcome, TMove> decisionTree)
+        {
+            if (!decisionTree.Edges.Any())
+            {
+                return decisionTree.Value;
+            }
+
+            foreach (var move in decisionTree.Edges)
+            {
+
+            }
+        }
+
+        private static Outcome AverageOfOutcomes(IEnumerable<Outcome> outcomes)
+        {
+            //// TODO this would be great to levarege mixins
+            var allWins = true;
+            var allLosses = true;
+            var allDraws = true;
+            var probability = 0.0;
+            var count = 0;
+            foreach (var outcome in outcomes)
+            {
+                if (outcome is Outcome.Win)
+                {
+                    probability += 1.0;
+                    allLosses = false;
+                    allDraws = false;
+                }
+                else if (outcome is Outcome.Loss)
+                {
+                    probability += -1.0;
+                    allWins = false;
+                    allDraws = false;
+                }
+                else if (outcome is Outcome.Draw)
+                {
+                    probability += 0.0; //// TODO parameterize all of these literals
+                    allWins = false;
+                    allLosses = false;
+                }
+                else if (outcomes is Outcome.Probability likelihood)
+                {
+                    probability += likelihood.Liklihood;
+                    allWins = false;
+                    allLosses = false;
+                    allDraws = false;
+                }
+                else
+                {
+                    throw new Exception("TODO visitor");
+                }
+
+                ++count;
+            }
+
+            if (allWins)
+            {
+                return Outcome.Win.Instance;
+            }
+
+            if (allLosses)
+            {
+                return Outcome.Loss.Instance;
+            }
+
+            if (allDraws)
+            {
+                return Outcome.Draw.Instance;
+            }
+
+            if (count == 0)
+            {
+                throw new Exception("TODO no outcomes to average");
+            }
+
+            return new Outcome.Probability(probability / count);
+        }
+
+        private static TMove Composed(TGame game)
+        {
+            var gameTree = CreateGameTree(game);
+            var decisionTree = CreateDecisionTree(gameTree);
+            return WinningMove(decisionTree);
         }
 
         public TMove SelectMove(TGame game)
