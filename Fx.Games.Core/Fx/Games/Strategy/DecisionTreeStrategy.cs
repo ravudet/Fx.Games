@@ -55,21 +55,21 @@
                     allLosses = false;
                     allDraws = false;
 
-                    probability += 1.0;
+                    probability += newGameProbability.Item1 * 1.0;
                 }
                 else if (outcome is Outcome.Loss)
                 {
                     allWins = false;
                     allDraws = false;
 
-                    probability += -1.0;
+                    probability += newGameProbability.Item1 * -1.0;
                 }
                 else if (outcome is Outcome.Draw)
                 {
                     allWins = false;
                     allLosses = false;
 
-                    probability += this.drawWeight;
+                    probability += newGameProbability.Item1 * this.drawWeight;
                 }
                 else if (outcome is Outcome.Probability liklihood)
                 {
@@ -77,7 +77,7 @@
                     allLosses = false;
                     allDraws = false;
 
-                    probability += liklihood.Liklihood;
+                    probability += newGameProbability.Item1 * liklihood.Liklihood;
                 }
                 else
                 {
