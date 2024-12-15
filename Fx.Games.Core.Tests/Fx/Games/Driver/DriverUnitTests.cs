@@ -6,6 +6,7 @@
 
     using Db.System.Collections.Generic;
     using DbAdapters.System.Collections.Generic;
+    using Fx.Distribution;
     using Fx.Games.Game;
     using Fx.Games.Strategy;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -23,7 +24,7 @@
         public void NullStrategies()
         {
             var game = new MockGame();
-            Assert.ThrowsException<ArgumentNullException>(() => new Driver<MockGame, string[], string, string>(
+            Assert.ThrowsException<ArgumentNullException>(() => new Driver<MockGame, string[], string, string, Univariate<MockGame>>(
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 // SUPPRESSION test case for the null validation
                 null,
@@ -38,7 +39,7 @@
         public void NullDisplayer()
         {
             var game = new MockGame();
-            Assert.ThrowsException<ArgumentNullException>(() => new Driver<MockGame, string[], string, string>(
+            Assert.ThrowsException<ArgumentNullException>(() => new Driver<MockGame, string[], string, string, Univariate<MockGame>>(
                 new[]
                 {
                     KeyValuePair.Create("first", MockStrategy.Create(game)),
@@ -57,7 +58,7 @@
         public void NullSettings()
         {
             var game = new MockGame();
-            Assert.ThrowsException<ArgumentNullException>(() => new Driver<MockGame, string[], string, string>(
+            Assert.ThrowsException<ArgumentNullException>(() => new Driver<MockGame, string[], string, string, Univariate<MockGame>>(
                 new[]
                 {
                     KeyValuePair.Create("first", MockStrategy.Create(game)),
@@ -205,7 +206,7 @@
         /// <summary>
         /// A mock implementation of <see cref="IGame{TGame, TBoard, TMove, TPlayer}"/> that plays a single turn with a single move
         /// </summary>
-        private sealed class MockGame : IGame<MockGame, string[], string, string>
+        private sealed class MockGame : IGame<MockGame, string[], string, string, Univariate<MockGame>>
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="MockGame"/> class
@@ -250,6 +251,11 @@
             {
                 return new MockGame(true);
             }
+
+            public Univariate<MockGame> ExploreMove(string move)
+            {
+                return new Univariate<MockGame>(this.CommitMove(move));
+            }
         }
 
         /// <summary>
@@ -266,9 +272,9 @@
             /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
             /// <param name="game">The game that the new <see cref="MockStrategy{TGame, TBoard, TMove, TPlayer}"/> will play</param>
             /// <returns>A new instance of <see cref="MockStrategy{TGame, TBoard, TMove, TPlayer}"/></returns>
-            public static MockStrategy<TGame, TBoard, TMove, TPlayer> Create<TGame, TBoard, TMove, TPlayer>(IGame<TGame, TBoard, TMove, TPlayer> game) where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+            public static MockStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> Create<TGame, TBoard, TMove, TPlayer, TDistribution>(IGame<TGame, TBoard, TMove, TPlayer, TDistribution> game) where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame>
             {
-                return new MockStrategy<TGame, TBoard, TMove, TPlayer>();
+                return new MockStrategy<TGame, TBoard, TMove, TPlayer, TDistribution>();
             }
         }
 
@@ -279,7 +285,7 @@
         /// <typeparam name="TBoard">The type of the board that the <typeparamref name="TGame"/> uses</typeparam>
         /// <typeparam name="TMove">The type of the moves that the <typeparamref name="TGame"/> uses</typeparam>
         /// <typeparam name="TPlayer">The type of the player that is playing the <typeparamref name="TGame"/></typeparam>
-        private sealed class MockStrategy<TGame, TBoard, TMove, TPlayer> : IStrategy<TGame, TBoard, TMove, TPlayer> where TGame : IGame<TGame, TBoard, TMove, TPlayer>
+        private sealed class MockStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> : IStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame>
         {
             /// <summary>
             /// The games that this strategy has been asked to select a move for

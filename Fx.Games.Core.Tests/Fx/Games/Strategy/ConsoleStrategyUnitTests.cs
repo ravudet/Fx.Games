@@ -7,7 +7,7 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-
+    using Fx.Distribution;
     using Fx.Games.Game;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -23,7 +23,7 @@
         [TestMethod]
         public void SelectMoveNullGame()
         {
-            var strategy = ConsoleStrategy<NoImplementationGame, string[], string, string>.Instance;
+            var strategy = ConsoleStrategy<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>.Instance;
 
             Assert.ThrowsException<ArgumentNullException>(() => strategy.SelectMove(
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -39,7 +39,7 @@
         [TestMethod]
         public void SelectMoveNoMoves()
         {
-            var strategy = ConsoleStrategy<MovelessGame, string[], string, string>.Instance;
+            var strategy = ConsoleStrategy<MovelessGame, string[], string, string, Univariate<MovelessGame>>.Instance;
             var game = new MovelessGame();
 
             Assert.ThrowsException<InvalidGameException>(() => strategy.SelectMove(game));
@@ -51,7 +51,7 @@
         [TestMethod]
         public void SelectMove()
         {
-            var strategy = ConsoleStrategy<SingleMoveGame, string[], string, string>.Instance;
+            var strategy = ConsoleStrategy<SingleMoveGame, string[], string, string, Univariate<SingleMoveGame>>.Instance;
             var game = new SingleMoveGame();
             using (var textReader = new StringReader("0" + Environment.NewLine))
             {
@@ -81,7 +81,7 @@
         [TestMethod]
         public void SelectMoveOutOfRange()
         {
-            var strategy = ConsoleStrategy<SingleMoveGame, string[], string, string>.Instance;
+            var strategy = ConsoleStrategy<SingleMoveGame, string[], string, string, Univariate<SingleMoveGame>>.Instance;
             var game = new SingleMoveGame();
             using (var textReader = new StringReader("1" + Environment.NewLine + "0" + Environment.NewLine))
             {
@@ -110,7 +110,7 @@
         [TestMethod]
         public void SelectMoveNotAnIndex()
         {
-            var strategy = ConsoleStrategy<SingleMoveGame, string[], string, string>.Instance;
+            var strategy = ConsoleStrategy<SingleMoveGame, string[], string, string, Univariate<SingleMoveGame>>.Instance;
             var game = new SingleMoveGame();
             using (var textReader = new StringReader("asdf" + Environment.NewLine + "1" + Environment.NewLine + "0" + Environment.NewLine))
             {
@@ -137,7 +137,7 @@
         /// <summary>
         /// A <see cref="IGame{TGame, TBoard, TMove, TPlayer}"/> that has a single legal move
         /// </summary>
-        private sealed class SingleMoveGame : IGame<SingleMoveGame, string[], string, string>
+        private sealed class SingleMoveGame : IGame<SingleMoveGame, string[], string, string, Univariate<SingleMoveGame>>
         {
             /// <summary>
             /// The single move that this game always has available
@@ -170,12 +170,17 @@
             {
                 throw new NotImplementedException();
             }
+
+            public Univariate<SingleMoveGame> ExploreMove(string move)
+            {
+                return new Univariate<SingleMoveGame>(this.CommitMove(move));
+            }
         }
 
         /// <summary>
         /// A <see cref="IGame{TGame, TBoard, TMove, TPlayer}"/> that never has any legal moves
         /// </summary>
-        private sealed class MovelessGame : IGame<MovelessGame, string[], string, string>
+        private sealed class MovelessGame : IGame<MovelessGame, string[], string, string, Univariate<MovelessGame>>
         {
             /// <inheritdoc/>
             public string CurrentPlayer => throw new NotImplementedException();
@@ -200,6 +205,11 @@
 
             /// <inheritdoc/>
             public MovelessGame CommitMove(string move)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Univariate<MovelessGame> ExploreMove(string move)
             {
                 throw new NotImplementedException();
             }
