@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-
+    using Fx.Distribution;
     using Fx.Games.Game;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -18,7 +18,7 @@
         [TestMethod]
         public void DefaultBuilder()
         {
-            var builder = new DriverSettings<NoImplementationGame, string[], string, string>.Builder()
+            var builder = new DriverSettings<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>.Builder()
             {
             };
 
@@ -33,14 +33,14 @@
         [TestMethod]
         public void DefaultSettings()
         {
-            var builder = new DriverSettings<NoImplementationGame, string[], string, string>.Builder()
+            var builder = new DriverSettings<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>.Builder()
             {
             };
 
             var settings = builder.Build();
 
             Assert.AreEqual(
-                DriverSettings<NoImplementationGame, string[], string, string>.Default.PlayerTranscriber, 
+                DriverSettings<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>.Default.PlayerTranscriber, 
                 settings.PlayerTranscriber);
         }
 
@@ -50,7 +50,7 @@
         [TestMethod]
         public void NullPlayerTranscriber()
         {
-            var builder = new DriverSettings<NoImplementationGame, string[], string, string>.Builder()
+            var builder = new DriverSettings<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>.Builder()
             {
                 PlayerTranscriber =
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.

@@ -1,8 +1,8 @@
 ﻿namespace Fx.Games.Strategy
 {
     using System;
-    using System.Collections.Generic;
 
+    using Fx.Distribution;
     using Fx.Games.Game;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -18,7 +18,7 @@
         [TestMethod]
         public void DefaultBuilder()
         {
-            var builder = new RandomStrategySettings<NoImplementationGame, string[], string, string>.Builder()
+            var builder = new RandomStrategySettings<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>.Builder()
             {
             };
 
@@ -33,14 +33,14 @@
         [TestMethod]
         public void DefaultSettings()
         {
-            var builder = new RandomStrategySettings<NoImplementationGame, string[], string, string>.Builder()
+            var builder = new RandomStrategySettings<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>.Builder()
             {
             };
 
             var settings = builder.Build();
 
             Assert.AreEqual(
-                RandomStrategySettings<NoImplementationGame, string[], string, string>.Default.Random, 
+                RandomStrategySettings<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>.Default.Random, 
                 settings.Random);
         }
 
@@ -50,7 +50,7 @@
         [TestMethod]
         public void NullRandom()
         {
-            var builder = new RandomStrategySettings<NoImplementationGame, string[], string, string>.Builder()
+            var builder = new RandomStrategySettings<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>.Builder()
             {
                 Random =
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.

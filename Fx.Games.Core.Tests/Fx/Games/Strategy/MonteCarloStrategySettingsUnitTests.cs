@@ -1,5 +1,6 @@
 ﻿namespace Fx.Games.Strategy
 {
+    using Fx.Distribution;
     using Fx.Games.Game;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
@@ -16,7 +17,7 @@
         [TestMethod]
         public void DefaultBuilder()
         {
-            var builder = new MonteCarloStrategySettings<NoImplementationGame, string[], string, string>.Builder()
+            var builder = new MonteCarloStrategySettings<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>.Builder()
             {
             };
 
@@ -32,17 +33,17 @@
         [TestMethod]
         public void DefaultSettings()
         {
-            var builder = new MonteCarloStrategySettings<NoImplementationGame, string[], string, string>.Builder()
+            var builder = new MonteCarloStrategySettings<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>.Builder()
             {
             };
 
             var settings = builder.Build();
 
             Assert.AreEqual(
-                MonteCarloStrategySettings<NoImplementationGame, string[], string, string>.Default.PlayerComparer,
+                MonteCarloStrategySettings<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>.Default.PlayerComparer,
                 settings.PlayerComparer);
             Assert.AreEqual(
-                MonteCarloStrategySettings<NoImplementationGame, string[], string, string>.Default.Random, 
+                MonteCarloStrategySettings<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>.Default.Random, 
                 settings.Random);
         }
 
@@ -52,7 +53,7 @@
         [TestMethod]
         public void NullPlayerComparer()
         {
-            var builder = new MonteCarloStrategySettings<NoImplementationGame, string[], string, string>.Builder()
+            var builder = new MonteCarloStrategySettings<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>.Builder()
             {
                 PlayerComparer =
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -69,7 +70,7 @@
         [TestMethod]
         public void NullRandom()
         {
-            var builder = new MonteCarloStrategySettings<NoImplementationGame, string[], string, string>.Builder()
+            var builder = new MonteCarloStrategySettings<NoImplementationGame, string[], string, string, Univariate<NoImplementationGame>>.Builder()
             {
                 Random =
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
