@@ -38,7 +38,6 @@
             //// TODO you have a model for idistribution in the /distribution branch; but, do you really want that? you won't be able to have a decision tree; you would still be able to have a monte carlo strategy; do you want to parameterize the tdistribution?
             //// TODO you *do* want the above; games like warhammer have continuous sets of states, so you want to be able to represent that; decision tree should probably require a selector from tdistribution to the weighted distribution (maybe just the portions?) that decision trees require
             ////
-            //// TODO write decision tree using a tree abstract; do this first with commit move, then with exploremove
             //// TODO idistribution.sample(...) should take in a subsequent idistribution for composability
             //// TODO the game interface will need both `exploremove` *and* `commitmove` so that you don't leak hidden information to players
             //// TODO update weighted distribution to use "portions"
