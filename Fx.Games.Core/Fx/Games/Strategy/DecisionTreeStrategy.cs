@@ -145,11 +145,8 @@
 
         public TMove SelectMove(TGame game)
         {
-            return DoWork(game);
-
             System.Console.WriteLine(DateTime.UtcNow);
-            var moves = game.Moves.ToList();
-            var move = moves.MaxBy(move => PlayMoves(game, move), new OutcomeComparer(this.drawWeight));
+            var move = DoWork(game);
             System.Console.WriteLine(DateTime.UtcNow);
             return move;
         }
