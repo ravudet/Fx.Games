@@ -54,6 +54,103 @@
         bool IsGameOver { get; }
     }
 
+    public abstract class Naturals
+    {
+        private Naturals()
+        {
+        }
+
+        public sealed class Zero : Naturals, ILessThanOne
+        {
+            private Zero()
+            {
+            }
+
+            public static Zero Instance { get; } = new Zero();
+        }
+
+        public sealed class One : Naturals, ILessThanTwo
+        {
+            private One()
+            {
+            }
+
+            public static One Instance { get; } = new One();
+        }
+
+        public sealed class Two : Naturals, ILessThanThree
+        {
+            private Two()
+            {
+            }
+
+            public static Two Instance { get; } = new Two();
+        }
+
+        public sealed class Three : Naturals
+        {
+            private Three()
+            {
+            }
+
+            public static Three Instance { get; } = new Three();
+        }
+    }
+
+    public interface ILessThanOne : ILessThanTwo, ILessThan<Naturals.One>
+    {
+    }
+
+    public interface ILessThanTwo : ILessThanThree, ILessThan<Naturals.Two>
+    {
+    }
+
+    public interface ILessThanThree : ILessThan<Naturals.Three>
+    {
+    }
+
+    public interface ILessThan<TNatural>
+    {
+    }
+
+    public class Range<TNatural> where TNatural : Naturals //// TODO this should be "wholes"
+    {
+    }
+
+    public abstract class InOrder<TTotal, TCurrent> where TTotal : Naturals where TCurrent : Naturals, ILessThan<TTotal>
+    {
+    }
+
+    public sealed class Intermediate<TTotal, TCurrent, TNext, TTheRest> : InOrder<TTotal, TCurrent> where TTotal : Naturals where TCurrent : Naturals, ILessThan<TNext>, ILessThan<TTotal> where TTheRest : InOrder<TTotal, TNext> where TNext : Naturals, ILessThan<TTotal>
+    {
+    }
+
+    public sealed class Last<TTotal, TCurrent> : InOrder<TTotal, TCurrent> where TTotal : Naturals where TCurrent : Naturals, ILessThan<TTotal>
+    {
+    }
+
+    public static class InOrderPlayground
+    {
+        public static void DoWork()
+        {
+            new Intermediate<Naturals.Three, Naturals.Zero, Naturals.Two, Last<Naturals.Three, Naturals.Two>>();
+
+
+
+
+            new Intermediate<Naturals.Three, Naturals.Zero, Naturals.One, 
+                Intermediate<Naturals.Three, Naturals.One, Naturals.Two, 
+                    Last<Naturals.Three, Naturals.Two>>>();
+        }
+    }
+
+    public sealed class PortionV3<TTotal, TCurrent> where TTotal : Naturals where TCurrent : Naturals, ILessThan<TTotal>
+    {
+        public PortionV3(InOrder<TTotal, TCurrent> inOrder)
+        {
+        }
+    }
+
     public abstract class PortionV2<TValue>
     {
         private PortionV2()
