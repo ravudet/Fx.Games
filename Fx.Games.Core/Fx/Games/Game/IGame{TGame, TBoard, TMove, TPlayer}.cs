@@ -138,9 +138,13 @@
 
 
 
-            new Intermediate<Naturals.Three, Naturals.Zero, Naturals.One, 
-                Intermediate<Naturals.Three, Naturals.One, Naturals.Two, 
+            new Intermediate<Naturals.Three, Naturals.Zero, Naturals.One,
+                Intermediate<Naturals.Three, Naturals.One, Naturals.Two,
                     Last<Naturals.Three, Naturals.Two>>>();
+        }
+
+        public static IEnumerable<int> ToValues<TTotal, TCurrent>(InOrder<TTotal, TCurrent> inOrder) where TTotal : Naturals where TCurrent : Naturals, ILessThan<TTotal>
+        {
         }
     }
 
