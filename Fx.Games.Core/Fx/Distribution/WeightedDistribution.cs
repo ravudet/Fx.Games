@@ -19,6 +19,8 @@
         public TValue Sample(out WeightedDistribution<TValue>? remainder)
         {
             //// TODO i think in your old cod,e you want *this*.weights[chosenIndex] on the right hand side of the operations; for the "current node" case, you set weights[currentIndex] to 0, so in the higher nodes in the tree, you will subtract 0 if the leaf node was the current index
+            
+            //// TODO i think you need to redo `portionv2`; it's basically impossible to get portions of equal weight
             throw new System.NotImplementedException();
         }
 
