@@ -37,6 +37,7 @@
 
             //// TODO update weighted distribution to use "portions"
             //// TODO tdistribution should be covariant
+            //// TODO update monte carlo (and all other strategies) to use exploremove
             //// TODO implement battleship
             var convertedPortion = PortionV2Playground.ConvertToPortion(weights);
 
