@@ -41,6 +41,8 @@
 
         static void Main(string[] args)
         {
+            Fx.Games.Game.NewAttempt.CreateOrdered();
+
             for (int i = 0; true; ++i)
             {
                 var sku = GetSkuFromArgsOrConsole(args, i);

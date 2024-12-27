@@ -4,6 +4,8 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.CompilerServices;
+    using System.Threading;
 
     /// <summary>
     /// A turn-based game engine at a specific state within the game it represents
@@ -143,9 +145,9 @@
                     Last<Naturals.Three, Naturals.Two>>>();
         }
 
-        public static IEnumerable<int> ToValues<TTotal, TCurrent>(InOrder<TTotal, TCurrent> inOrder) where TTotal : Naturals where TCurrent : Naturals, ILessThan<TTotal>
+        /*public static IEnumerable<int> ToValues<TTotal, TCurrent>(InOrder<TTotal, TCurrent> inOrder) where TTotal : Naturals where TCurrent : Naturals, ILessThan<TTotal>
         {
-        }
+        }*/
     }
 
 
@@ -157,7 +159,7 @@
 
         public interface INumericValue
         {
-            static abstract uint Value { get; }
+            static abstract uint Value { get; } //// TODO because this is abstract, anyone can implement their own; this probably isn't desireable for your purposes
         }
 
         public interface IWholes : INumericValue
@@ -179,7 +181,7 @@
             public interface ILessThanTwo : ILessThan<ITwo>, ILessThanThree
             {
             }
-            
+
             public interface IThree : IWholes, ILessThanFour
             {
                 static uint INumericValue.Value { get; } = 3;
@@ -212,29 +214,43 @@
             }
         }
 
-        public abstract class Ordered<TStart, TCurrent, TEnd> where TStart : ILessThan<TCurrent>, ILessThan<TEnd> where TCurrent : ILessThan<TEnd>
+        public interface IOrdered<TStart, TCurrent, TEnd> where TStart : ILessThan<TCurrent>, ILessThan<TEnd> where TCurrent : ILessThan<TEnd>
         {
+            static abstract IEnumerable<double> Weights<TPrevious>() where TPrevious : ILessThan<TCurrent>, INumericValue; //// TODO because this is abstract, anyone can implement their own; this probably isn't desireable for your purposes
         }
 
-        public sealed class Intermediate<TStart, TCurrent, TNext, TEnd, TTheRest> : Ordered<TStart, TCurrent, TEnd> where TStart : ILessThan<TCurrent>, ILessThan<TNext>, ILessThan<TEnd> where TCurrent : ILessThan<TNext>, ILessThan<TEnd> where TNext : ILessThan<TEnd> where TTheRest : Ordered<TStart, TNext, TEnd>
+        public interface IIntermediate<TStart, TCurrent, TNext, TEnd, TTheRest> : IOrdered<TStart, TCurrent, TEnd> where TStart : ILessThan<TCurrent>, INumericValue, ILessThan<TNext>, ILessThan<TEnd> where TCurrent : ILessThan<TNext>, ILessThan<TEnd>, INumericValue where TNext : ILessThan<TEnd>, INumericValue where TTheRest : IOrdered<TStart, TNext, TEnd> where TEnd : INumericValue
         {
             //// TODO do the generic type constraints need an igreaterthan interface?
+
+            static IEnumerable<double> IOrdered<TStart, TCurrent, TEnd>.Weights<TPrevious>()
+            {
+                return TTheRest
+                    .Weights<TCurrent>() //// TODO does this actually end up being lazy?
+                    .Prepend(((double)(TCurrent.Value - TPrevious.Value)) / (TEnd.Value - TStart.Value));
+            }
         }
 
-        public sealed class Last<TStart, TCurrent, TEnd> : Ordered<TStart, TCurrent, TEnd> where TStart : ILessThan<TEnd>, ILessThan<TCurrent> where TCurrent : ILessThan<TEnd>
+        public interface ILast<TStart, TCurrent, TEnd> : IOrdered<TStart, TCurrent, TEnd> where TStart : ILessThan<TEnd>, ILessThan<TCurrent>, INumericValue where TCurrent : ILessThan<TEnd>, INumericValue where TEnd : INumericValue
         {
+            static IEnumerable<double> IOrdered<TStart, TCurrent, TEnd>.Weights<TPrevious>()
+            {
+                yield return ((double)(TCurrent.Value - TPrevious.Value)) / (TEnd.Value - TStart.Value);
+                yield return ((double)(TEnd.Value - TCurrent.Value)) / (TEnd.Value - TStart.Value);
+            }
         }
 
         public static void CreateOrdered()
         {
-            new Intermediate<INaturals.IZero, IWholes.IOne, IWholes.ITwo, IWholes.IFour,
-                Intermediate<INaturals.IZero, IWholes.ITwo, IWholes.IThree, IWholes.IFour,
-                Last<INaturals.IZero, IWholes.IThree, IWholes.IFour>>>();
+            var weights = Weights<IIntermediate<INaturals.IZero, IWholes.IOne, IWholes.ITwo, IWholes.IThree,
+                ILast<INaturals.IZero, IWholes.ITwo, IWholes.IThree>>, INaturals.IZero, IWholes.IOne, IWholes.IThree>();
+
+            /*var otherWeights = Weights<IOrdered<INaturals.IZero, IWholes.IOne, IWholes.ITwo>, INaturals.IZero, IWholes.ITwo, IWholes.IThree>();*/
         }
 
-        public static double[] Weights<TOrdered, TStart, TCurrent, TEnd>(TOrdered ordered) where TOrdered : Ordered<TStart, TCurrent, TEnd> where TStart : ILessThan<TCurrent>, ILessThan<TEnd> where TCurrent : ILessThan<TEnd>
+        public static IEnumerable<double> Weights<TOrdered, TStart, TCurrent, TEnd>() where TOrdered : IOrdered<TStart, TCurrent, TEnd> where TStart : ILessThan<TCurrent>, INumericValue, ILessThan<TEnd> where TCurrent : ILessThan<TEnd>
         {
-            
+            return TOrdered.Weights<TStart>();
         }
 
         public static void Foo<TFirst, TSecond>() where TFirst : ILessThan<TSecond>
