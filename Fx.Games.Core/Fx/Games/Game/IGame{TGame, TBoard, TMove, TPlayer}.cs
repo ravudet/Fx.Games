@@ -159,6 +159,9 @@
 
         public interface INumericValue
         {
+            /// <summary>
+            /// TODO uint isn't inherently the best here...
+            /// </summary>
             static abstract uint Value { get; } //// TODO because this is abstract, anyone can implement their own; this probably isn't desireable for your purposes
         }
 
