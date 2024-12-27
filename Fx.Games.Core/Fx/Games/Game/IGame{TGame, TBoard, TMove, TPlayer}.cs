@@ -148,6 +148,100 @@
         }
     }
 
+
+    public static class NewAttempt
+    {
+        public interface ILessThan<T>
+        {
+        }
+
+        public abstract class Wholes
+        {
+            private Wholes()
+            {
+            }
+
+            public sealed class One : Wholes, ILessThanTwo
+            {
+                private One() //// TODO do you ever actually need instances of these?
+                {
+                }
+            }
+
+            public interface ILessThanOne : ILessThan<One>, ILessThanTwo
+            {
+            }
+
+            public sealed class Two : Wholes, ILessThanThree
+            {
+                private Two()
+                {
+                }
+            }
+
+            public interface ILessThanTwo : ILessThan<Two>, ILessThanThree
+            {
+            }
+            
+            public sealed class Three : Wholes, ILessThanFour
+            {
+                private Three()
+                {
+                }
+            }
+
+            public interface ILessThanThree : ILessThan<Three>, ILessThanFour
+            {
+            }
+
+            public sealed class Four : Wholes
+            {
+                private Four()
+                {
+                }
+            }
+
+            public interface ILessThanFour : ILessThan<Four>
+            {
+            }
+        }
+
+        public abstract class Naturals
+        {
+            public sealed class Zero : Naturals, Wholes.ILessThanOne
+            {
+                private Zero()
+                {
+                }
+            }
+
+            public sealed class Whole<TWhole> : Naturals where TWhole : Wholes //// TODO do this work correctly? looking at `foo` and `bar` below, it appears to work, but will you sometimes want to declare that `TFirst : Wholes` or anything like that? (like in `foo2` and `bar2`)
+            {
+                private Whole()
+                {
+                }
+            }
+        }
+
+        public static void Foo<TFirst, TSecond>() where TFirst : ILessThan<TSecond>
+        {
+        }
+
+        public static void Bar()
+        {
+            Foo<Naturals.Zero, Wholes.Three>();
+        }
+
+        /*public static void Foo2<TFirst, TSecond>() where TFirst : Naturals, ILessThan<TSecond> where TSecond : Naturals
+        {
+        }
+
+        public static void Bar2()
+        {
+            Foo<Naturals.Zero, Naturals.Whole<Wholes.Three>>();
+        }*/
+    }
+
     public sealed class PortionV3<TTotal, TCurrent> where TTotal : Naturals where TCurrent : Naturals, ILessThan<TTotal>
     {
         public PortionV3(InOrder<TTotal, TCurrent> inOrder)
