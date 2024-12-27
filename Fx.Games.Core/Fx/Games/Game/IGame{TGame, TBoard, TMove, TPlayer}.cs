@@ -155,72 +155,86 @@
         {
         }
 
-        public abstract class Wholes
+        public interface INumericValue
         {
-            private Wholes()
+            static abstract uint Value { get; }
+        }
+
+        public interface IWholes : INumericValue
+        {
+            public interface IOne : IWholes, ILessThanTwo
+            {
+                static uint INumericValue.Value { get; } = 1;
+            }
+
+            public interface ILessThanOne : ILessThan<IOne>, ILessThanTwo
             {
             }
 
-            public sealed class One : Wholes, ILessThanTwo
+            public interface ITwo : IWholes, ILessThanThree
             {
-                private One() //// TODO do you ever actually need instances of these?
-                {
-                }
+                static uint INumericValue.Value { get; } = 2;
             }
 
-            public interface ILessThanOne : ILessThan<One>, ILessThanTwo
-            {
-            }
-
-            public sealed class Two : Wholes, ILessThanThree
-            {
-                private Two()
-                {
-                }
-            }
-
-            public interface ILessThanTwo : ILessThan<Two>, ILessThanThree
+            public interface ILessThanTwo : ILessThan<ITwo>, ILessThanThree
             {
             }
             
-            public sealed class Three : Wholes, ILessThanFour
+            public interface IThree : IWholes, ILessThanFour
             {
-                private Three()
-                {
-                }
+                static uint INumericValue.Value { get; } = 3;
             }
 
-            public interface ILessThanThree : ILessThan<Three>, ILessThanFour
+            public interface ILessThanThree : ILessThan<IThree>, ILessThanFour
             {
             }
 
-            public sealed class Four : Wholes
+            public interface IFour : IWholes
             {
-                private Four()
-                {
-                }
+                static uint INumericValue.Value { get; } = 4;
             }
 
-            public interface ILessThanFour : ILessThan<Four>
+            public interface ILessThanFour : ILessThan<IFour>
             {
             }
         }
 
-        public abstract class Naturals
+        public interface INaturals : INumericValue
         {
-            public sealed class Zero : Naturals, Wholes.ILessThanOne
+            public interface IZero : INaturals, IWholes.ILessThanOne
             {
-                private Zero()
-                {
-                }
+                static uint INumericValue.Value { get; } = 0;
             }
 
-            public sealed class Whole<TWhole> : Naturals where TWhole : Wholes //// TODO do this work correctly? looking at `foo` and `bar` below, it appears to work, but will you sometimes want to declare that `TFirst : Wholes` or anything like that? (like in `foo2` and `bar2`)
+            public interface IWhole<TWhole> : INaturals where TWhole : IWholes //// TODO do this work correctly? looking at `foo` and `bar` below, it appears to work, but will you sometimes want to declare that `TFirst : Wholes` or anything like that? (like in `foo2` and `bar2`)
             {
-                private Whole()
-                {
-                }
+                static uint INumericValue.Value { get; } = TWhole.Value;
             }
+        }
+
+        public abstract class Ordered<TStart, TCurrent, TEnd> where TStart : ILessThan<TCurrent>, ILessThan<TEnd> where TCurrent : ILessThan<TEnd>
+        {
+        }
+
+        public sealed class Intermediate<TStart, TCurrent, TNext, TEnd, TTheRest> : Ordered<TStart, TCurrent, TEnd> where TStart : ILessThan<TCurrent>, ILessThan<TNext>, ILessThan<TEnd> where TCurrent : ILessThan<TNext>, ILessThan<TEnd> where TNext : ILessThan<TEnd> where TTheRest : Ordered<TStart, TNext, TEnd>
+        {
+            //// TODO do the generic type constraints need an igreaterthan interface?
+        }
+
+        public sealed class Last<TStart, TCurrent, TEnd> : Ordered<TStart, TCurrent, TEnd> where TStart : ILessThan<TEnd>, ILessThan<TCurrent> where TCurrent : ILessThan<TEnd>
+        {
+        }
+
+        public static void CreateOrdered()
+        {
+            new Intermediate<INaturals.IZero, IWholes.IOne, IWholes.ITwo, IWholes.IFour,
+                Intermediate<INaturals.IZero, IWholes.ITwo, IWholes.IThree, IWholes.IFour,
+                Last<INaturals.IZero, IWholes.IThree, IWholes.IFour>>>();
+        }
+
+        public static double[] Weights<TOrdered, TStart, TCurrent, TEnd>(TOrdered ordered) where TOrdered : Ordered<TStart, TCurrent, TEnd> where TStart : ILessThan<TCurrent>, ILessThan<TEnd> where TCurrent : ILessThan<TEnd>
+        {
+            
         }
 
         public static void Foo<TFirst, TSecond>() where TFirst : ILessThan<TSecond>
@@ -229,16 +243,16 @@
 
         public static void Bar()
         {
-            Foo<Naturals.Zero, Wholes.Three>();
+            Foo<INaturals.IZero, IWholes.IThree>();
         }
 
-        /*public static void Foo2<TFirst, TSecond>() where TFirst : Naturals, ILessThan<TSecond> where TSecond : Naturals
+        /*public static void Foo2<TFirst, TSecond>() where TFirst : INaturals, ILessThan<TSecond> where TSecond : INaturals
         {
         }
 
         public static void Bar2()
         {
-            Foo<Naturals.Zero, Naturals.Whole<Wholes.Three>>();
+            Foo<INaturals.IZero, INaturals.IWhole<IWholes.IThree>>();
         }*/
     }
 
