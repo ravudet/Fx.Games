@@ -237,6 +237,33 @@
             static abstract IEnumerable<double> Weights<TPrevious>() where TPrevious : ILessThan<TCurrent>, INumericValue; //// TODO because this is abstract, anyone can implement their own; this probably isn't desireable for your purposes
         }
 
+        private static class Ordered
+        {
+            public static Last<TStart, TCurrent, TEnd> Create<TStart, TCurrent, TEnd>(TStart start, TCurrent current, TEnd end) where TStart : ILessThan<TEnd>, ILessThan<TCurrent>, INumericValue where TCurrent : ILessThan<TEnd>, INumericValue where TEnd : INumericValue
+            {
+                return new Last<TStart, TCurrent, TEnd>();
+            }
+
+            public static Intermediate<TStart, TCurrent, TNext, TEnd> Create<TStart, TCurrent, TNext, TEnd>(TCurrent current, Ordered<TStart, TNext, TEnd> theRest) where TStart : ILessThan<TCurrent>, INumericValue, ILessThan<TNext>, ILessThan<TEnd> where TCurrent : ILessThan<TNext>, ILessThan<TEnd>, INumericValue where TNext : ILessThan<TEnd>, INumericValue where TEnd : INumericValue
+            {
+                return new Intermediate<TStart, TCurrent, TNext, TEnd>(theRest);
+            }
+
+            public static void Tester()
+            {
+                var last = Ordered.Create((INaturals.IZero)null, (IWholes.IThree)null, (IWholes.IFour)null);
+                var intermediate = Ordered.Create((IWholes.ITwo)null, last);
+
+                AndThen(intermediate, (IWholes.IOne)null);
+            }
+
+            public static Intermediate<TStart, TCurrent, TNext, TEnd> AndThen<TStart, TCurrent, TNext, TEnd>(this Ordered<TStart, TNext, TEnd> theRest, TCurrent current) where TStart : ILessThan<TCurrent>, INumericValue, ILessThan<TNext>, ILessThan<TEnd> where TCurrent : ILessThan<TNext>, ILessThan<TEnd>, INumericValue where TNext : ILessThan<TEnd>, INumericValue where TEnd : INumericValue
+            {
+                //// TODO this will do it backwards, actually; if you can reverse the model of the derived types, you should be able to get a fluent api for this...
+                return new Intermediate<TStart, TCurrent, TNext, TEnd>(theRest);
+            }
+        }
+
         public interface IIntermediate<TStart, TCurrent, TNext, TEnd, TTheRest> : IOrdered<TStart, TCurrent, TEnd> where TStart : ILessThan<TCurrent>, INumericValue, ILessThan<TNext>, ILessThan<TEnd> where TCurrent : ILessThan<TNext>, ILessThan<TEnd>, INumericValue where TNext : ILessThan<TEnd>, INumericValue where TTheRest : IOrdered<TStart, TNext, TEnd> where TEnd : INumericValue
         {
             //// TODO do the generic type constraints need an igreaterthan interface?
