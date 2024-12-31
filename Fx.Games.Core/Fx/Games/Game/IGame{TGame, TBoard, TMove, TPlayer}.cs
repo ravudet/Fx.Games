@@ -217,6 +217,21 @@
             }
         }
 
+        public abstract class Ordered<TStart, TCurrent, TEnd> where TStart : ILessThan<TCurrent>, ILessThan<TEnd> where TCurrent : ILessThan<TEnd>
+        {
+        }
+
+        public sealed class Intermediate<TStart, TCurrent, TNext, TEnd> : Ordered<TStart, TCurrent, TEnd> where TStart : ILessThan<TCurrent>, INumericValue, ILessThan<TNext>, ILessThan<TEnd> where TCurrent : ILessThan<TNext>, ILessThan<TEnd>, INumericValue where TNext : ILessThan<TEnd>, INumericValue where TEnd : INumericValue
+        {
+            public Intermediate(Ordered<TStart, TNext, TEnd> theRest)
+            {
+            }
+        }
+
+        public sealed class Last<TStart, TCurrent, TEnd> : Ordered<TStart, TCurrent, TEnd> where TStart : ILessThan<TEnd>, ILessThan<TCurrent>, INumericValue where TCurrent : ILessThan<TEnd>, INumericValue where TEnd : INumericValue
+        {
+        }
+
         public interface IOrdered<TStart, TCurrent, TEnd> where TStart : ILessThan<TCurrent>, ILessThan<TEnd> where TCurrent : ILessThan<TEnd>
         {
             static abstract IEnumerable<double> Weights<TPrevious>() where TPrevious : ILessThan<TCurrent>, INumericValue; //// TODO because this is abstract, anyone can implement their own; this probably isn't desireable for your purposes
