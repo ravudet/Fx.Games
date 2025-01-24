@@ -1,0 +1,3 @@
+﻿namespace Fx.Range
+{
+}

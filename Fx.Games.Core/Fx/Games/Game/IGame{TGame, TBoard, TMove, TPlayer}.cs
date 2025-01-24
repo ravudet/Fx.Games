@@ -257,11 +257,11 @@
                 AndThen(intermediate, (IWholes.IOne)null);
             }
 
-            public static Intermediate<TStart, TCurrent, TNext, TEnd> AndThen<TStart, TCurrent, TNext, TEnd>(this Ordered<TStart, TNext, TEnd> theRest, TCurrent current) where TStart : ILessThan<TCurrent>, INumericValue, ILessThan<TNext>, ILessThan<TEnd> where TCurrent : ILessThan<TNext>, ILessThan<TEnd>, INumericValue where TNext : ILessThan<TEnd>, INumericValue where TEnd : INumericValue
+            /*public static Intermediate<TStart, TCurrent, TNext, TEnd> AndThen<TStart, TCurrent, TNext, TEnd>(this Ordered<TStart, TNext, TEnd> theRest, TCurrent current) where TStart : ILessThan<TCurrent>, INumericValue, ILessThan<TNext>, ILessThan<TEnd> where TCurrent : ILessThan<TNext>, ILessThan<TEnd>, INumericValue where TNext : ILessThan<TEnd>, INumericValue where TEnd : INumericValue
             {
                 //// TODO this will do it backwards, actually; if you can reverse the model of the derived types, you should be able to get a fluent api for this...
                 return new Intermediate<TStart, TCurrent, TNext, TEnd>(theRest);
-            }
+            }*/
         }
 
         public interface IIntermediate<TStart, TCurrent, TNext, TEnd, TTheRest> : IOrdered<TStart, TCurrent, TEnd> where TStart : ILessThan<TCurrent>, INumericValue, ILessThan<TNext>, ILessThan<TEnd> where TCurrent : ILessThan<TNext>, ILessThan<TEnd>, INumericValue where TNext : ILessThan<TEnd>, INumericValue where TTheRest : IOrdered<TStart, TNext, TEnd> where TEnd : INumericValue

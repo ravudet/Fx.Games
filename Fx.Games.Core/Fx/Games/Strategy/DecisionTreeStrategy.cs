@@ -3,15 +3,16 @@
     using Fx.Distribution;
     using Fx.Games.Game;
     using Fx.Games.Game.Amazons;
+    using Fx.Range;
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
-    public sealed class DecisionTreeStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> : IStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame>
+    public sealed class DecisionTreeStrategy<TGame, TBoard, TMove, TPlayer, TDistribution, TMinimum, TMaximum> : IStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame> where TMinimum : Fx.Range.Naturals where TMaximum : Fx.Range.Naturals, IGreaterThan<TMinimum>
     {
         private readonly TPlayer desiredWinner;
 
-        private readonly Func<TDistribution, PortionV2<TGame>> weightedDistributionAdapter;
+        private readonly Func<TDistribution, Segment<TMinimum, TMaximum, TGame>> weightedDistributionAdapter;
 
         private readonly IEqualityComparer<TPlayer> playerComparer;
 
@@ -19,7 +20,7 @@
 
         public DecisionTreeStrategy(
             TPlayer desiredWinner, 
-            Func<TDistribution, PortionV2<TGame>> weightedDistributionAdapter,
+            Func<TDistribution, Segment<TMinimum, TMaximum, TGame>> weightedDistributionAdapter,
             IEqualityComparer<TPlayer> playerComparer, 
             double drawWeight)
         {
@@ -42,7 +43,7 @@
         private Outcome ComputeOutcome(TDistribution distribution)
         {
             var portions = this.weightedDistributionAdapter(distribution);
-            var weights = PortionV2Playground.ConvertToWeights(portions);
+            var weights = portions.ToWeights();
 
             return AverageOfOutcomes(weights.Select(weight => (weight.Item1, ComputeOutcome(weight.Item2))));
         }
