@@ -12,8 +12,8 @@ namespace Fx.Range
                 natural
                     .Visit(
                         Range
-                            .Instance(Naturals._0, Naturals._3, (Naturals value, Void @void) => value.Value * 1)
-                            .FollowedBy(Naturals._8, (Naturals value, Void @void) => value.Value * 2),
+                            .Instance(Naturals._0, Naturals._3, (Naturals value, Void @void) => value.ToClr() * 1)
+                            .FollowedBy(Naturals._8, (Naturals value, Void @void) => value.ToClr() * 2),
                         new Void());
         }
 
@@ -36,7 +36,7 @@ namespace Fx.Range
             //// TODO i think you prefer having concrete instances instead of just types; if you just have types, you would need to specify type parameters more often, which will result in losing all type inference
         }
 
-        public abstract uint Value { get; } //// TODO you like that you convert back into a built-in type so quickly? should you abstract this somehow? //// TODO use a visitor for this? //// TODO have a visitor, and then have a visit method that takes in a range where the values are the accept methods
+        //// public abstract uint Value { get; } //// TODO you like that you convert back into a built-in type so quickly? should you abstract this somehow? //// TODO use a visitor for this? //// TODO have a visitor, and then have a visit method that takes in a range where the values are the accept methods
 
         public TResult Visit<TResult, TContext>(Segment<Types._0, Types._8, Func<Naturals, TContext, TResult>> range, TContext context)
         {
@@ -106,8 +106,6 @@ namespace Fx.Range
                 }
 
                 public static _0 Instance { get; } = new _0();
-
-                public override uint Value => 0;
             }
 
             private interface IGreaterThan0 : IGreaterThan<_0>
@@ -121,8 +119,6 @@ namespace Fx.Range
                 }
 
                 public static _1 Instance { get; } = new _1();
-
-                public override uint Value => 1;
             }
 
             private interface IGreaterThan1 : IGreaterThan<_1>, IGreaterThan0
@@ -136,8 +132,6 @@ namespace Fx.Range
                 }
 
                 public static _2 Instance { get; } = new _2();
-
-                public override uint Value => 2;
             }
 
             private interface IGreaterThan2 : IGreaterThan<_2>, IGreaterThan1
@@ -151,8 +145,6 @@ namespace Fx.Range
                 }
 
                 public static _3 Instance { get; } = new _3();
-
-                public override uint Value => 3;
             }
 
             private interface IGreaterThan3 : IGreaterThan<_3>, IGreaterThan2
@@ -166,8 +158,6 @@ namespace Fx.Range
                 }
 
                 public static _4 Instance { get; } = new _4();
-
-                public override uint Value => 4;
             }
 
             private interface IGreaterThan4 : IGreaterThan<_4>, IGreaterThan3
@@ -181,8 +171,6 @@ namespace Fx.Range
                 }
 
                 public static _5 Instance { get; } = new _5();
-
-                public override uint Value => 5;
             }
 
             private interface IGreaterThan5 : IGreaterThan<_5>, IGreaterThan4
@@ -196,8 +184,6 @@ namespace Fx.Range
                 }
 
                 public static _6 Instance { get; } = new _6();
-
-                public override uint Value => 6;
             }
 
             private interface IGreaterThan6 : IGreaterThan<_6>, IGreaterThan5
@@ -211,8 +197,6 @@ namespace Fx.Range
                 }
 
                 public static _7 Instance { get; } = new _7();
-
-                public override uint Value => 7;
             }
 
             private interface IGreaterThan8 : IGreaterThan<_7>, IGreaterThan6
@@ -226,8 +210,6 @@ namespace Fx.Range
                 }
 
                 public static _8 Instance { get; } = new _8();
-
-                public override uint Value => 8;
             }
         }
     }

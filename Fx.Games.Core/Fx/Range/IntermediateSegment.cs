@@ -41,7 +41,7 @@ namespace Fx.Range
 
             protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept<TMinimum2, TMaximum2>(StartingSegment<TMinimum2, TMaximum2, TValue> node, Void context)
             {
-                yield return (node.Maximum.Value - node.Minimum.Value, node.Value, node.Minimum.Value, node.Maximum.Value);
+                yield return (node.Maximum.ToClr() - node.Minimum.ToClr(), node.Value, node.Minimum.ToClr(), node.Maximum.ToClr());
             }
 
             protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2, TValue> node, Void context)
@@ -55,7 +55,7 @@ namespace Fx.Range
                 }
 
                 //// TODO fix the nullable stuff with `lastweight`
-                yield return (node.Maximmum.Value - lastWeight.Value.Intermediate, node.Value, lastWeight.Value.Minimum, node.Maximmum.Value);
+                yield return (node.Maximmum.ToClr() - lastWeight.Value.Intermediate, node.Value, lastWeight.Value.Minimum, node.Maximmum.ToClr());
             }
         }
     }
