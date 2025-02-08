@@ -20,10 +20,12 @@ namespace Fx.Games.Game
 
             public Placement Place(Ship ship, (int X, int Y) location, Direction direction)
             {
+                throw new Exception("TODO");
             }
 
             public Discovery Complete()
             {
+                throw new Exception("TODO");
             }
         }
 

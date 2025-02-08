@@ -1,104 +1,227 @@
-﻿namespace Fx.Range
+﻿using System;
+using System.Net.Mime;
+using System.Runtime.InteropServices;
+
+namespace Fx.Range
 {
-    public interface ILessThan<T>
+    public static class NaturalsPlayground
     {
+        public static void DoWork(Naturals natural)
+        {
+            var value = 
+                natural
+                    .Visit(
+                        Range
+                            .Instance(Naturals._0, Naturals._3, (Naturals value, Void @void) => value.Value * 1)
+                            .FollowedBy(Naturals._8, (Naturals value, Void @void) => value.Value * 2),
+                        new Void());
+        }
     }
 
     public interface IGreaterThan<T>
     {
     }
 
-    public abstract class Naturals
+    public abstract class Naturals //// TODO should this be plural? do you want the static properties to be in static class called naturals, and have the du be a class called natural?
     {
         private Naturals()
         {
+            //// TODO i think you prefer having concrete instances instead of just types; if you just have types, you would need to specify type parameters more often, which will result in losing all type inference
         }
 
-        public abstract uint Value { get; } //// TODO you like that you convert back into a built-in type so quickly? should you abstract this somehow?
+        public abstract uint Value { get; } //// TODO you like that you convert back into a built-in type so quickly? should you abstract this somehow? //// TODO use a visitor for this? //// TODO have a visitor, and then have a visit method that takes in a range where the values are the accept methods
 
-        public sealed class Zero : Naturals, ILessThanOne //// TODO rename these to _0
+        public TResult Visit<TResult, TContext>(Segment<Types._0, Types._8, Func<Naturals, TContext, TResult>> range, TContext context)
         {
-            public override uint Value => 0;
+            //// TODO is this method signature actually valuable? the `func`s still won't know exactly which natural they are being given, so they will still need to do something more
+
+            return VisitVisitor<TResult, TContext, Naturals.Types._0, Naturals.Types._8>.Instance.Visit(range, (this, context));
         }
 
-        private interface IGreaterThanZero : IGreaterThan<Zero>
+        private sealed class VisitVisitor<TResult, TContext, TMinimum, TMaximum>
+            : Segment<TMinimum, TMaximum, Func<Naturals, TContext, TResult>>.Visitor<TResult, (Naturals Natural, TContext Context)>
+            where TMaximum : IGreaterThan<TMinimum>
         {
+            private VisitVisitor()
+            {
+            }
+
+            public static VisitVisitor<TResult, TContext, TMinimum, TMaximum> Instance { get; } =
+                new VisitVisitor<TResult, TContext, TMinimum, TMaximum>();
+
+            protected internal override TResult Accept<TMinimum2, TMaximum2>(
+                StartingSegment<TMinimum2, TMaximum2, Func<Naturals, TContext, TResult>> node,
+                (Naturals Natural, TContext Context) context)
+            {
+                if (context.Natural is IGreaterThan<TMinimum2> && !(context.Natural is IGreaterThan<TMaximum2>))
+                {
+                    //// TODO this if statement isn't actually inclusive of the whole range...
+
+                    return node.Value(context.Natural, context.Context);
+                }
+                else
+                {
+                    throw new Exception("TODO this means that they gave us a natural that somehow doesn't fit into the range, this is a bug");
+                }
+            }
+
+            protected internal override TResult Accept<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2>(
+                IntermediateSegment<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2, Func<Naturals, TContext, TResult>> node,
+                (Naturals Natural, TContext Context) context)
+            {
+                if (context.Natural is IGreaterThan<TIntermediate2>)
+                {
+                    return node.Value(context.Natural, context.Context);
+                }
+                else
+                {
+                    return VisitVisitor<TResult, TContext, TMinimum2, TIntermediate2>.Instance.Visit(node.PreviousRange, context);
+                }
+            }
         }
 
-        public sealed class One : Naturals, IGreaterThanZero
-        {
-            public override uint Value => 1;
-        }
+        public static Types._0 _0 { get; } = Types._0.Instance;
+        public static Types._1 _1 { get; } = Types._1.Instance;
+        public static Types._2 _2 { get; } = Types._2.Instance;
+        public static Types._3 _3 { get; } = Types._3.Instance;
+        public static Types._4 _4 { get; } = Types._4.Instance;
+        public static Types._5 _5 { get; } = Types._5.Instance;
+        public static Types._6 _6 { get; } = Types._6.Instance;
+        public static Types._7 _7 { get; } = Types._7.Instance;
+        public static Types._8 _8 { get; } = Types._8.Instance;
 
-        private interface IGreaterThanOne : IGreaterThan<One>, IGreaterThanZero
+        public static class Types
         {
-        }
+            public sealed class _0 : Naturals
+            {
+                private _0()
+                {
+                }
 
-        private interface ILessThanOne : ILessThan<One>
-        {
-        }
+                public static _0 Instance { get; } = new _0();
 
-        public sealed class Two : Naturals, IGreaterThanOne
-        {
-            public override uint Value => 2;
-        }
+                public override uint Value => 0;
+            }
 
-        private interface IGreaterThanTwo : IGreaterThan<Two>, IGreaterThanOne
-        {
-        }
+            private interface IGreaterThan0 : IGreaterThan<_0>
+            {
+            }
 
-        private interface ILessThanTwo : ILessThanOne, ILessThan<Two>
-        {
-        }
+            public sealed class _1 : Naturals, IGreaterThan0
+            {
+                private _1()
+                {
+                }
 
-        public sealed class Three : Naturals, IGreaterThanTwo
-        {
-            public override uint Value => 3;
-        }
+                public static _1 Instance { get; } = new _1();
 
-        private interface IGreaterThanThree : IGreaterThan<Three>, IGreaterThanTwo
-        {
-        }
+                public override uint Value => 1;
+            }
 
-        public sealed class Four : Naturals, IGreaterThanThree
-        {
-            public override uint Value => 4;
-        }
+            private interface IGreaterThan1 : IGreaterThan<_1>, IGreaterThan0
+            {
+            }
 
-        private interface IGreaterThanFour : IGreaterThan<Four>, IGreaterThanThree
-        {
-        }
+            public sealed class _2 : Naturals, IGreaterThan1
+            {
+                private _2()
+                {
+                }
 
-        public sealed class Five : Naturals, IGreaterThanFour
-        {
-            public override uint Value => 5;
-        }
+                public static _2 Instance { get; } = new _2();
 
-        private interface IGreaterThanFive : IGreaterThan<Five>, IGreaterThanFour
-        {
-        }
+                public override uint Value => 2;
+            }
 
-        public sealed class Six : Naturals, IGreaterThanFive
-        {
-            public override uint Value => 6;
-        }
+            private interface IGreaterThan2 : IGreaterThan<_2>, IGreaterThan1
+            {
+            }
 
-        private interface IGreaterThanSix : IGreaterThan<Six>, IGreaterThanFive
-        {
-        }
+            public sealed class _3 : Naturals, IGreaterThan2
+            {
+                private _3()
+                {
+                }
 
-        public sealed class Seven : Naturals, IGreaterThanSix
-        {
-            public override uint Value => 7;
-        }
+                public static _3 Instance { get; } = new _3();
 
-        private interface IGreaterThanSeven : IGreaterThan<Seven>, IGreaterThanSix
-        {
-        }
+                public override uint Value => 3;
+            }
 
-        public sealed class Eight : Naturals, IGreaterThanSeven
-        {
-            public override uint Value => 8;
+            private interface IGreaterThan3 : IGreaterThan<_3>, IGreaterThan2
+            {
+            }
+
+            public sealed class _4 : Naturals, IGreaterThan3
+            {
+                private _4()
+                {
+                }
+
+                public static _4 Instance { get; } = new _4();
+
+                public override uint Value => 4;
+            }
+
+            private interface IGreaterThan4 : IGreaterThan<_4>, IGreaterThan3
+            {
+            }
+
+            public sealed class _5 : Naturals, IGreaterThan4
+            {
+                private _5()
+                {
+                }
+
+                public static _5 Instance { get; } = new _5();
+
+                public override uint Value => 5;
+            }
+
+            private interface IGreaterThan5 : IGreaterThan<_5>, IGreaterThan4
+            {
+            }
+
+            public sealed class _6 : Naturals, IGreaterThan5
+            {
+                private _6()
+                {
+                }
+
+                public static _6 Instance { get; } = new _6();
+
+                public override uint Value => 6;
+            }
+
+            private interface IGreaterThan6 : IGreaterThan<_6>, IGreaterThan5
+            {
+            }
+
+            public sealed class _7 : Naturals, IGreaterThan6
+            {
+                private _7()
+                {
+                }
+
+                public static _7 Instance { get; } = new _7();
+
+                public override uint Value => 7;
+            }
+
+            private interface IGreaterThan8 : IGreaterThan<_7>, IGreaterThan6
+            {
+            }
+
+            public sealed class _8 : Naturals, IGreaterThan8
+            {
+                private _8()
+                {
+                }
+
+                public static _8 Instance { get; } = new _8();
+
+                public override uint Value => 8;
+            }
         }
     }
 }

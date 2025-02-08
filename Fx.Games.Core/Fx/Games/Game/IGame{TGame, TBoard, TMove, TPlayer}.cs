@@ -254,7 +254,7 @@
                 var last = Ordered.Create((INaturals.IZero)null, (IWholes.IThree)null, (IWholes.IFour)null);
                 var intermediate = Ordered.Create((IWholes.ITwo)null, last);
 
-                AndThen(intermediate, (IWholes.IOne)null);
+                ////AndThen(intermediate, (IWholes.IOne)null);
             }
 
             /*public static Intermediate<TStart, TCurrent, TNext, TEnd> AndThen<TStart, TCurrent, TNext, TEnd>(this Ordered<TStart, TNext, TEnd> theRest, TCurrent current) where TStart : ILessThan<TCurrent>, INumericValue, ILessThan<TNext>, ILessThan<TEnd> where TCurrent : ILessThan<TNext>, ILessThan<TEnd>, INumericValue where TNext : ILessThan<TEnd>, INumericValue where TEnd : INumericValue

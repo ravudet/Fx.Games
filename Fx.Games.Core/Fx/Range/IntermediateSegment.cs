@@ -85,7 +85,7 @@ namespace Fx.Range
             }
 
             protected internal abstract TResult Accept<TMinimum2, TMaximum2>(StartingSegment<TMinimum2, TMaximum2, TValue> node, TContext context) where TMinimum2 : Naturals where TMaximum2 : Naturals, IGreaterThan<TMinimum2>; //// TODO you shouldn't have to specify `naturals` here, it should be somehow in the derived type
-            protected internal abstract TResult Accept<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2, TValue> node, TContext context) where TPreviousRange2 : IRange<TMinimum2, TIntermediate2, TValue> where TIntermediate2 : Naturals, IGreaterThan<TMinimum2> where TMaximum2 : Naturals, IGreaterThan<TIntermediate2>, IGreaterThan<TMinimum2> where TMinimum2 : Naturals;
+            protected internal abstract TResult Accept<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2, TValue> node, TContext context) where TPreviousRange2 : Segment<TMinimum2, TIntermediate2, TValue>, IRange<TMinimum2, TIntermediate2, TValue> where TIntermediate2 : Naturals, IGreaterThan<TMinimum2> where TMaximum2 : Naturals, IGreaterThan<TIntermediate2>, IGreaterThan<TMinimum2> where TMinimum2 : Naturals;
         }
 
         public abstract TValue Value { get; }
@@ -118,7 +118,7 @@ namespace Fx.Range
         }
     }
 
-    public sealed class IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue> : Segment<TMinimum, TMaximum, TValue>, IRange<TMinimum, TMaximum, TValue> where TPreviousRange : IRange<TMinimum, TIntermediate, TValue> where TIntermediate : Naturals, IGreaterThan<TMinimum> where TMaximum : Naturals, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum> where TMinimum : Naturals
+    public sealed class IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue> : Segment<TMinimum, TMaximum, TValue>, IRange<TMinimum, TMaximum, TValue> where TPreviousRange : Segment<TMinimum, TIntermediate, TValue>, IRange<TMinimum, TIntermediate, TValue> where TIntermediate : Naturals, IGreaterThan<TMinimum> where TMaximum : Naturals, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum> where TMinimum : Naturals
     {
         public IntermediateSegment(TPreviousRange previousRange, TMaximum maximmum, TValue value)
         {
@@ -168,10 +168,12 @@ namespace Fx.Range
         {
             //// TODO try an operation that replaces the "maximum" of some segment by a different value (e.g. replace `four` with `three`)
             var range = Range
-                .Instance(new Naturals.One(), new Naturals.Three(), "first") //// TODO use singletons or "factory properties"
-                .FollowedBy(new Naturals.Four(), "second")
-                .FollowedBy(new Naturals.Seven(), "third")
-                .FollowedBy(new Naturals.Eight(), "fourth");
+                .Instance(Naturals._1, Naturals._3, "first")
+                .FollowedBy(Naturals._4, "second")
+                .FollowedBy(Naturals._7, "third")
+                .FollowedBy(Naturals._8, "fourth");
+
+            //// TODO would it be nice to have something like Range.Start(_1).FollowedBy(-3, "first").FollowedBy(_4, "second")...?
         }
     }
 }

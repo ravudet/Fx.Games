@@ -86,16 +86,16 @@
             var random1 = new Random();
 
             var game = new ConnectFour<string>(player1, player2);
-            var strategy = new DecisionTreeStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string, Univariate<ConnectFour<string>>>(
+            /*var strategy = new DecisionTreeStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string, Univariate<ConnectFour<string>>>(
                 player1,
                 univariate => univariate.ToPortion(),
                 StringComparer.OrdinalIgnoreCase, 
-                -1.0);
+                -1.0);*/
 
             var driver = Driver.Create(
                 new[]
                 {
-                    KeyValuePair.Create(player1, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string, Univariate<ConnectFour<string>>>) strategy),
+                    KeyValuePair.Create(player1, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string, Univariate<ConnectFour<string>>>) null),
                     KeyValuePair.Create(player2, (IStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string, Univariate<ConnectFour<string>>>) ConsoleStrategy<ConnectFour<string>, ConnectFourBoard, ConnectFourMove, string, Univariate<ConnectFour<string>>>.Instance),
                 }.ToDb().ToDictionary(),
                 displayer);
@@ -294,16 +294,16 @@
             var ohs = "ohs";
 
             var game = new TicTacToe<string>(exes, ohs);
-            var strategy = new DecisionTreeStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string, Univariate<TicTacToe<string>>>(
+            /*var strategy = new DecisionTreeStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string, Univariate<TicTacToe<string>>>(
                 exes, 
                 univariate => univariate.ToPortion(),
                 StringComparer.OrdinalIgnoreCase, 
-                -1.0);
+                -1.0);*/
 
             var driver = Driver.Create(
                 new[]
                 {
-                    KeyValuePair.Create(exes, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string, Univariate<TicTacToe<string>>>)strategy),
+                    KeyValuePair.Create(exes, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string, Univariate<TicTacToe<string>>>)null),
                     KeyValuePair.Create(ohs, (IStrategy<TicTacToe<string>, TicTacToeBoard, TicTacToeMove, string, Univariate<TicTacToe<string>>>)game.ConsoleStrategy()),
                 }.ToDb().ToDictionary(),
                 displayer);
@@ -384,19 +384,19 @@
             var player = "player";
             var game = new PegGame<string>(player);
 
-            var strategy = new DecisionTreeStrategy<PegGame<string>, PegBoard, PegMove, string, Univariate<PegGame<string>>>(
+            /*var strategy = new DecisionTreeStrategy<PegGame<string>, PegBoard, PegMove, string, Univariate<PegGame<string>>>(
                 player,
                 univariate => univariate.ToPortion(),
                 StringComparer.OrdinalIgnoreCase,
-                0.5);
+                0.5);*/
 
-            var driver = Driver.Create(
+            /*var driver = Driver.Create(
                 new[] //// TODO use a fluent builder?
                 {
-                    KeyValuePair.Create(player, strategy),
+                    KeyValuePair.Create(player, null),
                 }.ToDb().ToDictionary(),
                 displayer);
-            var result = driver.Run(game);
+            var result = driver.Run(game);*/
         }
 
         private static void PegsMonteCarlo()
