@@ -16,6 +16,13 @@ namespace Fx.Range
                             .FollowedBy(Naturals._8, (Naturals value, Void @void) => value.Value * 2),
                         new Void());
         }
+
+        public static uint ToClr(this Naturals natural)
+        {
+            return natural.Visit(
+                Range.Instance(Naturals._0, Naturals._8, (Naturals value, Void @void) => uint.Parse(value.GetType().Name.Substring(1))),
+                new Void());
+        }
     }
 
     public interface IGreaterThan<T>
