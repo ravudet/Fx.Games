@@ -23,6 +23,49 @@ namespace Fx.Range
                 Range.Instance(Naturals._0, Naturals._8, (Naturals value, Void @void) => uint.Parse(value.GetType().Name.Substring(1))),
                 new Void());
         }
+
+        public static TResult Visit<TNode, TResult, TContext, TMinimum, TMaximum>(
+            this TNode node, 
+            Segment<TMinimum, TMaximum, Func<TNode, TContext, TResult>> range,
+            TContext context)
+            where TMaximum : IGreaterThan<TMinimum>
+        {
+            return VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum>.Instance.Visit(range, (node, context));
+        }
+
+        private sealed class VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum> 
+            : Segment<TMinimum, TMaximum, Func<TNode, TContext, TResult>>.Visitor<TResult, (TNode Node, TContext Context)>
+            where TMaximum : IGreaterThan<TMinimum>
+        {
+            private VisitVisitor()
+            {
+            }
+
+            public static VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum> Instance { get; } = 
+                new VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum>();
+
+            protected internal override TResult Accept<TMinimum2, TMaximum2>(StartingSegment<TMinimum2, TMaximum2, Func<TNode, TContext, TResult>> node, (TNode Node, TContext Context) context)
+            {
+                if (node is IGreaterThan<TMinimum2>)//// TODO || TMinimum2 : IGreaterThan<TNode>)
+                {
+                    throw new Exception("TODO node is not in the specified range");
+                }
+
+                return node.Value(context.Node, context.Context);
+            }
+
+            protected internal override TResult Accept<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2, Func<TNode, TContext, TResult>> node, (TNode Node, TContext Context) context)
+            {
+                if (context.Node is IGreaterThan<TIntermediate2>)
+                {
+                    return node.Value(context.Node, context.Context);
+                }
+                else
+                {
+                    return VisitVisitor<TNode, TResult, TContext, TMinimum2, TIntermediate2>.Instance.Visit(node.PreviousRange, context);
+                }
+            }
+        }
     }
 
     public interface IGreaterThan<T>
@@ -38,12 +81,12 @@ namespace Fx.Range
 
         //// public abstract uint Value { get; } //// TODO you like that you convert back into a built-in type so quickly? should you abstract this somehow? //// TODO use a visitor for this? //// TODO have a visitor, and then have a visit method that takes in a range where the values are the accept methods
 
-        public TResult Visit<TResult, TContext>(Segment<Types._0, Types._8, Func<Naturals, TContext, TResult>> range, TContext context)
+        /*public TResult Visit<TResult, TContext>(Segment<Types._0, Types._8, Func<Naturals, TContext, TResult>> range, TContext context)
         {
             //// TODO is this method signature actually valuable? the `func`s still won't know exactly which natural they are being given, so they will still need to do something more
 
             return VisitVisitor<TResult, TContext, Naturals.Types._0, Naturals.Types._8>.Instance.Visit(range, (this, context));
-        }
+        }*/
 
         private sealed class VisitVisitor<TResult, TContext, TMinimum, TMaximum>
             : Segment<TMinimum, TMaximum, Func<Naturals, TContext, TResult>>.Visitor<TResult, (Naturals Natural, TContext Context)>
