@@ -6,6 +6,15 @@ namespace Fx.Range
 {
     public static class NaturalsPlayground
     {
+        public static void DoWork()
+        {
+            var genericType = typeof(StartingSegment<,,>);
+            var typeArguments = new[] { typeof(Naturals.Types._4), typeof(Naturals.Types._1), typeof(string) };
+            var concreteType = genericType.MakeGenericType(typeArguments);
+            //// TODO this throws because _1 doens't implement igreaterthan<_4>, which is a good thing; you need to start seeing how this range stuff can be leveraged by a game before going too much further cleaning up code; battleship or 2048 are good test beds
+            var instance = Activator.CreateInstance(concreteType, Naturals._4, Naturals._1, string.Empty);
+        }
+
         public static void DoWork(Naturals natural)
         {
             var value = 
