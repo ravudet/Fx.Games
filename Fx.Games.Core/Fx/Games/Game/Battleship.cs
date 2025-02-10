@@ -51,8 +51,8 @@ namespace Fx.Games.Game
                 var totalNumberOfSpaces = 50; //// TODO not the right number, just used for illustration
 
                 var range = Fx.Range.Range
-                    .Instance(Fx.Range.Natural._0, Fx.Range.Natural._1, default(Battleship<TPlayer>)) //// TODO should be a game instance that indicates a hit
-                    .FollowedBy(Fx.Range.Natural._5, default(Battleship<TPlayer>)); //// TODO should be a game instance that indicates a miss
+                    .Instance(Fx.Range.Naturals._0, Fx.Range.Naturals._1, default(Battleship<TPlayer>)) //// TODO should be a game instance that indicates a hit
+                    .FollowedBy(Fx.Range.Naturals._5, default(Battleship<TPlayer>)); //// TODO should be a game instance that indicates a miss
 
                 var segment = SegmentV2<Battleship<TPlayer>>.Create(range); //// TODO not sure why the compiler thinks `range` is nullable here...
 

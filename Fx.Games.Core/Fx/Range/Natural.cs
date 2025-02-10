@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Mime;
 using System.Runtime.InteropServices;
+using static Fx.Range.Natural;
 
 namespace Fx.Range
 {
@@ -9,20 +10,20 @@ namespace Fx.Range
         public static void DoWork()
         {
             var genericType = typeof(StartingSegment<,,>);
-            var typeArguments = new[] { typeof(Natural.Types._4), typeof(Natural.Types._1), typeof(string) };
+            var typeArguments = new[] { typeof(Natural._4), typeof(Natural._1), typeof(string) };
             var concreteType = genericType.MakeGenericType(typeArguments);
             //// TODO this throws because _1 doens't implement igreaterthan<_4>, which is a good thing; you need to start seeing how this range stuff can be leveraged by a game before going too much further cleaning up code; battleship or 2048 are good test beds
-            var instance = Activator.CreateInstance(concreteType, Natural._4, Natural._1, string.Empty);
+            var instance = Activator.CreateInstance(concreteType, Naturals._4, Naturals._1, string.Empty);
         }
 
         public static void DoWork(Natural natural)
         {
-            var value = 
+            var value =
                 natural
                     .Visit(
                         Range
-                            .Instance(Natural._0, Natural._3, (Natural value, Void @void) => value.ToClr() * 1)
-                            .FollowedBy(Natural._8, (Natural value, Void @void) => value.ToClr() * 2),
+                            .Instance(Naturals._0, Naturals._3, (Natural value, Void @void) => value.ToClr() * 1)
+                            .FollowedBy(Naturals._8, (Natural value, Void @void) => value.ToClr() * 2),
                         new Void());
         }
 
@@ -32,7 +33,7 @@ namespace Fx.Range
         }
 
         public static TResult Visit<TNode, TResult, TContext, TMinimum, TMaximum>(
-            this TNode node, 
+            this TNode node,
             Segment<TMinimum, TMaximum, Func<TNode, TContext, TResult>> range,
             TContext context)
             where TMaximum : IGreaterThan<TMinimum>
@@ -40,7 +41,7 @@ namespace Fx.Range
             return VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum>.Instance.Visit(range, (node, context));
         }
 
-        private sealed class VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum> 
+        private sealed class VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum>
             : Segment<TMinimum, TMaximum, Func<TNode, TContext, TResult>>.Visitor<TResult, (TNode Node, TContext Context)>
             where TMaximum : IGreaterThan<TMinimum>
         {
@@ -48,7 +49,7 @@ namespace Fx.Range
             {
             }
 
-            public static VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum> Instance { get; } = 
+            public static VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum> Instance { get; } =
                 new VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum>();
 
             protected internal override TResult Accept<TMinimum2, TMaximum2>(StartingSegment<TMinimum2, TMaximum2, Func<TNode, TContext, TResult>> node, (TNode Node, TContext Context) context)
@@ -81,10 +82,18 @@ namespace Fx.Range
 
     public static class Naturals
     {
-
+        public static Natural._0 _0 { get; } = Natural._0.Instance;
+        public static Natural._1 _1 { get; } = _1.Instance;
+        public static Natural._2 _2 { get; } = Natural._2.Instance;
+        public static Natural._3 _3 { get; } = Natural._3.Instance;
+        public static Natural._4 _4 { get; } = Natural._4.Instance;
+        public static Natural._5 _5 { get; } = Natural._5.Instance;
+        public static Natural._6 _6 { get; } = Natural._6.Instance;
+        public static Natural._7 _7 { get; } = Natural._7.Instance;
+        public static Natural._8 _8 { get; } = Natural._8.Instance;
     }
 
-    public abstract class Natural //// TODO should this be plural? do you want the static properties to be in static class called naturals, and have the du be a class called natural?
+    public abstract class Natural
     {
         private Natural()
         {
@@ -142,130 +151,117 @@ namespace Fx.Range
             }
         }
 
-        public static Types._0 _0 { get; } = Types._0.Instance;
-        public static Types._1 _1 { get; } = Types._1.Instance;
-        public static Types._2 _2 { get; } = Types._2.Instance;
-        public static Types._3 _3 { get; } = Types._3.Instance;
-        public static Types._4 _4 { get; } = Types._4.Instance;
-        public static Types._5 _5 { get; } = Types._5.Instance;
-        public static Types._6 _6 { get; } = Types._6.Instance;
-        public static Types._7 _7 { get; } = Types._7.Instance;
-        public static Types._8 _8 { get; } = Types._8.Instance;
-
-        public static class Types
+        public sealed class _0 : Natural
         {
-            public sealed class _0 : Natural
-            {
-                private _0()
-                {
-                }
-
-                public static _0 Instance { get; } = new _0();
-            }
-
-            private interface IGreaterThan0 : IGreaterThan<_0>
+            private _0()
             {
             }
 
-            public sealed class _1 : Natural, IGreaterThan0
-            {
-                private _1()
-                {
-                }
+            public static _0 Instance { get; } = new _0();
+        }
 
-                public static _1 Instance { get; } = new _1();
-            }
+        private interface IGreaterThan0 : IGreaterThan<_0>
+        {
+        }
 
-            private interface IGreaterThan1 : IGreaterThan<_1>, IGreaterThan0
-            {
-            }
-
-            public sealed class _2 : Natural, IGreaterThan1
-            {
-                private _2()
-                {
-                }
-
-                public static _2 Instance { get; } = new _2();
-            }
-
-            private interface IGreaterThan2 : IGreaterThan<_2>, IGreaterThan1
+        public sealed class _1 : Natural, IGreaterThan0
+        {
+            private _1()
             {
             }
 
-            public sealed class _3 : Natural, IGreaterThan2
-            {
-                private _3()
-                {
-                }
+            public static _1 Instance { get; } = new _1();
+        }
 
-                public static _3 Instance { get; } = new _3();
-            }
+        private interface IGreaterThan1 : IGreaterThan<_1>, IGreaterThan0
+        {
+        }
 
-            private interface IGreaterThan3 : IGreaterThan<_3>, IGreaterThan2
-            {
-            }
-
-            public sealed class _4 : Natural, IGreaterThan3
-            {
-                private _4()
-                {
-                }
-
-                public static _4 Instance { get; } = new _4();
-            }
-
-            private interface IGreaterThan4 : IGreaterThan<_4>, IGreaterThan3
+        public sealed class _2 : Natural, IGreaterThan1
+        {
+            private _2()
             {
             }
 
-            public sealed class _5 : Natural, IGreaterThan4
-            {
-                private _5()
-                {
-                }
+            public static _2 Instance { get; } = new _2();
+        }
 
-                public static _5 Instance { get; } = new _5();
-            }
+        private interface IGreaterThan2 : IGreaterThan<_2>, IGreaterThan1
+        {
+        }
 
-            private interface IGreaterThan5 : IGreaterThan<_5>, IGreaterThan4
-            {
-            }
-
-            public sealed class _6 : Natural, IGreaterThan5
-            {
-                private _6()
-                {
-                }
-
-                public static _6 Instance { get; } = new _6();
-            }
-
-            private interface IGreaterThan6 : IGreaterThan<_6>, IGreaterThan5
+        public sealed class _3 : Natural, IGreaterThan2
+        {
+            private _3()
             {
             }
 
-            public sealed class _7 : Natural, IGreaterThan6
-            {
-                private _7()
-                {
-                }
+            public static _3 Instance { get; } = new _3();
+        }
 
-                public static _7 Instance { get; } = new _7();
+        private interface IGreaterThan3 : IGreaterThan<_3>, IGreaterThan2
+        {
+        }
+
+        public sealed class _4 : Natural, IGreaterThan3
+        {
+            private _4()
+            {
             }
 
-            private interface IGreaterThan8 : IGreaterThan<_7>, IGreaterThan6
+            public static _4 Instance { get; } = new _4();
+        }
+
+        private interface IGreaterThan4 : IGreaterThan<_4>, IGreaterThan3
+        {
+        }
+
+        public sealed class _5 : Natural, IGreaterThan4
+        {
+            private _5()
             {
             }
 
-            public sealed class _8 : Natural, IGreaterThan8
-            {
-                private _8()
-                {
-                }
+            public static _5 Instance { get; } = new _5();
+        }
 
-                public static _8 Instance { get; } = new _8();
+        private interface IGreaterThan5 : IGreaterThan<_5>, IGreaterThan4
+        {
+        }
+
+        public sealed class _6 : Natural, IGreaterThan5
+        {
+            private _6()
+            {
             }
+
+            public static _6 Instance { get; } = new _6();
+        }
+
+        private interface IGreaterThan6 : IGreaterThan<_6>, IGreaterThan5
+        {
+        }
+
+        public sealed class _7 : Natural, IGreaterThan6
+        {
+            private _7()
+            {
+            }
+
+            public static _7 Instance { get; } = new _7();
+        }
+
+        private interface IGreaterThan8 : IGreaterThan<_7>, IGreaterThan6
+        {
+        }
+
+        public sealed class _8 : Natural, IGreaterThan8
+        {
+            private _8()
+            {
+            }
+
+            public static _8 Instance { get; } = new _8();
         }
     }
 }

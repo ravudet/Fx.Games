@@ -168,10 +168,10 @@ namespace Fx.Range
         {
             //// TODO try an operation that replaces the "maximum" of some segment by a different value (e.g. replace `four` with `three`)
             var range = Range
-                .Instance(Natural._1, Natural._3, "first")
-                .FollowedBy(Natural._4, "second")
-                .FollowedBy(Natural._7, "third")
-                .FollowedBy(Natural._8, "fourth");
+                .Instance(Naturals._1, Naturals._3, "first")
+                .FollowedBy(Naturals._4, "second")
+                .FollowedBy(Naturals._7, "third")
+                .FollowedBy(Naturals._8, "fourth");
 
             //// TODO would it be nice to have something like Range.Start(_1).FollowedBy(-3, "first").FollowedBy(_4, "second")...?
         }
