@@ -9,24 +9,24 @@ namespace Fx.Range
         public static void DoWork()
         {
             var genericType = typeof(StartingSegment<,,>);
-            var typeArguments = new[] { typeof(Naturals.Types._4), typeof(Naturals.Types._1), typeof(string) };
+            var typeArguments = new[] { typeof(Natural.Types._4), typeof(Natural.Types._1), typeof(string) };
             var concreteType = genericType.MakeGenericType(typeArguments);
             //// TODO this throws because _1 doens't implement igreaterthan<_4>, which is a good thing; you need to start seeing how this range stuff can be leveraged by a game before going too much further cleaning up code; battleship or 2048 are good test beds
-            var instance = Activator.CreateInstance(concreteType, Naturals._4, Naturals._1, string.Empty);
+            var instance = Activator.CreateInstance(concreteType, Natural._4, Natural._1, string.Empty);
         }
 
-        public static void DoWork(Naturals natural)
+        public static void DoWork(Natural natural)
         {
             var value = 
                 natural
                     .Visit(
                         Range
-                            .Instance(Naturals._0, Naturals._3, (Naturals value, Void @void) => value.ToClr() * 1)
-                            .FollowedBy(Naturals._8, (Naturals value, Void @void) => value.ToClr() * 2),
+                            .Instance(Natural._0, Natural._3, (Natural value, Void @void) => value.ToClr() * 1)
+                            .FollowedBy(Natural._8, (Natural value, Void @void) => value.ToClr() * 2),
                         new Void());
         }
 
-        public static uint ToClr(this Naturals natural)
+        public static uint ToClr(this Natural natural)
         {
             return uint.Parse(natural.GetType().Name.Substring(1));
         }
@@ -79,9 +79,14 @@ namespace Fx.Range
     {
     }
 
-    public abstract class Naturals //// TODO should this be plural? do you want the static properties to be in static class called naturals, and have the du be a class called natural?
+    public static class Naturals
     {
-        private Naturals()
+
+    }
+
+    public abstract class Natural //// TODO should this be plural? do you want the static properties to be in static class called naturals, and have the du be a class called natural?
+    {
+        private Natural()
         {
             //// TODO i think you prefer having concrete instances instead of just types; if you just have types, you would need to specify type parameters more often, which will result in losing all type inference
         }
@@ -96,7 +101,7 @@ namespace Fx.Range
         }*/
 
         private sealed class VisitVisitor<TResult, TContext, TMinimum, TMaximum>
-            : Segment<TMinimum, TMaximum, Func<Naturals, TContext, TResult>>.Visitor<TResult, (Naturals Natural, TContext Context)>
+            : Segment<TMinimum, TMaximum, Func<Natural, TContext, TResult>>.Visitor<TResult, (Natural Natural, TContext Context)>
             where TMaximum : IGreaterThan<TMinimum>
         {
             private VisitVisitor()
@@ -107,8 +112,8 @@ namespace Fx.Range
                 new VisitVisitor<TResult, TContext, TMinimum, TMaximum>();
 
             protected internal override TResult Accept<TMinimum2, TMaximum2>(
-                StartingSegment<TMinimum2, TMaximum2, Func<Naturals, TContext, TResult>> node,
-                (Naturals Natural, TContext Context) context)
+                StartingSegment<TMinimum2, TMaximum2, Func<Natural, TContext, TResult>> node,
+                (Natural Natural, TContext Context) context)
             {
                 if (context.Natural is IGreaterThan<TMinimum2> && !(context.Natural is IGreaterThan<TMaximum2>))
                 {
@@ -123,8 +128,8 @@ namespace Fx.Range
             }
 
             protected internal override TResult Accept<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2>(
-                IntermediateSegment<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2, Func<Naturals, TContext, TResult>> node,
-                (Naturals Natural, TContext Context) context)
+                IntermediateSegment<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2, Func<Natural, TContext, TResult>> node,
+                (Natural Natural, TContext Context) context)
             {
                 if (context.Natural is IGreaterThan<TIntermediate2>)
                 {
@@ -149,7 +154,7 @@ namespace Fx.Range
 
         public static class Types
         {
-            public sealed class _0 : Naturals
+            public sealed class _0 : Natural
             {
                 private _0()
                 {
@@ -162,7 +167,7 @@ namespace Fx.Range
             {
             }
 
-            public sealed class _1 : Naturals, IGreaterThan0
+            public sealed class _1 : Natural, IGreaterThan0
             {
                 private _1()
                 {
@@ -175,7 +180,7 @@ namespace Fx.Range
             {
             }
 
-            public sealed class _2 : Naturals, IGreaterThan1
+            public sealed class _2 : Natural, IGreaterThan1
             {
                 private _2()
                 {
@@ -188,7 +193,7 @@ namespace Fx.Range
             {
             }
 
-            public sealed class _3 : Naturals, IGreaterThan2
+            public sealed class _3 : Natural, IGreaterThan2
             {
                 private _3()
                 {
@@ -201,7 +206,7 @@ namespace Fx.Range
             {
             }
 
-            public sealed class _4 : Naturals, IGreaterThan3
+            public sealed class _4 : Natural, IGreaterThan3
             {
                 private _4()
                 {
@@ -214,7 +219,7 @@ namespace Fx.Range
             {
             }
 
-            public sealed class _5 : Naturals, IGreaterThan4
+            public sealed class _5 : Natural, IGreaterThan4
             {
                 private _5()
                 {
@@ -227,7 +232,7 @@ namespace Fx.Range
             {
             }
 
-            public sealed class _6 : Naturals, IGreaterThan5
+            public sealed class _6 : Natural, IGreaterThan5
             {
                 private _6()
                 {
@@ -240,7 +245,7 @@ namespace Fx.Range
             {
             }
 
-            public sealed class _7 : Naturals, IGreaterThan6
+            public sealed class _7 : Natural, IGreaterThan6
             {
                 private _7()
                 {
@@ -253,7 +258,7 @@ namespace Fx.Range
             {
             }
 
-            public sealed class _8 : Naturals, IGreaterThan8
+            public sealed class _8 : Natural, IGreaterThan8
             {
                 private _8()
                 {

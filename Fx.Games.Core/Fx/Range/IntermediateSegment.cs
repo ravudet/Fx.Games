@@ -14,7 +14,7 @@ namespace Fx.Range
 
     public static class RangeExtensions
     {
-        public static IEnumerable<(double Weight, TValue Value)> ToWeights<TMinimum, TMaximum, TValue>(this Segment<TMinimum, TMaximum, TValue> intermediateSegment) where TMaximum : Naturals, IGreaterThan<TMinimum> where TMinimum : Naturals
+        public static IEnumerable<(double Weight, TValue Value)> ToWeights<TMinimum, TMaximum, TValue>(this Segment<TMinimum, TMaximum, TValue> intermediateSegment) where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural
         {
             return ToWeightsVisitor<TMinimum, TMaximum, TValue>
                 .Instance
@@ -84,14 +84,14 @@ namespace Fx.Range
                 return node.Dispatch(this, context);
             }
 
-            protected internal abstract TResult Accept<TMinimum2, TMaximum2>(StartingSegment<TMinimum2, TMaximum2, TValue> node, TContext context) where TMinimum2 : Naturals where TMaximum2 : Naturals, IGreaterThan<TMinimum2>; //// TODO you shouldn't have to specify `naturals` here, it should be somehow in the derived type
-            protected internal abstract TResult Accept<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2, TValue> node, TContext context) where TPreviousRange2 : Segment<TMinimum2, TIntermediate2, TValue>, IRange<TMinimum2, TIntermediate2, TValue> where TIntermediate2 : Naturals, IGreaterThan<TMinimum2> where TMaximum2 : Naturals, IGreaterThan<TIntermediate2>, IGreaterThan<TMinimum2> where TMinimum2 : Naturals;
+            protected internal abstract TResult Accept<TMinimum2, TMaximum2>(StartingSegment<TMinimum2, TMaximum2, TValue> node, TContext context) where TMinimum2 : Natural where TMaximum2 : Natural, IGreaterThan<TMinimum2>; //// TODO you shouldn't have to specify `naturals` here, it should be somehow in the derived type
+            protected internal abstract TResult Accept<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2, TValue> node, TContext context) where TPreviousRange2 : Segment<TMinimum2, TIntermediate2, TValue>, IRange<TMinimum2, TIntermediate2, TValue> where TIntermediate2 : Natural, IGreaterThan<TMinimum2> where TMaximum2 : Natural, IGreaterThan<TIntermediate2>, IGreaterThan<TMinimum2> where TMinimum2 : Natural;
         }
 
         public abstract TValue Value { get; }
     }
 
-    public sealed class StartingSegment<TMinimum, TMaximum, TValue> : Segment<TMinimum, TMaximum, TValue>, IRange<TMinimum, TMaximum, TValue> where TMaximum : Naturals, IGreaterThan<TMinimum> where TMinimum : Naturals
+    public sealed class StartingSegment<TMinimum, TMaximum, TValue> : Segment<TMinimum, TMaximum, TValue>, IRange<TMinimum, TMaximum, TValue> where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural
     {
         public StartingSegment(TMinimum minimum, TMaximum maximum, TValue value)
         {
@@ -104,7 +104,7 @@ namespace Fx.Range
         public TMaximum Maximum { get; }
         public override TValue Value { get; }
 
-        public IntermediateSegment<TMinimum, TMaximum, TNewMaximum, StartingSegment<TMinimum, TMaximum, TValue>, TValue> FollowedBy<TNewMaximum>(TNewMaximum newMaximum, TValue value) where TNewMaximum : Naturals, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
+        public IntermediateSegment<TMinimum, TMaximum, TNewMaximum, StartingSegment<TMinimum, TMaximum, TValue>, TValue> FollowedBy<TNewMaximum>(TNewMaximum newMaximum, TValue value) where TNewMaximum : Natural, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
         {
             return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, StartingSegment<TMinimum, TMaximum, TValue>, TValue>(
                 this,
@@ -118,7 +118,7 @@ namespace Fx.Range
         }
     }
 
-    public sealed class IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue> : Segment<TMinimum, TMaximum, TValue>, IRange<TMinimum, TMaximum, TValue> where TPreviousRange : Segment<TMinimum, TIntermediate, TValue>, IRange<TMinimum, TIntermediate, TValue> where TIntermediate : Naturals, IGreaterThan<TMinimum> where TMaximum : Naturals, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum> where TMinimum : Naturals
+    public sealed class IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue> : Segment<TMinimum, TMaximum, TValue>, IRange<TMinimum, TMaximum, TValue> where TPreviousRange : Segment<TMinimum, TIntermediate, TValue>, IRange<TMinimum, TIntermediate, TValue> where TIntermediate : Natural, IGreaterThan<TMinimum> where TMaximum : Natural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum> where TMinimum : Natural
     {
         public IntermediateSegment(TPreviousRange previousRange, TMaximum maximmum, TValue value)
         {
@@ -131,7 +131,7 @@ namespace Fx.Range
         public TMaximum Maximmum { get; }
         public override TValue Value { get; }
 
-        public IntermediateSegment<TMinimum, TMaximum, TNewMaximum, IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue>, TValue> FollowedBy<TNewMaximum>(TNewMaximum newMaximum, TValue value) where TNewMaximum : Naturals, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
+        public IntermediateSegment<TMinimum, TMaximum, TNewMaximum, IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue>, TValue> FollowedBy<TNewMaximum>(TNewMaximum newMaximum, TValue value) where TNewMaximum : Natural, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
         {
             return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue>, TValue>(this, newMaximum, value);
         }
@@ -144,7 +144,7 @@ namespace Fx.Range
 
     public static class Range
     {
-        public static StartingSegment<TMinimum, TMaximum, TValue> Instance<TMinimum, TMaximum, TValue>(TMinimum minimum, TMaximum maximum, TValue value) where TMaximum : Naturals, IGreaterThan<TMinimum> where TMinimum : Naturals
+        public static StartingSegment<TMinimum, TMaximum, TValue> Instance<TMinimum, TMaximum, TValue>(TMinimum minimum, TMaximum maximum, TValue value) where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural
         {
             return new StartingSegment<TMinimum, TMaximum, TValue>(minimum, maximum, value);
         }
@@ -168,10 +168,10 @@ namespace Fx.Range
         {
             //// TODO try an operation that replaces the "maximum" of some segment by a different value (e.g. replace `four` with `three`)
             var range = Range
-                .Instance(Naturals._1, Naturals._3, "first")
-                .FollowedBy(Naturals._4, "second")
-                .FollowedBy(Naturals._7, "third")
-                .FollowedBy(Naturals._8, "fourth");
+                .Instance(Natural._1, Natural._3, "first")
+                .FollowedBy(Natural._4, "second")
+                .FollowedBy(Natural._7, "third")
+                .FollowedBy(Natural._8, "fourth");
 
             //// TODO would it be nice to have something like Range.Start(_1).FollowedBy(-3, "first").FollowedBy(_4, "second")...?
         }

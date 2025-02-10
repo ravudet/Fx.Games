@@ -29,15 +29,15 @@
     public sealed class SegmentV2<TValue>
     {
         public static SegmentV2<TValue> Create<TMinimum, TMaximum>(Segment<TMinimum, TMaximum, TValue> segment)
-            where TMaximum : Fx.Range.Naturals, IGreaterThan<TMinimum>
-            where TMinimum : Fx.Range.Naturals
+            where TMaximum : Fx.Range.Natural, IGreaterThan<TMinimum>
+            where TMinimum : Fx.Range.Natural
         {
             return CreateVisitor<TMinimum, TMaximum>.Instance.Visit(segment, default).Segment;
         }
 
-        private sealed class CreateVisitor<TMinimum, TMaximum> : Segment<TMinimum, TMaximum, TValue>.Visitor<(SegmentV2<TValue> Segment, Fx.Range.Naturals NestedMaximum, Fx.Range.Naturals GlobalMinimum), Fx.Range.Naturals?>
-            where TMaximum : Fx.Range.Naturals, IGreaterThan<TMinimum>
-            where TMinimum : Fx.Range.Naturals
+        private sealed class CreateVisitor<TMinimum, TMaximum> : Segment<TMinimum, TMaximum, TValue>.Visitor<(SegmentV2<TValue> Segment, Fx.Range.Natural NestedMaximum, Fx.Range.Natural GlobalMinimum), Fx.Range.Natural?>
+            where TMaximum : Fx.Range.Natural, IGreaterThan<TMinimum>
+            where TMinimum : Fx.Range.Natural
         {
             private CreateVisitor()
             {
@@ -45,12 +45,12 @@
 
             public static CreateVisitor<TMinimum, TMaximum> Instance { get; } = new CreateVisitor<TMinimum, TMaximum>();
 
-            protected internal override (SegmentV2<TValue> Segment, Fx.Range.Naturals NestedMaximum, Fx.Range.Naturals GlobalMinimum)  Accept<TMinimum2, TMaximum2>(StartingSegment<TMinimum2, TMaximum2, TValue> node, Fx.Range.Naturals? context)
+            protected internal override (SegmentV2<TValue> Segment, Fx.Range.Natural NestedMaximum, Fx.Range.Natural GlobalMinimum)  Accept<TMinimum2, TMaximum2>(StartingSegment<TMinimum2, TMaximum2, TValue> node, Fx.Range.Natural? context)
             {
                 return (new SegmentV2<TValue>(node.Minimum, context!, node.Minimum, node.Maximum, node.Value, null), node.Maximum, node.Minimum);
             }
 
-            protected internal override (SegmentV2<TValue> Segment, Fx.Range.Naturals NestedMaximum, Fx.Range.Naturals GlobalMinimum) Accept<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2, TValue> node, Fx.Range.Naturals? context)
+            protected internal override (SegmentV2<TValue> Segment, Fx.Range.Natural NestedMaximum, Fx.Range.Natural GlobalMinimum) Accept<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2, TValue> node, Fx.Range.Natural? context)
             {
                 var globalMaximum = context ?? node.Maximmum;
 
@@ -60,7 +60,7 @@
             }
         }
 
-        private SegmentV2(Fx.Range.Naturals globalMinimum, Fx.Range.Naturals globalMaximum, Fx.Range.Naturals minimum, Fx.Range.Naturals maximum, TValue value, SegmentV2<TValue>? nextSegment)
+        private SegmentV2(Fx.Range.Natural globalMinimum, Fx.Range.Natural globalMaximum, Fx.Range.Natural minimum, Fx.Range.Natural maximum, TValue value, SegmentV2<TValue>? nextSegment)
         {
             GlobalMinimum = globalMinimum;
             GlobalMaximum = globalMaximum;
@@ -70,13 +70,13 @@
             NextSegment = nextSegment;
         }
 
-        public Fx.Range.Naturals GlobalMinimum { get; }
+        public Fx.Range.Natural GlobalMinimum { get; }
 
-        public Fx.Range.Naturals GlobalMaximum { get; }
+        public Fx.Range.Natural GlobalMaximum { get; }
 
-        public Fx.Range.Naturals Minimum { get; }
+        public Fx.Range.Natural Minimum { get; }
 
-        public Fx.Range.Naturals Maximum { get; }
+        public Fx.Range.Natural Maximum { get; }
 
         public TValue Value { get; }
 

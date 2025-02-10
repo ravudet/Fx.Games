@@ -8,7 +8,7 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public sealed class DecisionTreeStrategy<TGame, TBoard, TMove, TPlayer, TDistribution, TMinimum, TMaximum> : IStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame> where TMinimum : Fx.Range.Naturals where TMaximum : Fx.Range.Naturals, IGreaterThan<TMinimum>
+    public sealed class DecisionTreeStrategy<TGame, TBoard, TMove, TPlayer, TDistribution, TMinimum, TMaximum> : IStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame> where TMinimum : Fx.Range.Natural where TMaximum : Fx.Range.Natural, IGreaterThan<TMinimum>
     {
         private readonly TPlayer desiredWinner;
 
