@@ -31,6 +31,53 @@ namespace Fx.Games.Game
 
         public sealed class Discovery : BattleshipBoard
         {
+            private readonly Shot[,] shots;
+
+            public Discovery(int rows, int columns)
+            {
+                this.shots = new Shot[rows, columns];
+            }
+
+            public Discovery(Shot[,] shots)
+            {
+                this.shots = shots;
+            }
+
+            public int Rows
+            {
+                get
+                {
+                    return this.shots.GetLength(0);
+                }
+            }
+
+            public int Columns
+            {
+                get
+                {
+                    return this.shots.GetLength(1);
+                }
+            }
+
+            public Shot Get(int row, int column)
+            {
+                return this.shots[row, column];
+            }
+        }
+    }
+
+    public abstract class Shot
+    {
+        public sealed class Empty : Shot
+        {
+        }
+
+        public sealed class Miss : Shot
+        {
+        }
+
+        public sealed class Hit : Shot
+        {
         }
     }
 

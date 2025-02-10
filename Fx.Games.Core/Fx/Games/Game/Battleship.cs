@@ -36,16 +36,35 @@ namespace Fx.Games.Game
 
         public bool IsGameOver => throw new System.NotImplementedException();
 
-        IEnumerable<BattleshipMove> IGame<Battleship<TPlayer>, BattleshipBoard, BattleshipMove, TPlayer, WeightedDistribution<Battleship<TPlayer>>>.Moves => throw new System.NotImplementedException();
+        public IEnumerable<BattleshipMove> Moves => throw new System.NotImplementedException();
 
-        Battleship<TPlayer> IGame<Battleship<TPlayer>, BattleshipBoard, BattleshipMove, TPlayer, WeightedDistribution<Battleship<TPlayer>>>.CommitMove(BattleshipMove move)
+        public Battleship<TPlayer> CommitMove(BattleshipMove move)
         {
             throw new System.NotImplementedException();
         }
 
-        WeightedDistribution<Battleship<TPlayer>> IGame<Battleship<TPlayer>, BattleshipBoard, BattleshipMove, TPlayer, WeightedDistribution<Battleship<TPlayer>>>.ExploreMove(BattleshipMove move)
+        public WeightedDistribution<Battleship<TPlayer>> ExploreMove(BattleshipMove move)
         {
-            throw new System.NotImplementedException();
+            if (NoHitsYet())
+            {
+                var numberOfShipSpaces = 10; //// TODO not the right number, just used for illustration
+                var totalNumberOfSpaces = 50; //// TODO not the right number, just used for illustration
+
+                var range = Fx.Range.Range
+                    .Instance(Fx.Range.Naturals._0, Fx.Range.Naturals._1, default(Battleship<TPlayer>)) //// TODO should be a game instance that indicates a hit
+                    .FollowedBy(Fx.Range.Naturals._5, default(Battleship<TPlayer>)); //// TODO should be a game instance that indicates a miss
+
+                var segment = SegmentV2<Battleship<TPlayer>>.Create(range); //// TODO not sure why the compiler thinks `range` is nullable here...
+
+                return new WeightedDistribution<Battleship<TPlayer>>(new UniformDistribution(new System.Random()), segment);
+            }
+
+            throw new System.Exception("TODO");
+        }
+
+        private static bool NoHitsYet()
+        {
+            return false;
         }
     }
 }

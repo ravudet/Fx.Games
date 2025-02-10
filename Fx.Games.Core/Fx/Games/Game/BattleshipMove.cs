@@ -6,7 +6,15 @@ using System.Threading.Tasks;
 
 namespace Fx.Games.Game
 {
-    internal class BattleshipMove
+    public class BattleshipMove
     {
+        public BattleshipMove(int row, int column)
+        {
+            Row = row;
+            Column = column;
+        }
+
+        public int Row { get; }
+        public int Column { get; }
     }
 }

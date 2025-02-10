@@ -1,10 +1,97 @@
 ﻿namespace Fx.Distribution
 {
     using Fx.Games.Game;
+    using Fx.Range;
+    using System.Net.Mime;
+    using System.Xml;
+    using System.Xml.Serialization;
+
+    public static class SegmentV2Extensions
+    {
+        public static System.Collections.Generic.IEnumerable<(double Weight, TValue Value)> ToWeights<TValue>(this SegmentV2<TValue> segment)
+        {
+            SegmentV2<TValue>? currentSegment = segment;
+
+            var range = segment.GlobalMaximum.ToClr() - segment.GlobalMinimum.ToClr();
+            while (currentSegment != null)
+            {
+                yield return
+                    (
+                        ((double)(currentSegment.Maximum.ToClr()) - currentSegment.Minimum.ToClr()) / range,
+                        currentSegment.Value
+                    );
+
+                currentSegment = currentSegment.NextSegment;
+            }
+        }
+    }
+
+    public sealed class SegmentV2<TValue>
+    {
+        public static SegmentV2<TValue> Create<TMinimum, TMaximum>(Segment<TMinimum, TMaximum, TValue> segment)
+            where TMaximum : Fx.Range.Naturals, IGreaterThan<TMinimum>
+            where TMinimum : Fx.Range.Naturals
+        {
+            return CreateVisitor<TMinimum, TMaximum>.Instance.Visit(segment, default).Segment;
+        }
+
+        private sealed class CreateVisitor<TMinimum, TMaximum> : Segment<TMinimum, TMaximum, TValue>.Visitor<(SegmentV2<TValue> Segment, Fx.Range.Naturals NestedMaximum, Fx.Range.Naturals GlobalMinimum), Fx.Range.Naturals?>
+            where TMaximum : Fx.Range.Naturals, IGreaterThan<TMinimum>
+            where TMinimum : Fx.Range.Naturals
+        {
+            private CreateVisitor()
+            {
+            }
+
+            public static CreateVisitor<TMinimum, TMaximum> Instance { get; } = new CreateVisitor<TMinimum, TMaximum>();
+
+            protected internal override (SegmentV2<TValue> Segment, Fx.Range.Naturals NestedMaximum, Fx.Range.Naturals GlobalMinimum)  Accept<TMinimum2, TMaximum2>(StartingSegment<TMinimum2, TMaximum2, TValue> node, Fx.Range.Naturals? context)
+            {
+                return (new SegmentV2<TValue>(node.Minimum, context!, node.Minimum, node.Maximum, node.Value, null), node.Maximum, node.Minimum);
+            }
+
+            protected internal override (SegmentV2<TValue> Segment, Fx.Range.Naturals NestedMaximum, Fx.Range.Naturals GlobalMinimum) Accept<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2, TValue> node, Fx.Range.Naturals? context)
+            {
+                var globalMaximum = context ?? node.Maximmum;
+
+                var nested = CreateVisitor<TMinimum2, TIntermediate2>.Instance.Visit(node.PreviousRange, globalMaximum);
+
+                return (new SegmentV2<TValue>(nested.GlobalMinimum, globalMaximum, nested.NestedMaximum, node.Maximmum, node.Value, nested.Segment), node.Maximmum, nested.GlobalMinimum);
+            }
+        }
+
+        private SegmentV2(Fx.Range.Naturals globalMinimum, Fx.Range.Naturals globalMaximum, Fx.Range.Naturals minimum, Fx.Range.Naturals maximum, TValue value, SegmentV2<TValue>? nextSegment)
+        {
+            GlobalMinimum = globalMinimum;
+            GlobalMaximum = globalMaximum;
+            Minimum = minimum;
+            Maximum = maximum;
+            Value = value;
+            NextSegment = nextSegment;
+        }
+
+        public Fx.Range.Naturals GlobalMinimum { get; }
+
+        public Fx.Range.Naturals GlobalMaximum { get; }
+
+        public Fx.Range.Naturals Minimum { get; }
+
+        public Fx.Range.Naturals Maximum { get; }
+
+        public TValue Value { get; }
+
+        public SegmentV2<TValue>? NextSegment { get; }
+    }
 
     public sealed class WeightedDistribution<TValue> : IDistribution<TValue, WeightedDistribution<TValue>>
     {
         private readonly IDistribution<int> uniformDistribution;
+
+        public WeightedDistribution(IDistribution<int> uniformDistribution, SegmentV2<TValue> range)
+        {
+            this.uniformDistribution = uniformDistribution;
+            Range = range;
+        }
 
         public WeightedDistribution(IDistribution<int> uniformDistribution, PortionV2<TValue> portions)
         {
@@ -15,6 +102,7 @@
         }
 
         public PortionV2<TValue> Portions { get; }
+        public SegmentV2<TValue> Range { get; }
 
         public TValue Sample(out WeightedDistribution<TValue>? remainder)
         {
