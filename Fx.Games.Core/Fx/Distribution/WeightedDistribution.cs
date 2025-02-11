@@ -7,6 +7,7 @@
     using System.Xml.Serialization;
 
     using Fx.Numerics;
+    using Stash;
 
     public static class SegmentV2Extensions
     {

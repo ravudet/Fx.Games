@@ -10,6 +10,7 @@ namespace Fx.Range
 {
     using Fx;
     using Fx.Numerics;
+    using Stash;
 
     public static class RangeExtensions
     {

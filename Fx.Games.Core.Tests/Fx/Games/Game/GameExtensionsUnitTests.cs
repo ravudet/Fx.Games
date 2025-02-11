@@ -35,6 +35,7 @@
 
             var weights = PortionV2Playground.ConvertToWeights(portion);
 
+            //// TODO use t4 (or something) to generate more naturals
             //// TODO update weighted distribution to use "portions"
             //// TODO tdistribution should be covariant
             //// TODO update monte carlo (and all other strategies) to use exploremove
