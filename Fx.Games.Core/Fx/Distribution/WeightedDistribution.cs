@@ -6,6 +6,8 @@
     using System.Xml;
     using System.Xml.Serialization;
 
+    using Fx.Numerics;
+
     public static class SegmentV2Extensions
     {
         public static System.Collections.Generic.IEnumerable<(double Weight, TValue Value)> ToWeights<TValue>(this SegmentV2<TValue> segment)

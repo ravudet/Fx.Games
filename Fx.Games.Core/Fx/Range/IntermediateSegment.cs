@@ -8,6 +8,8 @@ using System.Xml.Linq;
 
 namespace Fx.Range
 {
+    using Fx.Numerics;
+
     public struct Void
     {
     }
