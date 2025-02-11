@@ -31,7 +31,7 @@ namespace Fx.Range
         /// <typeparam name="TMinimum"></typeparam>
         /// <typeparam name="TMaximum"></typeparam>
         /// <typeparam name="TValue"></typeparam>
-        private sealed class ToWeightsVisitor<TMinimum, TMaximum, TValue> : Range<TMinimum, TMaximum, TValue>.Visitor<IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)>, Nothing> where TMaximum : IGreaterThan<TMinimum>
+        private sealed class ToWeightsVisitor<TMinimum, TMaximum, TValue> : Range<TMinimum, TMaximum, TValue>.RangeVisitor<IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)>, Nothing> where TMaximum : IGreaterThan<TMinimum>
         {
             private ToWeightsVisitor()
             {
@@ -91,7 +91,7 @@ namespace Fx.Range
                 value);
         }
 
-        protected override TResult Dispatch<TResult, TContext>(Visitor<TResult, TContext> visitor, TContext context)
+        protected override TResult Dispatch<TResult, TContext>(RangeVisitor<TResult, TContext> visitor, TContext context)
         {
             return visitor.Accept(this, context);
         }
@@ -115,7 +115,7 @@ namespace Fx.Range
             return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue>, TValue>(this, newMaximum, value);
         }
 
-        protected override TResult Dispatch<TResult, TContext>(Visitor<TResult, TContext> visitor, TContext context)
+        protected override TResult Dispatch<TResult, TContext>(RangeVisitor<TResult, TContext> visitor, TContext context)
         {
             return visitor.Accept(this, context);
         }

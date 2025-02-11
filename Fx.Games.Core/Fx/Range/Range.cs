@@ -9,9 +9,9 @@
             //// TODO should be private, and the derived classes should be nested
         }
 
-        protected abstract TResult Dispatch<TResult, TContext>(Visitor<TResult, TContext> visitor, TContext context);
+        protected abstract TResult Dispatch<TResult, TContext>(RangeVisitor<TResult, TContext> visitor, TContext context);
 
-        public abstract class Visitor<TResult, TContext>
+        public abstract class RangeVisitor<TResult, TContext>
         {
             public TResult Visit(Range<TMinimum, TMaximum, TValue> node, TContext context)
             {
