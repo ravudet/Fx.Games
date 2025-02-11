@@ -14,7 +14,7 @@ namespace Fx.Range
 
     public static class RangeExtensions
     {
-        public static IEnumerable<(double Weight, TValue Value)> ToWeights<TMinimum, TMaximum, TValue>(this Segment<TMinimum, TMaximum, TValue> intermediateSegment) where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural
+        public static IEnumerable<(double Weight, TValue Value)> ToWeights<TMinimum, TMaximum, TValue>(this Range<TMinimum, TMaximum, TValue> intermediateSegment) where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural
         {
             return ToWeightsVisitor<TMinimum, TMaximum, TValue>
                 .Instance
@@ -31,7 +31,7 @@ namespace Fx.Range
         /// <typeparam name="TMinimum"></typeparam>
         /// <typeparam name="TMaximum"></typeparam>
         /// <typeparam name="TValue"></typeparam>
-        private sealed class ToWeightsVisitor<TMinimum, TMaximum, TValue> : Segment<TMinimum, TMaximum, TValue>.Visitor<IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)>, Nothing> where TMaximum : IGreaterThan<TMinimum>
+        private sealed class ToWeightsVisitor<TMinimum, TMaximum, TValue> : Range<TMinimum, TMaximum, TValue>.Visitor<IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)>, Nothing> where TMaximum : IGreaterThan<TMinimum>
         {
             private ToWeightsVisitor()
             {
@@ -68,30 +68,9 @@ namespace Fx.Range
         TValue Value { get; }
     }
 
-    public abstract class Segment<TMinimum, TMaximum, TValue> : IRange<TMinimum, TMaximum, TValue> where TMaximum : IGreaterThan<TMinimum>
-    {
-        internal protected Segment()
-        {
-            //// TODO should be private, and the derived classes should be nested
-        }
+    
 
-        protected abstract TResult Dispatch<TResult, TContext>(Visitor<TResult, TContext> visitor, TContext context);
-
-        public abstract class Visitor<TResult, TContext>
-        {
-            public TResult Visit(Segment<TMinimum, TMaximum, TValue> node, TContext context)
-            {
-                return node.Dispatch(this, context);
-            }
-
-            protected internal abstract TResult Accept<TMinimum2, TMaximum2>(StartingSegment<TMinimum2, TMaximum2, TValue> node, TContext context) where TMinimum2 : Natural where TMaximum2 : Natural, IGreaterThan<TMinimum2>; //// TODO you shouldn't have to specify `naturals` here, it should be somehow in the derived type
-            protected internal abstract TResult Accept<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2, TValue> node, TContext context) where TPreviousRange2 : Segment<TMinimum2, TIntermediate2, TValue>, IRange<TMinimum2, TIntermediate2, TValue> where TIntermediate2 : Natural, IGreaterThan<TMinimum2> where TMaximum2 : Natural, IGreaterThan<TIntermediate2>, IGreaterThan<TMinimum2> where TMinimum2 : Natural;
-        }
-
-        public abstract TValue Value { get; }
-    }
-
-    public sealed class StartingSegment<TMinimum, TMaximum, TValue> : Segment<TMinimum, TMaximum, TValue>, IRange<TMinimum, TMaximum, TValue> where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural
+    public sealed class StartingSegment<TMinimum, TMaximum, TValue> : Range<TMinimum, TMaximum, TValue>, IRange<TMinimum, TMaximum, TValue> where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural
     {
         public StartingSegment(TMinimum minimum, TMaximum maximum, TValue value)
         {
@@ -118,7 +97,7 @@ namespace Fx.Range
         }
     }
 
-    public sealed class IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue> : Segment<TMinimum, TMaximum, TValue>, IRange<TMinimum, TMaximum, TValue> where TPreviousRange : Segment<TMinimum, TIntermediate, TValue>, IRange<TMinimum, TIntermediate, TValue> where TIntermediate : Natural, IGreaterThan<TMinimum> where TMaximum : Natural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum> where TMinimum : Natural
+    public sealed class IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue> : Range<TMinimum, TMaximum, TValue>, IRange<TMinimum, TMaximum, TValue> where TPreviousRange : Range<TMinimum, TIntermediate, TValue>, IRange<TMinimum, TIntermediate, TValue> where TIntermediate : Natural, IGreaterThan<TMinimum> where TMaximum : Natural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum> where TMinimum : Natural
     {
         public IntermediateSegment(TPreviousRange previousRange, TMaximum maximmum, TValue value)
         {

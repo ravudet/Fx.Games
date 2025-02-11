@@ -31,14 +31,14 @@
 
     public sealed class SegmentV2<TValue>
     {
-        public static SegmentV2<TValue> Create<TMinimum, TMaximum>(Segment<TMinimum, TMaximum, TValue> segment)
+        public static SegmentV2<TValue> Create<TMinimum, TMaximum>(Range<TMinimum, TMaximum, TValue> segment)
             where TMaximum : Natural, IGreaterThan<TMinimum>
             where TMinimum : Natural
         {
             return CreateVisitor<TMinimum, TMaximum>.Instance.Visit(segment, default).Segment;
         }
 
-        private sealed class CreateVisitor<TMinimum, TMaximum> : Segment<TMinimum, TMaximum, TValue>.Visitor<(SegmentV2<TValue> Segment, Natural NestedMaximum, Natural GlobalMinimum), Natural?>
+        private sealed class CreateVisitor<TMinimum, TMaximum> : Range<TMinimum, TMaximum, TValue>.Visitor<(SegmentV2<TValue> Segment, Natural NestedMaximum, Natural GlobalMinimum), Natural?>
             where TMaximum : Natural, IGreaterThan<TMinimum>
             where TMinimum : Natural
         {

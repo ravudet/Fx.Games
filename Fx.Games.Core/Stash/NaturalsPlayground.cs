@@ -30,7 +30,7 @@
 
         public static TResult Visit<TNode, TResult, TContext, TMinimum, TMaximum>(
             this TNode node,
-            Segment<TMinimum, TMaximum, Func<TNode, TContext, TResult>> range,
+            Range<TMinimum, TMaximum, Func<TNode, TContext, TResult>> range,
             TContext context)
             where TMaximum : IGreaterThan<TMinimum>
         {
@@ -40,7 +40,7 @@
         }
 
         private sealed class VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum>
-            : Segment<TMinimum, TMaximum, Func<TNode, TContext, TResult>>.Visitor<TResult, (TNode Node, TContext Context)>
+            : Range<TMinimum, TMaximum, Func<TNode, TContext, TResult>>.Visitor<TResult, (TNode Node, TContext Context)>
             where TMaximum : IGreaterThan<TMinimum>
         {
             private VisitVisitor()
