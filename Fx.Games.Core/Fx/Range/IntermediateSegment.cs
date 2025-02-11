@@ -16,8 +16,6 @@ namespace Fx.Range
         TValue Value { get; }
     }
 
-    
-
     public sealed class StartingSegment<TMinimum, TMaximum, TValue> : Range<TMinimum, TMaximum, TValue>, IRange<TMinimum, TMaximum, TValue> where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural
     {
         public StartingSegment(TMinimum minimum, TMaximum maximum, TValue value)

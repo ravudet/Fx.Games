@@ -61,6 +61,11 @@
 
                 return (new SegmentV2<TValue>(nested.GlobalMinimum, globalMaximum, nested.NestedMaximum, node.Maximmum, node.Value, nested.Segment), node.Maximmum, nested.GlobalMinimum);
             }
+
+            protected internal override (SegmentV2<TValue> Segment, Natural NestedMaximum, Natural GlobalMinimum) Accept<TMinimum2, TMaximum2>(Range<TMinimum2, TMaximum2, TValue>.StartingSegment node, Natural? context)
+            {
+                throw new System.NotImplementedException();
+            }
         }
 
         private SegmentV2(Natural globalMinimum, Natural globalMaximum, Natural minimum, Natural maximum, TValue value, SegmentV2<TValue>? nextSegment)

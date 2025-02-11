@@ -71,6 +71,11 @@
                     return VisitVisitor<TNode, TResult, TContext, TMinimum2, TIntermediate2>.Instance.Visit(node.PreviousRange, context);
                 }
             }
+
+            protected internal override TResult Accept<TMinimum2, TMaximum2>(Range<TMinimum2, TMaximum2, Func<TNode, TContext, TResult>>.StartingSegment node, (TNode Node, TContext Context) context)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }
