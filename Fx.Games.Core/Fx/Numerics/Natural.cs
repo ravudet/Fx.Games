@@ -2,9 +2,9 @@
 using System.Net.Mime;
 using System.Runtime.InteropServices;
 
-namespace Fx.Range
+namespace Fx.Numerics
 {
-    using Fx.Numerics;
+    using Fx.Range;
 
     public static class NaturalsPlayground
     {
@@ -24,7 +24,7 @@ namespace Fx.Range
                     .Visit(
                         Range
                             .Instance(Naturals._0, Naturals._3, (Natural value, Void @void) => value.ToClr() * 1)
-                            .FollowedBy(Naturals._8, (Natural value, Void @void) => value.ToClr() * 2),
+                            .FollowedBy(Naturals._8, (value, @void) => value.ToClr() * 2),
                         new Void());
         }
 

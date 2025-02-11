@@ -1,7 +1,5 @@
 ﻿namespace Fx.Numerics
 {
-    using Fx.Range;
-
     public static class Naturals
     {
         public static Natural._0 _0 { get; } = Natural._0.Instance;

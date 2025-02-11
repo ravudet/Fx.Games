@@ -10,7 +10,7 @@
 
     using Fx.Numerics;
 
-    public sealed class DecisionTreeStrategy<TGame, TBoard, TMove, TPlayer, TDistribution, TMinimum, TMaximum> : IStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame> where TMinimum : Fx.Range.Natural where TMaximum : Fx.Range.Natural, IGreaterThan<TMinimum>
+    public sealed class DecisionTreeStrategy<TGame, TBoard, TMove, TPlayer, TDistribution, TMinimum, TMaximum> : IStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame> where TMinimum : Natural where TMaximum : Natural, IGreaterThan<TMinimum>
     {
         private readonly TPlayer desiredWinner;
 
