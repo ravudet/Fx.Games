@@ -8,11 +8,8 @@ using System.Xml.Linq;
 
 namespace Fx.Range
 {
+    using Fx;
     using Fx.Numerics;
-
-    public struct Void
-    {
-    }
 
     public static class RangeExtensions
     {
@@ -33,7 +30,7 @@ namespace Fx.Range
         /// <typeparam name="TMinimum"></typeparam>
         /// <typeparam name="TMaximum"></typeparam>
         /// <typeparam name="TValue"></typeparam>
-        private sealed class ToWeightsVisitor<TMinimum, TMaximum, TValue> : Segment<TMinimum, TMaximum, TValue>.Visitor<IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)>, Void> where TMaximum : IGreaterThan<TMinimum>
+        private sealed class ToWeightsVisitor<TMinimum, TMaximum, TValue> : Segment<TMinimum, TMaximum, TValue>.Visitor<IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)>, Nothing> where TMaximum : IGreaterThan<TMinimum>
         {
             private ToWeightsVisitor()
             {
@@ -41,12 +38,12 @@ namespace Fx.Range
 
             public static ToWeightsVisitor<TMinimum, TMaximum, TValue> Instance { get; } = new ToWeightsVisitor<TMinimum, TMaximum, TValue>();
 
-            protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept<TMinimum2, TMaximum2>(StartingSegment<TMinimum2, TMaximum2, TValue> node, Void context)
+            protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept<TMinimum2, TMaximum2>(StartingSegment<TMinimum2, TMaximum2, TValue> node, Nothing context)
             {
                 yield return (node.Maximum.ToClr() - node.Minimum.ToClr(), node.Value, node.Minimum.ToClr(), node.Maximum.ToClr());
             }
 
-            protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2, TValue> node, Void context)
+            protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2, TValue> node, Nothing context)
             {
                 var previousWeights = ToWeightsVisitor<TMinimum2, TMaximum2, TValue>.Instance.Visit(node, context);
                 (uint Range, TValue Value, uint Minimum, uint Intermediate)? lastWeight = null;
