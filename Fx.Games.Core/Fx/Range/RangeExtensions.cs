@@ -8,7 +8,7 @@
 
     public static class RangeExtensions
     {
-        public static IEnumerable<(double Weight, TValue Value)> ToWeights<TMinimum, TMaximum, TValue>(this Range<TMinimum, TMaximum, TValue> intermediateSegment) where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural
+        public static IEnumerable<(double Weight, TValue Value)> ToWeights<TMinimum, TMaximum, TValue>(this Range<TMinimum, TMaximum, TValue> intermediateSegment) where TMaximum : IGreaterThan<TMinimum> where TMinimum : Natural
         {
             return ToWeightsVisitor<TMinimum, TMaximum, TValue>
                 .Instance
@@ -25,7 +25,7 @@
         /// <typeparam name="TMinimum"></typeparam>
         /// <typeparam name="TMaximum"></typeparam>
         /// <typeparam name="TValue"></typeparam>
-        private sealed class ToWeightsVisitor<TMinimum, TMaximum, TValue> : Range<TMinimum, TMaximum, TValue>.RangeVisitor<IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)>, Nothing> where TMaximum : IGreaterThan<TMinimum>
+        private sealed class ToWeightsVisitor<TMinimum, TMaximum, TValue> : Range<TMinimum, TMaximum, TValue>.RangeVisitor<IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)>, Nothing> where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural
         {
             private ToWeightsVisitor()
             {

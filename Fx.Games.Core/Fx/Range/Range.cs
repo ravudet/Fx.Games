@@ -20,19 +20,19 @@
 
         public abstract TValue Value { get; }
 
-        protected abstract TResult Dispatch<TResult, TContext>(RangeVisitor<TResult, TContext> visitor, TContext context);
+        protected abstract TResult Dispatch<TResult, TContext, TNumeric>(RangeVisitor<TResult, TContext, TNumeric> visitor, TContext context);
 
-        public abstract class RangeVisitor<TResult, TContext>
+        public abstract class RangeVisitor<TResult, TContext, TNumeric> //// TODO does introducing tnumeric actually help you remove the naturals type constraint? why do you even need the additional type parameters on accept
         {
             public TResult Visit(Range<TMinimum, TMaximum, TValue> node, TContext context)
             {
                 return node.Dispatch(this, context);
             }
 
-            protected internal abstract TResult Accept<TMinimum2, TMaximum2>(Range<TMinimum2, TMaximum2, TValue>.StartingSegment node, TContext context) where TMaximum2 : IGreaterThan<TMinimum2>;
+            protected internal abstract TResult Accept<TMinimum2, TMaximum2>(Range<TMinimum2, TMaximum2, TValue>.StartingSegment node, TContext context) where TMaximum2 : TNumeric, IGreaterThan<TMinimum2> where TMinimum2 : TNumeric;
 
-            protected internal abstract TResult Accept<TMinimum2, TMaximum2>(StartingSegment<TMinimum2, TMaximum2, TValue> node, TContext context) where TMinimum2 : Natural where TMaximum2 : Natural, IGreaterThan<TMinimum2>;
-            protected internal abstract TResult Accept<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2, TValue> node, TContext context) where TPreviousRange2 : Range<TMinimum2, TIntermediate2, TValue>, IRange<TMinimum2, TIntermediate2, TValue> where TIntermediate2 : Natural, IGreaterThan<TMinimum2> where TMaximum2 : Natural, IGreaterThan<TIntermediate2>, IGreaterThan<TMinimum2> where TMinimum2 : Natural; //// TODO you shouldn't have to specify `naturals` here, it should be somehow in the derived type
+            protected internal abstract TResult Accept<TMinimum2, TMaximum2>(StartingSegment<TMinimum2, TMaximum2, TValue> node, TContext context) where TMaximum2 : IGreaterThan<TMinimum2>;
+            protected internal abstract TResult Accept<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2, TValue> node, TContext context) where TPreviousRange2 : Range<TMinimum2, TIntermediate2, TValue>, IRange<TMinimum2, TIntermediate2, TValue> where TIntermediate2 : Natural, IGreaterThan<TMinimum2> where TMaximum2 : IGreaterThan<TIntermediate2>, IGreaterThan<TMinimum2>;
         }
 
         public sealed class StartingSegment : Range<TMinimum, TMaximum, TValue>, IRange<TMinimum, TMaximum, TValue>
