@@ -14,7 +14,7 @@
     {
         private readonly TPlayer desiredWinner;
 
-        private readonly Func<TDistribution, Range<TMinimum, TMaximum, TGame>> weightedDistributionAdapter;
+        private readonly Func<TDistribution, SegmentV2<TGame, Natural>> weightedDistributionAdapter;
 
         private readonly IEqualityComparer<TPlayer> playerComparer;
 
@@ -22,7 +22,7 @@
 
         public DecisionTreeStrategy(
             TPlayer desiredWinner, 
-            Func<TDistribution, Range<TMinimum, TMaximum, TGame>> weightedDistributionAdapter,
+            Func<TDistribution, SegmentV2<TGame, Natural>> weightedDistributionAdapter,
             IEqualityComparer<TPlayer> playerComparer, 
             double drawWeight)
         {
