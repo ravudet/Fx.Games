@@ -8,7 +8,7 @@
 
     public static class RangeExtensions
     {
-        public static IEnumerable<(double Weight, TValue Value)> ToWeights<TMinimum, TMaximum, TValue>(this Range<TMinimum, TMaximum, TValue> intermediateSegment) where TMaximum : IGreaterThan<TMinimum> where TMinimum : Natural
+        public static IEnumerable<(double Weight, TValue Value)> ToWeights<TMinimum, TMaximum, TValue>(this Range<TMinimum, TMaximum, TValue, Natural> intermediateSegment) where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural
         {
             return ToWeightsVisitor<TMinimum, TMaximum, TValue>
                 .Instance
@@ -25,7 +25,7 @@
         /// <typeparam name="TMinimum"></typeparam>
         /// <typeparam name="TMaximum"></typeparam>
         /// <typeparam name="TValue"></typeparam>
-        private sealed class ToWeightsVisitor<TMinimum, TMaximum, TValue> : Range<TMinimum, TMaximum, TValue>.RangeVisitor<IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)>, Nothing> where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural
+        private sealed class ToWeightsVisitor<TMinimum, TMaximum, TValue> : RangeVisitor<TMinimum, TMaximum, TValue, IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)>, Nothing, Natural> where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural
         {
             private ToWeightsVisitor()
             {
@@ -33,14 +33,14 @@
 
             public static ToWeightsVisitor<TMinimum, TMaximum, TValue> Instance { get; } = new ToWeightsVisitor<TMinimum, TMaximum, TValue>();
 
-            protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept<TMinimum2, TMaximum2>(StartingSegment<TMinimum2, TMaximum2, TValue> node, Nothing context)
+            protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept(StartingSegment<TMinimum, TMaximum, TValue, Natural> node, Nothing context)
             {
                 yield return (node.Maximum.ToClr() - node.Minimum.ToClr(), node.Value, node.Minimum.ToClr(), node.Maximum.ToClr());
             }
 
-            protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum2, TIntermediate2, TMaximum2, TPreviousRange2, TValue> node, Nothing context)
+            protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TValue, Natural> node, Nothing context)
             {
-                var previousWeights = ToWeightsVisitor<TMinimum2, TMaximum2, TValue>.Instance.Visit(node, context);
+                var previousWeights = ToWeightsVisitor<TMinimum, TMaximum2, TValue>.Instance.Visit(node, context);
                 (uint Range, TValue Value, uint Minimum, uint Intermediate)? lastWeight = null;
                 foreach (var previousWeight in previousWeights)
                 {
@@ -52,7 +52,7 @@
                 yield return (node.Maximmum.ToClr() - lastWeight.Value.Intermediate, node.Value, lastWeight.Value.Minimum, node.Maximmum.ToClr());
             }
 
-            protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept<TMinimum2, TMaximum2>(Range<TMinimum2, TMaximum2, TValue>.StartingSegment node, Nothing context)
+            protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept(Range<TMinimum, TMaximum, TValue, Natural>.StartingSegment node, Nothing context)
             {
                 throw new System.NotImplementedException();
             }
