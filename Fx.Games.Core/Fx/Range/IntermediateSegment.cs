@@ -38,7 +38,7 @@ namespace Fx.Range
                 value);
         }
 
-        protected override TResult Dispatch<TResult, TContext>(RangeVisitor<TResult, TContext> visitor, TContext context)
+        protected internal override TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext> visitor, TContext context)
         {
             return visitor.Accept(this, context);
         }
@@ -62,7 +62,7 @@ namespace Fx.Range
             return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue>, TValue>(this, newMaximum, value);
         }
 
-        protected override TResult Dispatch<TResult, TContext>(RangeVisitor<TResult, TContext> visitor, TContext context)
+        protected internal override TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext> visitor, TContext context)
         {
             return visitor.Accept(this, context);
         }
