@@ -54,7 +54,7 @@ namespace Fx.Games.Game
                     .Instance(Fx.Numerics.Naturals._0, Fx.Numerics.Naturals._1, default(Battleship<TPlayer>)) //// TODO should be a game instance that indicates a hit
                     .FollowedBy(Fx.Numerics.Naturals._5, default(Battleship<TPlayer>)); //// TODO should be a game instance that indicates a miss
 
-                var segment = SegmentV2<Battleship<TPlayer>>.Create(range); //// TODO not sure why the compiler thinks `range` is nullable here...
+                var segment = SegmentV2<Battleship<TPlayer>, Fx.Numerics.Natural>.Create(range); //// TODO not sure why the compiler thinks `range` is nullable here...
 
                 return new WeightedDistribution<Battleship<TPlayer>>(new UniformDistribution(new System.Random()), segment);
             }
