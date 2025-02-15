@@ -31,7 +31,6 @@ namespace Fx.Range
 
         public IntermediateSegment<TMinimum, TMaximum, TNewMaximum, StartingSegment<TMinimum, TMaximum, TValue, TNatural>, TValue, TNatural> FollowedBy<TNewMaximum>(TNewMaximum newMaximum, TValue value) where TNewMaximum : TNatural, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
         {
-            //// TODO can you implement these methods using the visitor?
             return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, StartingSegment<TMinimum, TMaximum, TValue, TNatural>, TValue, TNatural>(
                 this,
                 newMaximum,
@@ -59,6 +58,7 @@ namespace Fx.Range
 
         public IntermediateSegment<TMinimum, TMaximum, TNewMaximum, IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue, TNatural>, TValue, TNatural> FollowedBy<TNewMaximum>(TNewMaximum newMaximum, TValue value) where TNewMaximum : TNatural, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
         {
+            //// TODO can you implement these methods using the visitor?
             return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue, TNatural>, TValue, TNatural>(this, newMaximum, value);
         }
 
@@ -70,9 +70,9 @@ namespace Fx.Range
 
     public static class Range
     {
-        public static StartingSegment<TMinimum, TMaximum, TValue, Natural> Instance<TMinimum, TMaximum, TValue>(TMinimum minimum, TMaximum maximum, TValue value) where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural
+        public static Range<TMinimum, TMaximum, TValue, Natural>.StartingSegment Instance<TMinimum, TMaximum, TValue>(TMinimum minimum, TMaximum maximum, TValue value) where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural
         {
-            return new StartingSegment<TMinimum, TMaximum, TValue, Natural>(minimum, maximum, value);
+            return new Range<TMinimum, TMaximum, TValue, Natural>.StartingSegment(minimum, maximum, value);
         }
 
         /*public static IntermediateSegment<TMinimum, TMaximum, TNewMaximum, StartingSegment<TMinimum, TMaximum>> FollowedBy<TMinimum, TMaximum, TNewMaximum>(this StartingSegment<TMinimum, TMaximum> startingSegment, TNewMaximum newMaximum) where TMinimum : ILessThan<TMaximum>, ILessThan<TNewMaximum> where TMaximum : ILessThan<TNewMaximum>
