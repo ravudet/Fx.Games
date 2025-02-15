@@ -62,6 +62,6 @@
         protected internal abstract TResult Accept(Range<TMinimum, TMaximum, TValue, TNatural>.StartingSegment node, TContext context);
 
         protected internal abstract TResult Accept(StartingSegment<TMinimum, TMaximum, TValue, TNatural> node, TContext context);
-        protected internal abstract TResult Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TValue, TNatural> node, TContext context) where TPreviousRange2 : Range<TMinimum, TIntermediate, TValue, TNatural> where TIntermediate : TNatural, IGreaterThan<TMinimum> where TMaximum2 : TNatural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum>;
+        protected internal abstract TResult Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TValue, TNatural> node, TContext context) where TPreviousRange2 : Range<TMinimum, TIntermediate, TValue, TNatural> where TIntermediate : TNatural, IGreaterThan<TMinimum> where TMaximum2 : TNatural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum>; //// TODO can you really not get rid of tintermediate and just use tmaximum?
     }
 }
