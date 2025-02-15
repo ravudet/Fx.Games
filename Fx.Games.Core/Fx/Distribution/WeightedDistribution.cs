@@ -49,11 +49,6 @@
 
             public static CreateVisitor<TMinimum, TMaximum> Instance { get; } = new CreateVisitor<TMinimum, TMaximum>();
 
-            protected internal override (SegmentV2<TValue, TNatural> Segment, TNatural NestedMaximum, TNatural GlobalMinimum) Accept(StartingSegment<TMinimum, TMaximum, TValue, TNatural> node, TNatural? context)
-            {
-                return (new SegmentV2<TValue, TNatural>(node.Minimum, context!, node.Minimum, node.Maximum, node.Value, null), node.Maximum, node.Minimum);
-            }
-
             protected internal override (SegmentV2<TValue, TNatural> Segment, TNatural NestedMaximum, TNatural GlobalMinimum) Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TValue, TNatural> node, TNatural? context)
             {
                 var globalMaximum = context ?? node.Maximmum;
@@ -65,7 +60,7 @@
 
             protected internal override (SegmentV2<TValue, TNatural> Segment, TNatural NestedMaximum, TNatural GlobalMinimum) Accept(Range<TMinimum, TMaximum, TValue, TNatural>.StartingSegment node, TNatural? context)
             {
-                throw new System.NotImplementedException();
+                return (new SegmentV2<TValue, TNatural>(node.Minimum, context!, node.Minimum, node.Maximum, node.Value, null), node.Maximum, node.Minimum);
             }
         }
 

@@ -16,33 +16,6 @@ namespace Fx.Range
         TValue Value { get; }
     }
 
-    public sealed class StartingSegment<TMinimum, TMaximum, TValue, TNatural> : Range<TMinimum, TMaximum, TValue, TNatural>, IRange<TMinimum, TMaximum, TValue> where TMaximum : TNatural, IGreaterThan<TMinimum> where TMinimum : TNatural
-    {
-        public StartingSegment(TMinimum minimum, TMaximum maximum, TValue value)
-        {
-            Minimum = minimum;
-            Maximum = maximum;
-            Value = value;
-        }
-
-        public TMinimum Minimum { get; }
-        public TMaximum Maximum { get; }
-        public override TValue Value { get; }
-
-        public IntermediateSegment<TMinimum, TMaximum, TNewMaximum, StartingSegment<TMinimum, TMaximum, TValue, TNatural>, TValue, TNatural> FollowedBy<TNewMaximum>(TNewMaximum newMaximum, TValue value) where TNewMaximum : TNatural, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
-        {
-            return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, StartingSegment<TMinimum, TMaximum, TValue, TNatural>, TValue, TNatural>(
-                this,
-                newMaximum,
-                value);
-        }
-
-        protected internal override TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext, TNatural> visitor, TContext context)
-        {
-            return visitor.Accept(this, context);
-        }
-    }
-
     public sealed class IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue, TNatural> : Range<TMinimum, TMaximum, TValue, TNatural>, IRange<TMinimum, TMaximum, TValue> where TPreviousRange : Range<TMinimum, TIntermediate, TValue, TNatural> where TIntermediate : TNatural, IGreaterThan<TMinimum> where TMaximum : TNatural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum> where TMinimum : TNatural
     {
         public IntermediateSegment(TPreviousRange previousRange, TMaximum maximmum, TValue value)

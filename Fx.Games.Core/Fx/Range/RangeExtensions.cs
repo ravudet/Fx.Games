@@ -33,11 +33,6 @@
 
             public static ToWeightsVisitor<TMinimum, TMaximum, TValue> Instance { get; } = new ToWeightsVisitor<TMinimum, TMaximum, TValue>();
 
-            protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept(StartingSegment<TMinimum, TMaximum, TValue, Natural> node, Nothing context)
-            {
-                yield return (node.Maximum.ToClr() - node.Minimum.ToClr(), node.Value, node.Minimum.ToClr(), node.Maximum.ToClr());
-            }
-
             protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TValue, Natural> node, Nothing context)
             {
                 var previousWeights = ToWeightsVisitor<TMinimum, TMaximum2, TValue>.Instance.Visit(node, context);
@@ -54,7 +49,7 @@
 
             protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept(Range<TMinimum, TMaximum, TValue, Natural>.StartingSegment node, Nothing context)
             {
-                throw new System.NotImplementedException();
+                yield return (node.Maximum.ToClr() - node.Minimum.ToClr(), node.Value, node.Minimum.ToClr(), node.Maximum.ToClr());
             }
         }
     }
