@@ -50,7 +50,7 @@
         }
     }
 
-    public abstract class RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext, TNatural> //// TODO does introducing tnumeric actually help you remove the naturals type constraint? why do you even need the additional type parameters on accept
+    public abstract class RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext, TNatural>
         where TMaximum : TNatural, IGreaterThan<TMinimum>
         where TMinimum : TNatural
     {
@@ -62,6 +62,6 @@
         protected internal abstract TResult Accept(Range<TMinimum, TMaximum, TValue, TNatural>.StartingSegment node, TContext context);
 
         protected internal abstract TResult Accept(StartingSegment<TMinimum, TMaximum, TValue, TNatural> node, TContext context);
-        protected internal abstract TResult Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TValue, TNatural> node, TContext context) where TPreviousRange2 : Range<TMinimum, TIntermediate, TValue, TNatural> where TIntermediate : TNatural, IGreaterThan<TMinimum> where TMaximum2 : TNatural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum>; //// TODO can you really not get rid of tintermediate and just use tmaximum?
+        protected internal abstract TResult Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TValue, TNatural> node, TContext context) where TPreviousRange2 : Range<TMinimum, TIntermediate, TValue, TNatural> where TIntermediate : TNatural, IGreaterThan<TMinimum> where TMaximum2 : TNatural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum>;
     }
 }
