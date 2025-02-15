@@ -2,7 +2,7 @@
 {
     using Fx.Numerics;
 
-    public abstract class Range<TMinimum, TMaximum, TValue, TNatural> : IRange<TMinimum, TMaximum, TValue> where TMaximum : TNatural, IGreaterThan<TMinimum> where TMinimum : TNatural
+    public abstract class Range<TMinimum, TMaximum, TValue, TNatural> : IRange<TMinimum, TMaximum, TValue> where TMaximum : TNatural, IGreaterThan<TMinimum> where TMinimum : TNatural //// TODO find a better name for `tnatural` //// TODO change the order of type parameters to `tnatural` comes before `tvalue`
     {
         /// <summary>
         /// 
@@ -35,13 +35,13 @@
             public TMaximum Maximum { get; }
             public override TValue Value { get; }
 
-            /*public IntermediateSegment<TMinimum, TMaximum, TNewMaximum, StartingSegment<TMinimum, TMaximum, TValue>, TValue> FollowedBy<TNewMaximum>(TNewMaximum newMaximum, TValue value) where TNewMaximum : Natural, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
+            public IntermediateSegment<TMinimum, TMaximum, TNewMaximum, StartingSegment<TMinimum, TMaximum, TValue, TNatural>, TValue, TNatural> FollowedBy<TNewMaximum>(TNewMaximum newMaximum, TValue value) where TNewMaximum : TNatural, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
             {
-                return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, StartingSegment<TMinimum, TMaximum, TValue>, TValue>(
+                return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, StartingSegment<TMinimum, TMaximum, TValue, TNatural>, TValue, TNatural>(
                     this,
                     newMaximum,
                     value);
-            }*/
+            }
 
             protected internal override TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext, TNatural> visitor, TContext context)
             {
