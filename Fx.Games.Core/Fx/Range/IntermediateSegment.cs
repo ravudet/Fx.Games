@@ -70,9 +70,9 @@ namespace Fx.Range
 
     public static class Range
     {
-        public static StartingSegment<TMinimum, TMaximum, TValue> Instance<TMinimum, TMaximum, TValue>(TMinimum minimum, TMaximum maximum, TValue value) where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural
+        public static StartingSegment<TMinimum, TMaximum, TValue, Natural> Instance<TMinimum, TMaximum, TValue>(TMinimum minimum, TMaximum maximum, TValue value) where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural
         {
-            return new StartingSegment<TMinimum, TMaximum, TValue>(minimum, maximum, value);
+            return new StartingSegment<TMinimum, TMaximum, TValue, Natural>(minimum, maximum, value);
         }
 
         /*public static IntermediateSegment<TMinimum, TMaximum, TNewMaximum, StartingSegment<TMinimum, TMaximum>> FollowedBy<TMinimum, TMaximum, TNewMaximum>(this StartingSegment<TMinimum, TMaximum> startingSegment, TNewMaximum newMaximum) where TMinimum : ILessThan<TMaximum>, ILessThan<TNewMaximum> where TMaximum : ILessThan<TNewMaximum>
