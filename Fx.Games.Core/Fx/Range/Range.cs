@@ -2,7 +2,7 @@
 {
     using Fx.Numerics;
 
-    public abstract class Range<TMinimum, TMaximum, TValue> : IRange<TMinimum, TMaximum, TValue> where TMaximum : IGreaterThan<TMinimum>
+    public abstract class Range<TMinimum, TMaximum, TValue, TNatural> : IRange<TMinimum, TMaximum, TValue> where TMaximum : TNatural, IGreaterThan<TMinimum> where TMinimum : TNatural
     {
         /// <summary>
         /// 
@@ -20,9 +20,9 @@
 
         public abstract TValue Value { get; }
 
-        protected internal abstract TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext> visitor, TContext context); //// TODO this should only be `protected`, but you're trying to see if it helps you implement the visitor and allow constraints on naturals *outside* of the `range` type
+        protected internal abstract TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext, TNatural> visitor, TContext context); //// TODO this should only be `protected`, but you're trying to see if it helps you implement the visitor and allow constraints on naturals *outside* of the `range` type
 
-        public sealed class StartingSegment : Range<TMinimum, TMaximum, TValue>, IRange<TMinimum, TMaximum, TValue>
+        public sealed class StartingSegment : Range<TMinimum, TMaximum, TValue, TNatural>, IRange<TMinimum, TMaximum, TValue>
         {
             public StartingSegment(TMinimum minimum, TMaximum maximum, TValue value)
             {
@@ -43,24 +43,25 @@
                     value);
             }*/
 
-            protected internal override TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext> visitor, TContext context)
+            protected internal override TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext, TNatural> visitor, TContext context)
             {
                 return visitor.Accept(this, context);
             }
         }
     }
 
-    public abstract class RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext> //// TODO does introducing tnumeric actually help you remove the naturals type constraint? why do you even need the additional type parameters on accept
-        where TMaximum : IGreaterThan<TMinimum>
+    public abstract class RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext, TNatural> //// TODO does introducing tnumeric actually help you remove the naturals type constraint? why do you even need the additional type parameters on accept
+        where TMaximum : TNatural, IGreaterThan<TMinimum>
+        where TMinimum : TNatural
     {
-        public TResult Visit(Range<TMinimum, TMaximum, TValue> node, TContext context)
+        public TResult Visit(Range<TMinimum, TMaximum, TValue, TNatural> node, TContext context)
         {
             return node.Dispatch(this, context);
         }
 
-        protected internal abstract TResult Accept(Range<TMinimum, TMaximum, TValue>.StartingSegment node, TContext context);
+        protected internal abstract TResult Accept(Range<TMinimum, TMaximum, TValue, TNatural>.StartingSegment node, TContext context);
 
-        protected internal abstract TResult Accept(StartingSegment<TMinimum, TMaximum, TValue> node, TContext context);
-        protected internal abstract TResult Accept<TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TMaximum, TMaximum2, TPreviousRange2, TValue> node, TContext context) where TPreviousRange2 : Range<TMinimum, TMaximum, TValue>, IRange<TMinimum, TMaximum, TValue> where TMaximum2 : IGreaterThan<TMaximum>, IGreaterThan<TMinimum>;
+        protected internal abstract TResult Accept(StartingSegment<TMinimum, TMaximum, TValue, TNatural> node, TContext context);
+        protected internal abstract TResult Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TValue, TNatural> node, TContext context) where TPreviousRange2 : Range<TMinimum, TIntermediate, TValue, TNatural> where TIntermediate : TNatural, IGreaterThan<TMinimum> where TMaximum2 : TNatural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum>;
     }
 }

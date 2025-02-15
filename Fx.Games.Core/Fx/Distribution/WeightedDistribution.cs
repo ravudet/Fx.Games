@@ -31,14 +31,14 @@
 
     public sealed class SegmentV2<TValue>
     {
-        public static SegmentV2<TValue> Create<TMinimum, TMaximum>(Range<TMinimum, TMaximum, TValue> segment)
+        public static SegmentV2<TValue> Create<TMinimum, TMaximum>(Range<TMinimum, TMaximum, TValue, Natural> segment)
             where TMaximum : Natural, IGreaterThan<TMinimum>
             where TMinimum : Natural
         {
             return CreateVisitor<TMinimum, TMaximum>.Instance.Visit(segment, default).Segment;
         }
 
-        private sealed class CreateVisitor<TMinimum, TMaximum> : RangeVisitor<TMinimum, TMaximum, TValue, (SegmentV2<TValue> Segment, Natural NestedMaximum, Natural GlobalMinimum), Natural?>
+        private sealed class CreateVisitor<TMinimum, TMaximum> : RangeVisitor<TMinimum, TMaximum, TValue, (SegmentV2<TValue> Segment, Natural NestedMaximum, Natural GlobalMinimum), Natural?, Natural>
             where TMaximum : Natural, IGreaterThan<TMinimum>
             where TMinimum : Natural
         {
@@ -48,21 +48,21 @@
 
             public static CreateVisitor<TMinimum, TMaximum> Instance { get; } = new CreateVisitor<TMinimum, TMaximum>();
 
-            protected internal override (SegmentV2<TValue> Segment, Natural NestedMaximum, Natural GlobalMinimum)  Accept(StartingSegment<TMinimum, TMaximum, TValue> node, Natural? context)
+            protected internal override (SegmentV2<TValue> Segment, Natural NestedMaximum, Natural GlobalMinimum) Accept(StartingSegment<TMinimum, TMaximum, TValue, Natural> node, Natural? context)
             {
                 return (new SegmentV2<TValue>(node.Minimum, context!, node.Minimum, node.Maximum, node.Value, null), node.Maximum, node.Minimum);
             }
 
-            protected internal override (SegmentV2<TValue> Segment, Natural NestedMaximum, Natural GlobalMinimum) Accept<TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TMaximum, TMaximum2, TPreviousRange2, TValue> node, Natural? context)
+            protected internal override (SegmentV2<TValue> Segment, Natural NestedMaximum, Natural GlobalMinimum) Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TValue, Natural> node, Natural? context)
             {
                 var globalMaximum = context ?? node.Maximmum;
 
-                var nested = CreateVisitor<TMinimum, TMaximum>.Instance.Visit(node.PreviousRange, globalMaximum);
+                var nested = CreateVisitor<TMinimum, TIntermediate>.Instance.Visit(node.PreviousRange, globalMaximum);
 
                 return (new SegmentV2<TValue>(nested.GlobalMinimum, globalMaximum, nested.NestedMaximum, node.Maximmum, node.Value, nested.Segment), node.Maximmum, nested.GlobalMinimum);
             }
 
-            protected internal override (SegmentV2<TValue> Segment, Natural NestedMaximum, Natural GlobalMinimum) Accept(Range<TMinimum, TMaximum, TValue>.StartingSegment node, Natural? context)
+            protected internal override (SegmentV2<TValue> Segment, Natural NestedMaximum, Natural GlobalMinimum) Accept(Range<TMinimum, TMaximum, TValue, Natural>.StartingSegment node, Natural? context)
             {
                 throw new System.NotImplementedException();
             }
