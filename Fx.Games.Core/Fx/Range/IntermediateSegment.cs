@@ -16,7 +16,7 @@ namespace Fx.Range
         TValue Value { get; }
     }
 
-    public sealed class IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue, TNatural> : Range<TMinimum, TMaximum, TValue, TNatural>, IRange<TMinimum, TMaximum, TValue> where TPreviousRange : Range<TMinimum, TIntermediate, TValue, TNatural> where TIntermediate : TNatural, IGreaterThan<TMinimum> where TMaximum : TNatural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum> where TMinimum : TNatural
+    public sealed class IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue, TNatural> : Range<TMinimum, TMaximum, TValue, TNatural> where TPreviousRange : Range<TMinimum, TIntermediate, TValue, TNatural> where TIntermediate : TNatural, IGreaterThan<TMinimum> where TMaximum : TNatural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum> where TMinimum : TNatural
     {
         public IntermediateSegment(TPreviousRange previousRange, TMaximum maximmum, TValue value)
         {

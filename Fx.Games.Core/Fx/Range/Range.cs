@@ -2,7 +2,7 @@
 {
     using Fx.Numerics;
 
-    public abstract class Range<TMinimum, TMaximum, TValue, TNatural> : IRange<TMinimum, TMaximum, TValue> where TMaximum : TNatural, IGreaterThan<TMinimum> where TMinimum : TNatural //// TODO find a better name for `tnatural` //// TODO change the order of type parameters to `tnatural` comes before `tvalue`
+    public abstract class Range<TMinimum, TMaximum, TValue, TNatural> where TMaximum : TNatural, IGreaterThan<TMinimum> where TMinimum : TNatural //// TODO find a better name for `tnatural` //// TODO change the order of type parameters to `tnatural` comes before `tvalue`
     {
         /// <summary>
         /// 
@@ -22,7 +22,7 @@
 
         protected internal abstract TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext, TNatural> visitor, TContext context); //// TODO this should only be `protected`, but you're trying to see if it helps you implement the visitor and allow constraints on naturals *outside* of the `range` type
 
-        public sealed class StartingSegment : Range<TMinimum, TMaximum, TValue, TNatural>, IRange<TMinimum, TMaximum, TValue>
+        public sealed class StartingSegment : Range<TMinimum, TMaximum, TValue, TNatural>
         {
             public StartingSegment(TMinimum minimum, TMaximum maximum, TValue value)
             {
