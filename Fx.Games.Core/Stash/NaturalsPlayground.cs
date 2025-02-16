@@ -41,7 +41,7 @@
         }
 
         private sealed class VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum, TNatural>
-            : RangeVisitor<TMinimum, TMaximum, Func<TNode, TContext, TResult>, TResult, (TNode Node, TContext Context), TNatural>
+            : RangeVisitor<TMinimum, TMaximum, Func<TNode, TContext, TResult>, TNatural, TResult, (TNode Node, TContext Context)>
             where TMaximum : TNatural, IGreaterThan<TMinimum>
             where TMinimum : TNatural
         {

@@ -39,7 +39,7 @@
             return CreateVisitor<TMinimum, TMaximum>.Instance.Visit(segment, default).Segment;
         }
 
-        private sealed class CreateVisitor<TMinimum, TMaximum> : RangeVisitor<TMinimum, TMaximum, TValue, (SegmentV2<TValue, TNatural> Segment, TNatural NestedMaximum, TNatural GlobalMinimum), TNatural?, TNatural>
+        private sealed class CreateVisitor<TMinimum, TMaximum> : RangeVisitor<TMinimum, TMaximum, TValue, TNatural,  (SegmentV2<TValue, TNatural> Segment, TNatural NestedMaximum, TNatural GlobalMinimum), TNatural?>
             where TMaximum : TNatural, IGreaterThan<TMinimum>
             where TMinimum : TNatural
         {

@@ -20,7 +20,7 @@
 
         public abstract TValue Value { get; }
 
-        protected internal abstract TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext, TNatural> visitor, TContext context); //// TODO this should only be `protected`, but you're trying to see if it helps you implement the visitor and allow constraints on naturals *outside* of the `range` type
+        protected internal abstract TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TNatural, TResult, TContext> visitor, TContext context); //// TODO this should only be `protected`, but you're trying to see if it helps you implement the visitor and allow constraints on naturals *outside* of the `range` type
 
         public sealed class StartingSegment : Range<TMinimum, TMaximum, TNatural, TValue>
         {
@@ -43,14 +43,14 @@
                     value);
             }
 
-            protected internal override TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext, TNatural> visitor, TContext context)
+            protected internal override TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TNatural, TResult, TContext> visitor, TContext context)
             {
                 return visitor.Accept(this, context);
             }
         }
     }
 
-    public abstract class RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext, TNatural>
+    public abstract class RangeVisitor<TMinimum, TMaximum, TValue, TNatural, TResult, TContext>
         where TMaximum : TNatural, IGreaterThan<TMinimum>
         where TMinimum : TNatural
     {

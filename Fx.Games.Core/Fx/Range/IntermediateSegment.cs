@@ -29,7 +29,7 @@ namespace Fx.Range
             return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TNatural, TValue>, TNatural, TValue>(this, newMaximum, value);
         }
 
-        protected internal override TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext, TNatural> visitor, TContext context)
+        protected internal override TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TNatural, TResult, TContext> visitor, TContext context)
         {
             return visitor.Accept(this, context);
         }

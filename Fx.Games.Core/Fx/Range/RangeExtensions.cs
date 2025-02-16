@@ -25,7 +25,7 @@
         /// <typeparam name="TMinimum"></typeparam>
         /// <typeparam name="TMaximum"></typeparam>
         /// <typeparam name="TValue"></typeparam>
-        private sealed class ToWeightsVisitor<TMinimum, TMaximum, TValue> : RangeVisitor<TMinimum, TMaximum, TValue, IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)>, Nothing, Natural> where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural //// TODO i think you can use a numerics interface instead of `natural`
+        private sealed class ToWeightsVisitor<TMinimum, TMaximum, TValue> : RangeVisitor<TMinimum, TMaximum, TValue, Natural, IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)>, Nothing> where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural //// TODO i think you can use a numerics interface instead of `natural`
         {
             private ToWeightsVisitor()
             {
