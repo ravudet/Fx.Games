@@ -10,6 +10,7 @@
     {
         public static IEnumerable<(double Weight, TValue Value)> ToWeights<TMinimum, TMaximum, TValue>(this Range<TMinimum, TMaximum, Natural, TValue> intermediateSegment) where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural
         {
+            //// TODO instead of implementing a visitor here, if you just create a `segmentv2`, you can delegate to its `ToWeights` extension; keeping the implementation here for now because it's a good example for the range visitor when you're recompiling after a re-design
             return ToWeightsVisitor<TMinimum, TMaximum, TValue>
                 .Instance
                 .Visit(intermediateSegment, default)
