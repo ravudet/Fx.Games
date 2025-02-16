@@ -30,7 +30,7 @@
 
         public static TResult Visit<TNode, TResult, TContext, TMinimum, TMaximum, TNatural>(
             this TNode node,
-            Range<TMinimum, TMaximum, Func<TNode, TContext, TResult>, TNatural> range,
+            Range<TMinimum, TMaximum, TNatural, Func<TNode, TContext, TResult>> range,
             TContext context)
             where TMaximum : TNatural, IGreaterThan<TMinimum>
             where TMinimum : TNatural
@@ -64,7 +64,7 @@
                 }
             }
 
-            protected internal override TResult Accept(Range<TMinimum, TMaximum, Func<TNode, TContext, TResult>, TNatural>.StartingSegment node, (TNode Node, TContext Context) context)
+            protected internal override TResult Accept(Range<TMinimum, TMaximum, TNatural, Func<TNode, TContext, TResult>>.StartingSegment node, (TNode Node, TContext Context) context)
             {
                 if (node is IGreaterThan<TMinimum>)//// TODO || TMinimum2 : IGreaterThan<TNode>)
                 {

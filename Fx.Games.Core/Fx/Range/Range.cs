@@ -2,7 +2,7 @@
 {
     using Fx.Numerics;
 
-    public abstract class Range<TMinimum, TMaximum, TValue, TNatural> where TMaximum : TNatural, IGreaterThan<TMinimum> where TMinimum : TNatural //// TODO find a better name for `tnatural` //// TODO change the order of type parameters to `tnatural` comes before `tvalue`
+    public abstract class Range<TMinimum, TMaximum, TNatural, TValue> where TMaximum : TNatural, IGreaterThan<TMinimum> where TMinimum : TNatural //// TODO find a better name for `tnatural` //// TODO change the order of type parameters to `tnatural` comes before `tvalue`
     {
         /// <summary>
         /// 
@@ -22,7 +22,7 @@
 
         protected internal abstract TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext, TNatural> visitor, TContext context); //// TODO this should only be `protected`, but you're trying to see if it helps you implement the visitor and allow constraints on naturals *outside* of the `range` type
 
-        public sealed class StartingSegment : Range<TMinimum, TMaximum, TValue, TNatural>
+        public sealed class StartingSegment : Range<TMinimum, TMaximum, TNatural, TValue>
         {
             public StartingSegment(TMinimum minimum, TMaximum maximum, TValue value)
             {
@@ -35,9 +35,9 @@
             public TMaximum Maximum { get; }
             public override TValue Value { get; }
 
-            public IntermediateSegment<TMinimum, TMaximum, TNewMaximum, Range<TMinimum, TMaximum, TValue, TNatural>.StartingSegment, TValue, TNatural> FollowedBy<TNewMaximum>(TNewMaximum newMaximum, TValue value) where TNewMaximum : TNatural, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
+            public IntermediateSegment<TMinimum, TMaximum, TNewMaximum, Range<TMinimum, TMaximum, TNatural, TValue>.StartingSegment, TValue, TNatural> FollowedBy<TNewMaximum>(TNewMaximum newMaximum, TValue value) where TNewMaximum : TNatural, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
             {
-                return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, Range<TMinimum, TMaximum, TValue, TNatural>.StartingSegment, TValue, TNatural>(
+                return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, Range<TMinimum, TMaximum, TNatural, TValue>.StartingSegment, TValue, TNatural>(
                     this,
                     newMaximum,
                     value);
@@ -54,13 +54,13 @@
         where TMaximum : TNatural, IGreaterThan<TMinimum>
         where TMinimum : TNatural
     {
-        public TResult Visit(Range<TMinimum, TMaximum, TValue, TNatural> node, TContext context)
+        public TResult Visit(Range<TMinimum, TMaximum, TNatural, TValue> node, TContext context)
         {
             return node.Dispatch(this, context);
         }
 
-        protected internal abstract TResult Accept(Range<TMinimum, TMaximum, TValue, TNatural>.StartingSegment node, TContext context);
+        protected internal abstract TResult Accept(Range<TMinimum, TMaximum, TNatural, TValue>.StartingSegment node, TContext context);
 
-        protected internal abstract TResult Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TValue, TNatural> node, TContext context) where TPreviousRange2 : Range<TMinimum, TIntermediate, TValue, TNatural> where TIntermediate : TNatural, IGreaterThan<TMinimum> where TMaximum2 : TNatural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum>;
+        protected internal abstract TResult Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TValue, TNatural> node, TContext context) where TPreviousRange2 : Range<TMinimum, TIntermediate, TNatural, TValue> where TIntermediate : TNatural, IGreaterThan<TMinimum> where TMaximum2 : TNatural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum>;
     }
 }

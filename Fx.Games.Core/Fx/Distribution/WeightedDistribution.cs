@@ -32,7 +32,7 @@
 
     public sealed class SegmentV2<TValue, TNatural>
     {
-        public static SegmentV2<TValue, TNatural> Create<TMinimum, TMaximum>(Range<TMinimum, TMaximum, TValue, TNatural> segment)
+        public static SegmentV2<TValue, TNatural> Create<TMinimum, TMaximum>(Range<TMinimum, TMaximum, TNatural, TValue> segment)
             where TMaximum : TNatural, IGreaterThan<TMinimum>
             where TMinimum : TNatural
         {
@@ -58,7 +58,7 @@
                 return (new SegmentV2<TValue, TNatural>(nested.GlobalMinimum, globalMaximum, nested.NestedMaximum, node.Maximmum, node.Value, nested.Segment), node.Maximmum, nested.GlobalMinimum);
             }
 
-            protected internal override (SegmentV2<TValue, TNatural> Segment, TNatural NestedMaximum, TNatural GlobalMinimum) Accept(Range<TMinimum, TMaximum, TValue, TNatural>.StartingSegment node, TNatural? context)
+            protected internal override (SegmentV2<TValue, TNatural> Segment, TNatural NestedMaximum, TNatural GlobalMinimum) Accept(Range<TMinimum, TMaximum, TNatural, TValue>.StartingSegment node, TNatural? context)
             {
                 return (new SegmentV2<TValue, TNatural>(node.Minimum, context!, node.Minimum, node.Maximum, node.Value, null), node.Maximum, node.Minimum);
             }
