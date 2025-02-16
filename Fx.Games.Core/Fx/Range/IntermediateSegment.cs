@@ -8,13 +8,7 @@ namespace Fx.Range
     using Fx.Numerics;
     using Stash;
 
-    public interface IRange<TMinimum, TMaximum, TValue> where TMaximum : IGreaterThan<TMinimum>
-    {
-        //// TODO use a base class for this if possible
-        //// TODO add the lessthan stuff
-
-        TValue Value { get; }
-    }
+    //// TODO add the lessthan stuff
 
     public sealed class IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue, TNatural> : Range<TMinimum, TMaximum, TValue, TNatural> where TPreviousRange : Range<TMinimum, TIntermediate, TValue, TNatural> where TIntermediate : TNatural, IGreaterThan<TMinimum> where TMaximum : TNatural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum> where TMinimum : TNatural
     {
