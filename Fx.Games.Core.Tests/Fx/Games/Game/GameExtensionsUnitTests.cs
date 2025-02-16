@@ -1,6 +1,7 @@
 ﻿namespace Fx.Games.Game
 {
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System.ComponentModel.DataAnnotations;
 
     /// <summary>
     /// Unit tests for <see cref="GameExtensions"/>
@@ -43,6 +44,16 @@
             var convertedPortion = PortionV2Playground.ConvertToPortion(weights);
 
             var convertedWeights = PortionV2Playground.ConvertToWeights(convertedPortion);
+        }
+
+        [TestMethod]
+        public void Test()
+        {
+            for (int i = 0; i < byte.MaxValue; ++i)
+            {
+                System.Console.WriteLine($"case {i.ToString()}:");
+                System.Console.WriteLine($"return Naturals._0;");
+            }
         }
 
         [TestMethod]
