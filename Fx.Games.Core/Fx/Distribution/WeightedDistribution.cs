@@ -30,18 +30,18 @@
         }
     }
 
-    public sealed class SegmentV2<TValue, TNatural>
+    public sealed class SegmentV2<TValue, TNumeric>
     {
-        public static SegmentV2<TValue, TNatural> Create<TMinimum, TMaximum>(Range<TMinimum, TMaximum, TNatural, TValue> segment)
-            where TMaximum : TNatural, IGreaterThan<TMinimum>
-            where TMinimum : TNatural
+        public static SegmentV2<TValue, TNumeric> Create<TMinimum, TMaximum>(Range<TMinimum, TMaximum, TNumeric, TValue> segment)
+            where TMaximum : TNumeric, IGreaterThan<TMinimum>
+            where TMinimum : TNumeric
         {
             return CreateVisitor<TMinimum, TMaximum>.Instance.Visit(segment, default).Segment;
         }
 
-        private sealed class CreateVisitor<TMinimum, TMaximum> : RangeVisitor<TMinimum, TMaximum, TValue, TNatural,  (SegmentV2<TValue, TNatural> Segment, TNatural NestedMaximum, TNatural GlobalMinimum), TNatural?>
-            where TMaximum : TNatural, IGreaterThan<TMinimum>
-            where TMinimum : TNatural
+        private sealed class CreateVisitor<TMinimum, TMaximum> : RangeVisitor<TMinimum, TMaximum, TValue, TNumeric,  (SegmentV2<TValue, TNumeric> Segment, TNumeric NestedMaximum, TNumeric GlobalMinimum), TNumeric?>
+            where TMaximum : TNumeric, IGreaterThan<TMinimum>
+            where TMinimum : TNumeric
         {
             private CreateVisitor()
             {
@@ -49,22 +49,22 @@
 
             public static CreateVisitor<TMinimum, TMaximum> Instance { get; } = new CreateVisitor<TMinimum, TMaximum>();
 
-            protected internal override (SegmentV2<TValue, TNatural> Segment, TNatural NestedMaximum, TNatural GlobalMinimum) Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TNatural, TValue> node, TNatural? context)
+            protected internal override (SegmentV2<TValue, TNumeric> Segment, TNumeric NestedMaximum, TNumeric GlobalMinimum) Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TNumeric, TValue> node, TNumeric? context)
             {
                 var globalMaximum = context ?? node.Maximmum;
 
                 var nested = CreateVisitor<TMinimum, TIntermediate>.Instance.Visit(node.PreviousRange, globalMaximum);
 
-                return (new SegmentV2<TValue, TNatural>(nested.GlobalMinimum, globalMaximum, nested.NestedMaximum, node.Maximmum, node.Value, nested.Segment), node.Maximmum, nested.GlobalMinimum);
+                return (new SegmentV2<TValue, TNumeric>(nested.GlobalMinimum, globalMaximum, nested.NestedMaximum, node.Maximmum, node.Value, nested.Segment), node.Maximmum, nested.GlobalMinimum);
             }
 
-            protected internal override (SegmentV2<TValue, TNatural> Segment, TNatural NestedMaximum, TNatural GlobalMinimum) Accept(Range<TMinimum, TMaximum, TNatural, TValue>.StartingSegment node, TNatural? context)
+            protected internal override (SegmentV2<TValue, TNumeric> Segment, TNumeric NestedMaximum, TNumeric GlobalMinimum) Accept(Range<TMinimum, TMaximum, TNumeric, TValue>.StartingSegment node, TNumeric? context)
             {
-                return (new SegmentV2<TValue, TNatural>(node.Minimum, context!, node.Minimum, node.Maximum, node.Value, null), node.Maximum, node.Minimum);
+                return (new SegmentV2<TValue, TNumeric>(node.Minimum, context!, node.Minimum, node.Maximum, node.Value, null), node.Maximum, node.Minimum);
             }
         }
 
-        private SegmentV2(TNatural globalMinimum, TNatural globalMaximum, TNatural minimum, TNatural maximum, TValue value, SegmentV2<TValue, TNatural>? nextSegment)
+        private SegmentV2(TNumeric globalMinimum, TNumeric globalMaximum, TNumeric minimum, TNumeric maximum, TValue value, SegmentV2<TValue, TNumeric>? nextSegment)
         {
             GlobalMinimum = globalMinimum;
             GlobalMaximum = globalMaximum;
@@ -74,17 +74,17 @@
             NextSegment = nextSegment;
         }
 
-        public TNatural GlobalMinimum { get; }
+        public TNumeric GlobalMinimum { get; }
 
-        public TNatural GlobalMaximum { get; }
+        public TNumeric GlobalMaximum { get; }
 
-        public TNatural Minimum { get; }
+        public TNumeric Minimum { get; }
 
-        public TNatural Maximum { get; }
+        public TNumeric Maximum { get; }
 
         public TValue Value { get; }
 
-        public SegmentV2<TValue, TNatural>? NextSegment { get; }
+        public SegmentV2<TValue, TNumeric>? NextSegment { get; }
     }
 
     public sealed class WeightedDistribution<TValue> : IDistribution<TValue, WeightedDistribution<TValue>>

@@ -28,31 +28,31 @@
                         new Nothing());
         }
 
-        public static TResult Visit<TNode, TResult, TContext, TMinimum, TMaximum, TNatural>(
+        public static TResult Visit<TNode, TResult, TContext, TMinimum, TMaximum, TNumeric>(
             this TNode node,
-            Range<TMinimum, TMaximum, TNatural, Func<TNode, TContext, TResult>> range,
+            Range<TMinimum, TMaximum, TNumeric, Func<TNode, TContext, TResult>> range,
             TContext context)
-            where TMaximum : TNatural, IGreaterThan<TMinimum>
-            where TMinimum : TNatural
+            where TMaximum : TNumeric, IGreaterThan<TMinimum>
+            where TMinimum : TNumeric
         {
             //// TODO you need to be able to say something like `where TNode : IGreaterThanable` for this to really make sense, and `IGreaterThan` needs to be coupled to that in some way to ensure that the `where TMaximum` constraint actually means something
 
-            return VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum, TNatural>.Instance.Visit(range, (node, context));
+            return VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum, TNumeric>.Instance.Visit(range, (node, context));
         }
 
-        private sealed class VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum, TNatural>
-            : RangeVisitor<TMinimum, TMaximum, Func<TNode, TContext, TResult>, TNatural, TResult, (TNode Node, TContext Context)>
-            where TMaximum : TNatural, IGreaterThan<TMinimum>
-            where TMinimum : TNatural
+        private sealed class VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum, TNumeric>
+            : RangeVisitor<TMinimum, TMaximum, Func<TNode, TContext, TResult>, TNumeric, TResult, (TNode Node, TContext Context)>
+            where TMaximum : TNumeric, IGreaterThan<TMinimum>
+            where TMinimum : TNumeric
         {
             private VisitVisitor()
             {
             }
 
-            public static VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum, TNatural> Instance { get; } =
-                new VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum, TNatural>();
+            public static VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum, TNumeric> Instance { get; } =
+                new VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum, TNumeric>();
 
-            protected internal override TResult Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TNatural, Func<TNode, TContext, TResult>> node, (TNode Node, TContext Context) context)
+            protected internal override TResult Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TNumeric, Func<TNode, TContext, TResult>> node, (TNode Node, TContext Context) context)
             {
                 if (context.Node is IGreaterThan<TIntermediate>)
                 {
@@ -60,11 +60,11 @@
                 }
                 else
                 {
-                    return VisitVisitor<TNode, TResult, TContext, TMinimum, TIntermediate, TNatural>.Instance.Visit(node.PreviousRange, context);
+                    return VisitVisitor<TNode, TResult, TContext, TMinimum, TIntermediate, TNumeric>.Instance.Visit(node.PreviousRange, context);
                 }
             }
 
-            protected internal override TResult Accept(Range<TMinimum, TMaximum, TNatural, Func<TNode, TContext, TResult>>.StartingSegment node, (TNode Node, TContext Context) context)
+            protected internal override TResult Accept(Range<TMinimum, TMaximum, TNumeric, Func<TNode, TContext, TResult>>.StartingSegment node, (TNode Node, TContext Context) context)
             {
                 if (node is IGreaterThan<TMinimum>)//// TODO || TMinimum2 : IGreaterThan<TNode>)
                 {
