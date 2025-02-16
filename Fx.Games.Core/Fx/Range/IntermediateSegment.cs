@@ -35,18 +35,6 @@ namespace Fx.Range
         {
             return new Range<TMinimum, TMaximum, Natural, TValue>.StartingSegment(minimum, maximum, value);
         }
-
-        /*public static IntermediateSegment<TMinimum, TMaximum, TNewMaximum, StartingSegment<TMinimum, TMaximum>> FollowedBy<TMinimum, TMaximum, TNewMaximum>(this StartingSegment<TMinimum, TMaximum> startingSegment, TNewMaximum newMaximum) where TMinimum : ILessThan<TMaximum>, ILessThan<TNewMaximum> where TMaximum : ILessThan<TNewMaximum>
-        {
-            return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, StartingSegment<TMinimum, TMaximum>>(
-                startingSegment,
-                newMaximum);
-        }*/
-
-        /*public static IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange> FollowedBy<TMinimum, TIntermediate, TMaximum, TPreviousRange>(this TPreviousRange previousRange, TMaximum maximum) where TPreviousRange : IRange<TMinimum, TIntermediate>
-        {
-            return new IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange>(previousRange, maximum);
-        }*/
     }
 
     public static class Driver
