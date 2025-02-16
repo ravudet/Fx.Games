@@ -52,7 +52,7 @@
             public static VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum, TNatural> Instance { get; } =
                 new VisitVisitor<TNode, TResult, TContext, TMinimum, TMaximum, TNatural>();
 
-            protected internal override TResult Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, Func<TNode, TContext, TResult>, TNatural> node, (TNode Node, TContext Context) context)
+            protected internal override TResult Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TNatural, Func<TNode, TContext, TResult>> node, (TNode Node, TContext Context) context)
             {
                 if (context.Node is IGreaterThan<TIntermediate>)
                 {

@@ -35,9 +35,9 @@
             public TMaximum Maximum { get; }
             public override TValue Value { get; }
 
-            public IntermediateSegment<TMinimum, TMaximum, TNewMaximum, Range<TMinimum, TMaximum, TNatural, TValue>.StartingSegment, TValue, TNatural> FollowedBy<TNewMaximum>(TNewMaximum newMaximum, TValue value) where TNewMaximum : TNatural, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
+            public IntermediateSegment<TMinimum, TMaximum, TNewMaximum, Range<TMinimum, TMaximum, TNatural, TValue>.StartingSegment, TNatural, TValue> FollowedBy<TNewMaximum>(TNewMaximum newMaximum, TValue value) where TNewMaximum : TNatural, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
             {
-                return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, Range<TMinimum, TMaximum, TNatural, TValue>.StartingSegment, TValue, TNatural>(
+                return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, Range<TMinimum, TMaximum, TNatural, TValue>.StartingSegment, TNatural, TValue>(
                     this,
                     newMaximum,
                     value);
@@ -61,6 +61,6 @@
 
         protected internal abstract TResult Accept(Range<TMinimum, TMaximum, TNatural, TValue>.StartingSegment node, TContext context);
 
-        protected internal abstract TResult Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TValue, TNatural> node, TContext context) where TPreviousRange2 : Range<TMinimum, TIntermediate, TNatural, TValue> where TIntermediate : TNatural, IGreaterThan<TMinimum> where TMaximum2 : TNatural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum>;
+        protected internal abstract TResult Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TNatural, TValue> node, TContext context) where TPreviousRange2 : Range<TMinimum, TIntermediate, TNatural, TValue> where TIntermediate : TNatural, IGreaterThan<TMinimum> where TMaximum2 : TNatural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum>;
     }
 }

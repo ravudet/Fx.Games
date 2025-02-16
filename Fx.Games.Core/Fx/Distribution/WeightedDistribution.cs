@@ -49,7 +49,7 @@
 
             public static CreateVisitor<TMinimum, TMaximum> Instance { get; } = new CreateVisitor<TMinimum, TMaximum>();
 
-            protected internal override (SegmentV2<TValue, TNatural> Segment, TNatural NestedMaximum, TNatural GlobalMinimum) Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TValue, TNatural> node, TNatural? context)
+            protected internal override (SegmentV2<TValue, TNatural> Segment, TNatural NestedMaximum, TNatural GlobalMinimum) Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TNatural, TValue> node, TNatural? context)
             {
                 var globalMaximum = context ?? node.Maximmum;
 

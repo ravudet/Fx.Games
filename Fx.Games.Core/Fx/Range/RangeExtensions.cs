@@ -33,7 +33,7 @@
 
             public static ToWeightsVisitor<TMinimum, TMaximum, TValue> Instance { get; } = new ToWeightsVisitor<TMinimum, TMaximum, TValue>();
 
-            protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TValue, Natural> node, Nothing context)
+            protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, Natural, TValue> node, Nothing context)
             {
                 var previousWeights = ToWeightsVisitor<TMinimum, TMaximum2, TValue>.Instance.Visit(node, context);
                 (uint Range, TValue Value, uint Minimum, uint Intermediate)? lastWeight = null;

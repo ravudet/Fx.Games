@@ -10,7 +10,7 @@ namespace Fx.Range
 
     //// TODO add the lessthan stuff //// TODO i don't remember why i wrote this, but maybe using ilessthan will let you nest stuff under the `range` abstract class?
 
-    public sealed class IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue, TNatural> : Range<TMinimum, TMaximum, TNatural, TValue> where TPreviousRange : Range<TMinimum, TIntermediate, TNatural, TValue> where TIntermediate : TNatural, IGreaterThan<TMinimum> where TMaximum : TNatural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum> where TMinimum : TNatural
+    public sealed class IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TNatural, TValue> : Range<TMinimum, TMaximum, TNatural, TValue> where TPreviousRange : Range<TMinimum, TIntermediate, TNatural, TValue> where TIntermediate : TNatural, IGreaterThan<TMinimum> where TMaximum : TNatural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum> where TMinimum : TNatural
     {
         public IntermediateSegment(TPreviousRange previousRange, TMaximum maximmum, TValue value)
         {
@@ -23,10 +23,10 @@ namespace Fx.Range
         public TMaximum Maximmum { get; }
         public override TValue Value { get; }
 
-        public IntermediateSegment<TMinimum, TMaximum, TNewMaximum, IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue, TNatural>, TValue, TNatural> FollowedBy<TNewMaximum>(TNewMaximum newMaximum, TValue value) where TNewMaximum : TNatural, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
+        public IntermediateSegment<TMinimum, TMaximum, TNewMaximum, IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TNatural, TValue>, TNatural, TValue> FollowedBy<TNewMaximum>(TNewMaximum newMaximum, TValue value) where TNewMaximum : TNatural, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
         {
             //// TODO can you implement these methods using the visitor?
-            return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue, TNatural>, TValue, TNatural>(this, newMaximum, value);
+            return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TNatural, TValue>, TNatural, TValue>(this, newMaximum, value);
         }
 
         protected internal override TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TResult, TContext, TNatural> visitor, TContext context)
