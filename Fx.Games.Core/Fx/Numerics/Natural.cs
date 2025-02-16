@@ -11,6 +11,7 @@
     public abstract class Natural : 
         ISubtractionOperators<Natural, Natural, Natural>, //// TODO the result isn't necessary natural...
         IDivisionOperators<Natural, Natural, double> //// TODO why double?
+        //// TODO any other numerics you would like to do?
     {
         private Natural()
         {
@@ -196,6 +197,7 @@
 
         public static Natural operator -(Natural left, Natural right)
         {
+            //// TODO there's got to be a better way to implement this
             var difference = left.ToClr() - right.ToClr();
 
             return Natural.Create(difference);
@@ -203,6 +205,7 @@
 
         public static double operator /(Natural left, Natural right)
         {
+            //// TODO there's got to be a better way to implement this
             return ((double)left.ToClr()) / (right.ToClr());
         }
 
