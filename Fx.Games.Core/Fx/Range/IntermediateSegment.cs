@@ -8,7 +8,7 @@ namespace Fx.Range
     using Fx.Numerics;
     using Stash;
 
-    //// TODO add the lessthan stuff
+    //// TODO add the lessthan stuff //// TODO i don't remember why i wrote this, but maybe using ilessthan will let you nest stuff under the `range` abstract class?
 
     public sealed class IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TValue, TNatural> : Range<TMinimum, TMaximum, TValue, TNatural> where TPreviousRange : Range<TMinimum, TIntermediate, TValue, TNatural> where TIntermediate : TNatural, IGreaterThan<TMinimum> where TMaximum : TNatural, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum> where TMinimum : TNatural
     {
