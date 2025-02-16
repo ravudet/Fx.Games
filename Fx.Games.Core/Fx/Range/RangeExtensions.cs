@@ -18,7 +18,7 @@
         }
 
         /// <summary>
-        /// TODO i don't think you should need the type parameters of `segment` to get to the visitor
+        /// 
         /// 
         /// TODO imnplement the `sample` method in `weighteddistribution` to make sure you can actually compute everything you need to
         /// </summary>

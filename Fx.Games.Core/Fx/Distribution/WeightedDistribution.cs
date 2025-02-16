@@ -36,6 +36,7 @@
             where TMaximum : TNumeric, IGreaterThan<TMinimum>
             where TMinimum : TNumeric
         {
+            //// TODO i don't think you should need the type parameters of `segment` to get to this create method
             return CreateVisitor<TMinimum, TMaximum>.Instance.Visit(segment, default).Segment;
         }
 
