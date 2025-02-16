@@ -13,45 +13,22 @@
 
     public static class SegmentV2Extensions
     {
-        public static System.Collections.Generic.IEnumerable<(double Weight, TValue Value)> ToWeights2<TValue, TNumeric>(this SegmentV2<TValue, TNumeric> segment)
+        public static System.Collections.Generic.IEnumerable<(double Weight, TValue Value)> ToWeights<TValue, TNumeric>(this SegmentV2<TValue, TNumeric> segment)
             where TNumeric : ISubtractionOperators<TNumeric, TNumeric, TNumeric>, IDivisionOperators<TNumeric, TNumeric, double>  //// TODO why double?
         {
-            //// TODO i think you can use a numerics interface instead of `natural`
             SegmentV2<TValue, TNumeric>? currentSegment = segment;
 
             var range = segment.GlobalMaximum - segment.GlobalMinimum;
-            ////var range = segment.GlobalMaximum.ToClr() - segment.GlobalMinimum.ToClr();
             while (currentSegment != null)
             {
                 yield return
                     (
                         (currentSegment.Maximum - currentSegment.Minimum) / range,
-                        ////((double)(currentSegment.Maximum.ToClr()) - currentSegment.Minimum.ToClr()) / range,
                         currentSegment.Value
                     );
 
                 currentSegment = currentSegment.NextSegment;
             }
-        }
-
-        public static System.Collections.Generic.IEnumerable<(double Weight, TValue Value)> ToWeights<TValue>(this SegmentV2<TValue, Natural> segment)
-        {
-            //// TODO i think you can use a numerics interface instead of `natural`
-            /*SegmentV2<TValue, Natural>? currentSegment = segment;
-
-            var range = segment.GlobalMaximum.ToClr() - segment.GlobalMinimum.ToClr();
-            while (currentSegment != null)
-            {
-                yield return
-                    (
-                        ((double)(currentSegment.Maximum.ToClr()) - currentSegment.Minimum.ToClr()) / range,
-                        currentSegment.Value
-                    );
-
-                currentSegment = currentSegment.NextSegment;
-            }*/
-
-            return segment.ToWeights2();
         }
     }
 
