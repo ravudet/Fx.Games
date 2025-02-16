@@ -23,11 +23,11 @@ namespace Fx.Range
         public TMaximum Maximmum { get; }
         public override TValue Value { get; }
 
-        public IntermediateSegment<TMinimum, TMaximum, TNewMaximum, IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TNumeric, TValue>, TNumeric, TValue> FollowedBy<TNewMaximum>(TNewMaximum newMaximum, TValue value) where TNewMaximum : TNumeric, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
+        /*public IntermediateSegment<TMinimum, TMaximum, TNewMaximum, IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TNumeric, TValue>, TNumeric, TValue> FollowedBy<TNewMaximum>(TNewMaximum newMaximum, TValue value) where TNewMaximum : TNumeric, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
         {
             //// TODO can you implement these methods using the visitor?
             return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TNumeric, TValue>, TNumeric, TValue>(this, newMaximum, value);
-        }
+        }*/
 
         protected internal override TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TNumeric, TResult, TContext> visitor, TContext context)
         {

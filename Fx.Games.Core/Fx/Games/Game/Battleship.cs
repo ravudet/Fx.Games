@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace Fx.Games.Game
 {
+    using Fx.Range;
+
     public sealed class Battleship<TPlayer> : IGame<Battleship<TPlayer>, BattleshipBoard, BattleshipMove, TPlayer, WeightedDistribution<Battleship<TPlayer>>>
     {
         private readonly (TPlayer Player, BattleshipBoard Board) current;

@@ -52,5 +52,65 @@
                 yield return (node.Maximum.ToClr() - node.Minimum.ToClr(), node.Value, node.Minimum.ToClr(), node.Maximum.ToClr());
             }
         }
+
+        public static IntermediateSegment
+            <
+                TMinimum, 
+                TMaximum, 
+                TNewMaximum, 
+                IntermediateSegment
+                    <
+                        TMinimum, 
+                        TIntermediate, 
+                        TMaximum, 
+                        TPreviousRange, 
+                        TNumeric, 
+                        TValue
+                    >, 
+                TNumeric, 
+                TValue
+            > 
+            FollowedBy<TMinimum, TMaximum, TNewMaximum, TIntermediate, TPreviousRange, TNumeric, TValue>(
+                this IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TNumeric, TValue> segment,
+                TNewMaximum newMaximum,
+                TValue value) 
+            where TMinimum : TNumeric 
+            where TIntermediate : TNumeric, IGreaterThan<TMinimum>
+            where TMaximum : TNumeric, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum>
+            where TNewMaximum : TNumeric, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
+            where TPreviousRange : Range<TMinimum, TIntermediate, TNumeric, TValue>
+        {
+            return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, IntermediateSegment<TMinimum, TIntermediate, TMaximum, TPreviousRange, TNumeric, TValue>, TNumeric, TValue>(segment, newMaximum, value);
+        }
+
+        public static IntermediateSegment
+            <
+                TMinimum, 
+                TMaximum, 
+                TNewMaximum, 
+                Range
+                    <
+                        TMinimum, 
+                        TMaximum, 
+                        TNumeric, 
+                        TValue
+                    >
+                    .StartingSegment, 
+                TNumeric,
+                TValue
+            > 
+            FollowedBy<TMinimum, TMaximum, TNewMaximum, TNumeric, TValue>(
+                this Range<TMinimum, TMaximum, TNumeric, TValue>.StartingSegment segment, 
+                TNewMaximum newMaximum, 
+                TValue value)
+            where TMinimum : TNumeric
+            where TMaximum : TNumeric, IGreaterThan<TMinimum>
+            where TNewMaximum : TNumeric, IGreaterThan<TMaximum>, IGreaterThan<TMinimum>
+        {
+            return new IntermediateSegment<TMinimum, TMaximum, TNewMaximum, Range<TMinimum, TMaximum, TNumeric, TValue>.StartingSegment, TNumeric, TValue>(
+                segment,
+                newMaximum,
+                value);
+        }
     }
 }
