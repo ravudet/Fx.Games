@@ -34,6 +34,8 @@
 
     public sealed class SegmentV2<TValue, TNumeric>
     {
+        //// TODO only rational weights can be modeled with this; maybe you should have a `create` overload that just uses doubles directly and then makes the assertions about them
+
         public static SegmentV2<TValue, TNumeric> Create<TMinimum, TMaximum>(Range<TMinimum, TMaximum, TNumeric, TValue> segment)
             where TMaximum : TNumeric, IGreaterThan<TMinimum>
             where TMinimum : TNumeric

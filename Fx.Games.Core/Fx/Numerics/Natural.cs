@@ -10,6 +10,7 @@
     /// </remarks>
     public abstract class Natural : 
         ISubtractionOperators<Natural, Natural, Natural>, //// TODO the result isn't necessary natural...
+        ISubtractionOperators<Natural, Natural, Integer>,
         IDivisionOperators<Natural, Natural, double> //// TODO why double?
         //// TODO any other numerics you would like to do?
     {
@@ -207,6 +208,11 @@
         {
             //// TODO there's got to be a better way to implement this
             return ((double)left.ToClr()) / (right.ToClr());
+        }
+
+        static Integer ISubtractionOperators<Natural, Natural, Integer>.operator -(Natural left, Natural right)
+        {
+            throw new System.NotImplementedException();
         }
 
         public static Natural Create(uint value)
