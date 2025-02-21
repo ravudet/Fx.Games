@@ -15,12 +15,12 @@ namespace Fx.Range
         public IntermediateSegment(TPreviousRange previousRange, TMaximum maximmum, TValue value)
         {
             PreviousRange = previousRange;
-            Maximmum = maximmum;
+            Maximum = maximmum;
             Value = value;
         }
 
         public TPreviousRange PreviousRange { get; }
-        public TMaximum Maximmum { get; }
+        public TMaximum Maximum { get; }
         public override TValue Value { get; }
 
         protected internal override TResult Dispatch<TResult, TContext>(RangeVisitor<TMinimum, TMaximum, TValue, TNumeric, TResult, TContext> visitor, TContext context)

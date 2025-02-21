@@ -45,7 +45,7 @@
                 }
 
                 //// TODO fix the nullable stuff with `lastweight`
-                yield return (node.Maximmum.ToClr() - lastWeight.Value.Intermediate, node.Value, lastWeight.Value.Minimum, node.Maximmum.ToClr());
+                yield return (node.Maximum.ToClr() - lastWeight.Value.Intermediate, node.Value, lastWeight.Value.Minimum, node.Maximum.ToClr());
             }
 
             protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept(Range<TMinimum, TMaximum, Natural, TValue>.StartingSegment node, Nothing context)

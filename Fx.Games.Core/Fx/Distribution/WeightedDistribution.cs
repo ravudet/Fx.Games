@@ -56,11 +56,11 @@
 
             protected internal override (SegmentV2<TValue, TNumeric> Segment, TNumeric NestedMaximum, TNumeric GlobalMinimum) Accept<TIntermediate, TMaximum2, TPreviousRange2>(IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, TNumeric, TValue> node, TNumeric? context)
             {
-                var globalMaximum = context ?? node.Maximmum;
+                var globalMaximum = context ?? node.Maximum;
 
                 var nested = CreateVisitor<TMinimum, TIntermediate>.Instance.Visit(node.PreviousRange, globalMaximum);
 
-                return (new SegmentV2<TValue, TNumeric>(nested.GlobalMinimum, globalMaximum, nested.NestedMaximum, node.Maximmum, node.Value, nested.Segment), node.Maximmum, nested.GlobalMinimum);
+                return (new SegmentV2<TValue, TNumeric>(nested.GlobalMinimum, globalMaximum, nested.NestedMaximum, node.Maximum, node.Value, nested.Segment), node.Maximum, nested.GlobalMinimum);
             }
 
             protected internal override (SegmentV2<TValue, TNumeric> Segment, TNumeric NestedMaximum, TNumeric GlobalMinimum) Accept(Range<TMinimum, TMaximum, TNumeric, TValue>.StartingSegment node, TNumeric? context)
