@@ -10,6 +10,55 @@
 
     using Fx.Numerics;
 
+    public interface IOperations
+    {
+        Natural Minus<TLeft, TRight>(TLeft left, TRight right) where TLeft : Natural, IGreaterThan<TRight> where TRight : Natural;
+
+        Integer Minus(Natural left, Natural right);
+    }
+
+    public static class OperationsPlayground
+    {
+        public static void DoWork<TMinimum, TMaximum, TValue>(Fx.Range.Range<TMinimum, TMaximum, Natural, TValue> range, IOperations operations)
+            where TMaximum : Natural, IGreaterThan<TMinimum>
+            where TMinimum : Natural
+        {
+
+        }
+
+        private sealed class CreateVisitor<TMinimum, TMaximum, TValue> : Fx.Range.RangeVisitor<TMinimum, TMaximum, TValue, Natural, Nothing, IOperations>
+            where TMaximum : Natural, IGreaterThan<TMinimum>
+            where TMinimum : Natural
+        {
+            private CreateVisitor()
+            {
+            }
+
+            public static CreateVisitor<TMinimum, TMaximum, TValue> Instance { get; } = new CreateVisitor<TMinimum, TMaximum, TValue>();
+
+            protected internal override Nothing Accept<TIntermediate, TMaximum2, TPreviousRange2>(Fx.Range.IntermediateSegment<TMinimum, TIntermediate, TMaximum2, TPreviousRange2, Natural, TValue> node, IOperations context)
+            {
+                var difference = context.Minus(node.Maximum, (node.PreviousRange as Fx.Range.Range<TMinimum, TMaximum, Natural, TValue>.StartingSegment)!.Minimum);
+
+                var otherDifference = context.Minus((node.PreviousRange as Fx.Range.Range<TMinimum, TMaximum, Natural, TValue>.StartingSegment)!.Minimum, node.Maximum);
+
+                return default;
+
+                /*var globalMaximum = context ?? node.Maximmum;
+
+                var nested = CreateVisitor<TMinimum, TIntermediate>.Instance.Visit(node.PreviousRange, globalMaximum);
+
+                return (new SegmentV2<TValue, TNumeric>(nested.GlobalMinimum, globalMaximum, nested.NestedMaximum, node.Maximmum, node.Value, nested.Segment), node.Maximmum, nested.GlobalMinimum);*/
+            }
+
+            protected internal override Nothing Accept(Fx.Range.Range<TMinimum, TMaximum, Natural, TValue>.StartingSegment node, IOperations context)
+            {
+                return default;
+                /*return (new SegmentV2<TValue, TNumeric>(node.Minimum, context!, node.Minimum, node.Maximum, node.Value, null), node.Maximum, node.Minimum);*/
+            }
+        }
+    }
+
     public sealed class DecisionTreeStrategy<TGame, TBoard, TMove, TPlayer, TDistribution, TMinimum, TMaximum> : IStrategy<TGame, TBoard, TMove, TPlayer, TDistribution> where TGame : IGame<TGame, TBoard, TMove, TPlayer, TDistribution> where TDistribution : IDistribution<TGame> where TMinimum : Natural where TMaximum : Natural, IGreaterThan<TMinimum>
     {
         private readonly TPlayer desiredWinner;

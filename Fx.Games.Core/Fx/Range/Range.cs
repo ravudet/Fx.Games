@@ -2,6 +2,8 @@
 {
     using Fx.Numerics;
 
+    //// TODO call it interval, mesh, and partition (note that mesh isn't quite right: https://en.wikipedia.org/wiki/Partition_of_an_interval#Norm_of_a_partition)
+
     public abstract class Range<TMinimum, TMaximum, TNumeric, TValue> where TMaximum : TNumeric, IGreaterThan<TMinimum> where TMinimum : TNumeric
     {
         /// <summary>
