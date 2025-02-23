@@ -25,10 +25,9 @@
             }
         }
 
-        public sealed class Partition<TIntermediate, TMaximum2, TSubInterval> : Interval<TMinimum, TMaximum2, TNumeric, TValue>
-            where TIntermediate : TNumeric, IGreaterThan<TMinimum>
-            where TMaximum2 : TNumeric, IGreaterThan<TMinimum>, IGreaterThan<TIntermediate>
-            where TSubInterval : Interval<TMinimum, TIntermediate, TNumeric, TValue>
+        public sealed class Partition<TMaximum2, TSubInterval> : Interval<TMinimum, TMaximum2, TNumeric, TValue>
+            where TMaximum2 : TNumeric, IGreaterThan<TMinimum>, IGreaterThan<TMaximum>
+            where TSubInterval : Interval<TMinimum, TMaximum, TNumeric, TValue>
         {
             [Obsolete("the message", DiagnosticId = "anotheridTODO")]
             internal Partition(TSubInterval subInterval, TMaximum2 maximum, TValue value)
@@ -53,6 +52,10 @@
 
         protected internal abstract TResult Accept(Interval<TMinimum, TMaximum, TNumeric, TValue>.Mesh node, TContext context);
 
-        protected internal abstract TResult Accept<TIntermediate, TMaximum2, TSubInterval>(Interval<TMinimum, TMaximum, TNumeric, TValue>.Partition<TIntermediate, TMaximum2, TSubInterval> node, TContext context) where TSubInterval : Interval<TMinimum, TIntermediate, TNumeric, TValue> where TIntermediate : TNumeric, IGreaterThan<TMinimum> where TMaximum2 : TNumeric, IGreaterThan<TIntermediate>, IGreaterThan<TMinimum>;
+        protected internal abstract TResult Accept<TMinimum2, TMaximum2, TNumeric2, TValue2, TNewMaximum, TSubInterval2>(Interval<TMinimum2, TMaximum2, TNumeric2, TValue2>.Partition<TNewMaximum, TSubInterval2> node, TContext context)
+            where TMinimum2 : TNumeric2
+            where TMaximum2 : TNumeric2, IGreaterThan<TMinimum2>
+            where TNewMaximum : TNumeric2, IGreaterThan<TMaximum2>, IGreaterThan<TMinimum2>
+            where TSubInterval2 : Interval<TMinimum2, TMaximum2, TNumeric2, TValue2>;
     }
 }
