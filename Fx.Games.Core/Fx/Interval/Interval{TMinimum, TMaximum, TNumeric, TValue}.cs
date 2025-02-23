@@ -41,6 +41,16 @@
         }
     }
 
+    /// <summary>
+    /// TODO make sure this visitor can be used to implement all of the place that rangevisitor is used right now
+    /// TODO then move this visitor inside the `interval` class
+    /// </summary>
+    /// <typeparam name="TMinimum"></typeparam>
+    /// <typeparam name="TMaximum"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <typeparam name="TNumeric"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <typeparam name="TContext"></typeparam>
     public abstract class IntervalVisitor<TMinimum, TMaximum, TValue, TNumeric, TResult, TContext>
         where TMaximum : TNumeric, IGreaterThan<TMinimum>
         where TMinimum : TNumeric
