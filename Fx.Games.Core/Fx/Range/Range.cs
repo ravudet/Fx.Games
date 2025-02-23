@@ -3,6 +3,7 @@
     using Fx.Numerics;
 
     //// TODO call it interval, mesh, and partition (note that mesh isn't quite right: https://en.wikipedia.org/wiki/Partition_of_an_interval#Norm_of_a_partition)
+    //// TODO also, have everything nested like you're supposed to, and then have convenience types outside of this class that let you not have unnecessary type parameters (do this for the visitor too) and document the `internal`s that are necesssary as a result, maybe even mark them obsolete
 
     public abstract class Range<TMinimum, TMaximum, TNumeric, TValue> where TMaximum : TNumeric, IGreaterThan<TMinimum> where TMinimum : TNumeric
     {
