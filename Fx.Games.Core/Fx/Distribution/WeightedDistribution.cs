@@ -10,6 +10,7 @@
     using Stash;
     using static Fx.Games.Game.NewAttempt;
     using System.Numerics;
+    using Fx.Interval;
 
     public static class SegmentV2Extensions
     {
@@ -30,6 +31,85 @@
                 currentSegment = currentSegment.NextSegment;
             }
         }
+
+        public static System.Collections.Generic.IEnumerable<(double Weight, TValue Value)> ToWeights<TValue, TNumeric>(this SegmentV3<TValue, TNumeric> segment)
+            where TNumeric : ISubtractionOperators<TNumeric, TNumeric, TNumeric>, IDivisionOperators<TNumeric, TNumeric, double>  //// TODO why double?
+        {
+            SegmentV3<TValue, TNumeric>? currentSegment = segment;
+
+            var range = segment.GlobalMaximum - segment.GlobalMinimum;
+            while (currentSegment != null)
+            {
+                yield return
+                    (
+                        (currentSegment.Maximum - currentSegment.Minimum) / range,
+                        currentSegment.Value
+                    );
+
+                currentSegment = currentSegment.NextSegment;
+            }
+        }
+    }
+
+    public sealed class SegmentV3<TValue, TNumeric>
+    {
+        //// TODO only rational weights can be modeled with this; maybe you should have a `create` overload that just uses doubles directly and then makes the assertions about them
+        
+        public static SegmentV3<TValue, TNumeric> Create<TMinimum, TMaximum>(Interval<TMinimum, TMaximum, TNumeric, TValue> segment)
+            where TMaximum : TNumeric, IGreaterThan<TMinimum>
+            where TMinimum : TNumeric
+        {
+            //// TODO i don't think you should need the type parameters of `segment` to get to this create method
+            return CreateVisitor<TMinimum, TMaximum>.Instance.Visit(segment, default).Segment;
+        }
+
+        private sealed class CreateVisitor<TMinimum, TMaximum> : Fx.Interval.IntervalVisitor<TMinimum, TMaximum, TValue, TNumeric, (SegmentV3<TValue, TNumeric> Segment, TNumeric NestedMaximum, TNumeric GlobalMinimum), TNumeric?>
+            where TMaximum : TNumeric, IGreaterThan<TMinimum>
+            where TMinimum : TNumeric
+        {
+            private CreateVisitor()
+            {
+            }
+
+            public static CreateVisitor<TMinimum, TMaximum> Instance { get; } = new CreateVisitor<TMinimum, TMaximum>();
+
+            protected internal override (SegmentV3<TValue, TNumeric> Segment, TNumeric NestedMaximum, TNumeric GlobalMinimum) Accept(Interval<TMinimum, TMaximum, TNumeric, TValue>.Mesh node, TNumeric? context)
+            {
+                //// TODO can you remove the null forgiving on `context`?
+                return (new SegmentV3<TValue, TNumeric>(node.Minimum, context!, node.Minimum, node.Maximum, node.Value, null), node.Maximum, node.Minimum);
+            }
+
+            protected internal override (SegmentV3<TValue, TNumeric> Segment, TNumeric NestedMaximum, TNumeric GlobalMinimum) Accept<TMinimum2, TMaximum2, TNewMaximum, TSubInterval2>(Interval<TMinimum2, TMaximum2, TNumeric, TValue>.Partition<TNewMaximum, TSubInterval2> node, TNumeric? context)
+            {
+                var globalMaximum = context ?? node.Maximum;
+
+                var nested = CreateVisitor<TMinimum2, TMaximum2>.Instance.Visit(node.SubInterval, globalMaximum);
+
+                return (new SegmentV3<TValue, TNumeric>(nested.GlobalMinimum, globalMaximum, nested.NestedMaximum, node.Maximum, node.Value, nested.Segment), node.Maximum, nested.GlobalMinimum);
+            }
+        }
+
+        private SegmentV3(TNumeric globalMinimum, TNumeric globalMaximum, TNumeric minimum, TNumeric maximum, TValue value, SegmentV3<TValue, TNumeric>? nextSegment)
+        {
+            GlobalMinimum = globalMinimum;
+            GlobalMaximum = globalMaximum;
+            Minimum = minimum;
+            Maximum = maximum;
+            Value = value;
+            NextSegment = nextSegment;
+        }
+
+        public TNumeric GlobalMinimum { get; }
+
+        public TNumeric GlobalMaximum { get; }
+
+        public TNumeric Minimum { get; }
+
+        public TNumeric Maximum { get; }
+
+        public TValue Value { get; }
+
+        public SegmentV3<TValue, TNumeric>? NextSegment { get; }
     }
 
     public sealed class SegmentV2<TValue, TNumeric>

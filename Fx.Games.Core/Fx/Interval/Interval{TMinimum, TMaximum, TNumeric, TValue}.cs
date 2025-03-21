@@ -17,7 +17,14 @@
             [Obsolete("the message", DiagnosticId = "anidTODO")]
             internal Mesh(TMinimum minimum, TMaximum maximum, TValue value)
             {
+                Minimum = minimum;
+                Maximum = maximum;
+                Value = value;
             }
+
+            public TMinimum Minimum { get; }
+            public TMaximum Maximum { get; }
+            public TValue Value { get; }
 
             protected internal override TResult Dispatch<TResult, TContext>(IntervalVisitor<TMinimum, TMaximum, TValue, TNumeric, TResult, TContext> visitor, TContext context)
             {
@@ -32,7 +39,14 @@
             [Obsolete("the message", DiagnosticId = "anotheridTODO")]
             internal Partition(TSubInterval subInterval, TMaximum2 maximum, TValue value)
             {
+                SubInterval = subInterval;
+                Maximum = maximum;
+                Value = value;
             }
+
+            public TSubInterval SubInterval { get; }
+            public TMaximum2 Maximum { get; }
+            public TValue Value { get; }
 
             protected internal override TResult Dispatch<TResult, TContext>(IntervalVisitor<TMinimum, TMaximum2, TValue, TNumeric, TResult, TContext> visitor, TContext context)
             {
@@ -62,10 +76,10 @@
 
         protected internal abstract TResult Accept(Interval<TMinimum, TMaximum, TNumeric, TValue>.Mesh node, TContext context);
 
-        protected internal abstract TResult Accept<TMinimum2, TMaximum2, TNumeric2, TValue2, TNewMaximum, TSubInterval2>(Interval<TMinimum2, TMaximum2, TNumeric2, TValue2>.Partition<TNewMaximum, TSubInterval2> node, TContext context)
-            where TMinimum2 : TNumeric2
-            where TMaximum2 : TNumeric2, IGreaterThan<TMinimum2>
-            where TNewMaximum : TNumeric2, IGreaterThan<TMaximum2>, IGreaterThan<TMinimum2>
-            where TSubInterval2 : Interval<TMinimum2, TMaximum2, TNumeric2, TValue2>;
+        protected internal abstract TResult Accept<TMinimum2, TMaximum2, TNewMaximum, TSubInterval2>(Interval<TMinimum2, TMaximum2, TNumeric, TValue>.Partition<TNewMaximum, TSubInterval2> node, TContext context)
+            where TMinimum2 : TNumeric
+            where TMaximum2 : TNumeric, IGreaterThan<TMinimum2>
+            where TNewMaximum : TNumeric, IGreaterThan<TMaximum2>, IGreaterThan<TMinimum2>
+            where TSubInterval2 : Interval<TMinimum2, TMaximum2, TNumeric, TValue>;
     }
 }
