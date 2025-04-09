@@ -56,7 +56,6 @@
     }
 
     /// <summary>
-    /// TODO why do yuou need tminimum2?
     /// TODO then move this visitor inside the `interval` class
     /// TODO then the interval factories need to mimic the `rangeextensions` `followedby` stuff
     /// </summary>
