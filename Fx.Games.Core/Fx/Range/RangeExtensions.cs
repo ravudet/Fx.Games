@@ -35,7 +35,15 @@
             protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept<TMinimum2, TMaximum2, TNewMaximum, TSubInterval2>(Interval<TMinimum2, TMaximum2, Natural, TValue>.Partition<TNewMaximum, TSubInterval2> node, Nothing context)
             {
                 var previousWeights = ToWeightsVisitor2<TMinimum2, TMaximum2, TValue>.Instance.Visit(node.SubInterval, context); //// TODO you stole this from other code that thing might have a bug; the code you stole it from just passed `node` in, in case it actually wasn't a bug
+                (uint Range, TValue Value, uint Minimum, uint Intermediate)? lastWeight = null;
+                foreach (var previousWeight in previousWeights)
+                {
+                    lastWeight = previousWeight;
+                    yield return previousWeight;
+                }
 
+                //// TODO fix the nullable stuff with `lastweight`
+                yield return (node.Maximum.ToClr() - lastWeight.Value.Intermediate, node.Value, lastWeight.Value.Minimum, node.Maximum.ToClr());
             }
         }
 

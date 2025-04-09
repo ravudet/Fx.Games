@@ -3,6 +3,7 @@
     using System;
 
     using Fx;
+    using Fx.Interval;
     using Fx.Numerics;
     using Fx.Range;
 
@@ -26,6 +27,66 @@
                             .Instance(Naturals._0, Naturals._3, (Natural value, Nothing @void) => value.ToClr() * 1)
                             .FollowedBy(Naturals._8, (value, @void) => value.ToClr() * 2),
                         new Nothing());
+
+            var otherValue = natural
+                .Switch(
+                    Fx.Interval.Interval.Partition<Natural._0, Natural._3, Natural, Func<Natural, Nothing, uint>, Natural._8, Fx.Interval.Interval<Natural._0, Natural._3, Natural, Func<Natural, Nothing, uint>>.Mesh>(
+                        Fx.Interval.Interval.Mesh(
+                            Naturals._0,
+                            Naturals._3,
+                            (Natural value, Nothing nothing) => value.ToClr() * 1,
+                            Of.Type<Natural>()),
+                        Naturals._8,
+                        (value, nothing) => value.ToClr() * 2),
+                    new Nothing());
+
+
+        }
+
+        public static TResult Switch<TNode, TResult, TContext, TMinimum, TMaximum, TNumeric>(
+            this TNode node,
+            Fx.Interval.Interval<TMinimum, TMaximum, TNumeric, Func<TNode, TContext, TResult>> range,
+            TContext context)
+            where TMaximum : TNumeric, IGreaterThan<TMinimum>
+            where TMinimum : TNumeric
+        {
+            //// TODO you need to be able to say something like `where TNode : IGreaterThanable` for this to really make sense, and `IGreaterThan` needs to be coupled to that in some way to ensure that the `where TMaximum` constraint actually means something
+
+            return SwitchVisitor<TNode, TResult, TContext, TMinimum, TMaximum, TNumeric>.Instance.Visit(range, (node, context));
+        }
+
+        private sealed class SwitchVisitor<TNode, TResult, TContext, TMinimum, TMaximum, TNumeric> :
+            Fx.Interval.IntervalVisitor<TMinimum, TMaximum, Func<TNode, TContext, TResult>, TNumeric, TResult, (TNode Node, TContext Context)>
+            where TMaximum : TNumeric, IGreaterThan<TMinimum>
+            where TMinimum : TNumeric
+        {
+            private SwitchVisitor()
+            {
+            }
+
+            public static SwitchVisitor<TNode, TResult, TContext, TMinimum, TMaximum, TNumeric> Instance { get; } = new SwitchVisitor<TNode, TResult, TContext, TMinimum, TMaximum, TNumeric>();
+
+            protected internal override TResult Accept(Interval<TMinimum, TMaximum, TNumeric, Func<TNode, TContext, TResult>>.Mesh node, (TNode Node, TContext Context) context)
+            {
+                if (context.Node is IGreaterThan<TMinimum>)
+                {
+                    throw new Exception("TODO context.node is not in the specified range");
+                }
+
+                return node.Value(context.Node, context.Context);
+            }
+
+            protected internal override TResult Accept<TMinimum2, TMaximum2, TNewMaximum, TSubInterval2>(Interval<TMinimum2, TMaximum2, TNumeric, Func<TNode, TContext, TResult>>.Partition<TNewMaximum, TSubInterval2> node, (TNode Node, TContext Context) context)
+            {
+                if (context.Node is IGreaterThan<TMaximum2>)
+                {
+                    return node.Value(context.Node, context.Context);
+                }
+                else
+                {
+                    return SwitchVisitor<TNode, TResult, TContext, TMinimum2, TMaximum2, TNumeric>.Instance.Visit(node.SubInterval, context);
+                }
+            }
         }
 
         public static TResult Visit<TNode, TResult, TContext, TMinimum, TMaximum, TNumeric>(

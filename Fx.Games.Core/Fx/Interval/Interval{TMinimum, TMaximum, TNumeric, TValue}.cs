@@ -58,6 +58,7 @@
     /// <summary>
     /// TODO make sure this visitor can be used to implement all of the place that rangevisitor is used right now
     /// TODO then move this visitor inside the `interval` class
+    /// TODO then the interval factories need to mimic the `rangeextensions` `followedby` stuff
     /// </summary>
     /// <typeparam name="TMinimum"></typeparam>
     /// <typeparam name="TMaximum"></typeparam>
