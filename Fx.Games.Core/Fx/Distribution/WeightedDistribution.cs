@@ -63,7 +63,7 @@
             return CreateVisitor<TMinimum, TMaximum>.Instance.Visit(segment, default).Segment;
         }
 
-        private sealed class CreateVisitor<TMinimum, TMaximum> : Fx.Interval.IntervalVisitor<TMinimum, TMaximum, TValue, TNumeric, (SegmentV3<TValue, TNumeric> Segment, TNumeric NestedMaximum, TNumeric GlobalMinimum), TNumeric?>
+        private sealed class CreateVisitor<TMinimum, TMaximum> : Fx.Interval.Interval<TMinimum, TMaximum, TNumeric, TValue>.IntervalVisitor<(SegmentV3<TValue, TNumeric> Segment, TNumeric NestedMaximum, TNumeric GlobalMinimum), TNumeric?>
             where TMaximum : TNumeric, IGreaterThan<TMinimum>
             where TMinimum : TNumeric
         {

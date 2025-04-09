@@ -10,7 +10,7 @@
         {
         }
 
-        protected internal abstract TResult Dispatch<TResult, TContext>(IntervalVisitor<TMinimum, TMaximum, TValue, TNumeric, TResult, TContext> visitor, TContext context);
+        protected internal abstract TResult Dispatch<TResult, TContext>(IntervalVisitor<TResult, TContext> visitor, TContext context);
 
         public sealed class Mesh : Interval<TMinimum, TMaximum, TNumeric, TValue>
         {
@@ -26,7 +26,7 @@
             public TMaximum Maximum { get; }
             public TValue Value { get; }
 
-            protected internal override TResult Dispatch<TResult, TContext>(IntervalVisitor<TMinimum, TMaximum, TValue, TNumeric, TResult, TContext> visitor, TContext context)
+            protected internal override TResult Dispatch<TResult, TContext>(IntervalVisitor<TResult, TContext> visitor, TContext context)
             {
                 return visitor.Accept(this, context);
             }
@@ -48,37 +48,35 @@
             public TMaximum2 Maximum { get; }
             public TValue Value { get; }
 
-            protected internal override TResult Dispatch<TResult, TContext>(IntervalVisitor<TMinimum, TMaximum2, TValue, TNumeric, TResult, TContext> visitor, TContext context)
+            protected internal override TResult Dispatch<TResult, TContext>(IntervalVisitor<TResult, TContext> visitor, TContext context)
             {
                 return visitor.Accept(this, context);
             }
         }
-    }
 
-    /// <summary>
-    /// TODO then move this visitor inside the `interval` class
-    /// TODO then the interval factories need to mimic the `rangeextensions` `followedby` stuff
-    /// </summary>
-    /// <typeparam name="TMinimum"></typeparam>
-    /// <typeparam name="TMaximum"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
-    /// <typeparam name="TNumeric"></typeparam>
-    /// <typeparam name="TResult"></typeparam>
-    /// <typeparam name="TContext"></typeparam>
-    public abstract class IntervalVisitor<TMinimum, TMaximum, TValue, TNumeric, TResult, TContext>
-        where TMaximum : TNumeric, IGreaterThan<TMinimum>
-        where TMinimum : TNumeric
-    {
-        public TResult Visit(Interval<TMinimum, TMaximum, TNumeric, TValue> node, TContext context)
+        /// <summary>
+        /// TODO then move this visitor inside the `interval` class
+        /// TODO then the interval factories need to mimic the `rangeextensions` `followedby` stuff
+        /// </summary>
+        /// <typeparam name="TMinimum"></typeparam>
+        /// <typeparam name="TMaximum"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <typeparam name="TNumeric"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <typeparam name="TContext"></typeparam>
+        public abstract class IntervalVisitor<TResult, TContext>
         {
-            return node.Dispatch(this, context);
+            public TResult Visit(Interval<TMinimum, TMaximum, TNumeric, TValue> node, TContext context)
+            {
+                return node.Dispatch(this, context);
+            }
+
+            protected internal abstract TResult Accept(Interval<TMinimum, TMaximum, TNumeric, TValue>.Mesh node, TContext context);
+
+            protected internal abstract TResult Accept<TMaximum2, TNewMaximum, TSubInterval2>(Interval<TMinimum, TMaximum2, TNumeric, TValue>.Partition<TNewMaximum, TSubInterval2> node, TContext context)
+                where TMaximum2 : TNumeric, IGreaterThan<TMinimum>
+                where TNewMaximum : TNumeric, IGreaterThan<TMaximum2>, IGreaterThan<TMinimum>
+                where TSubInterval2 : Interval<TMinimum, TMaximum2, TNumeric, TValue>;
         }
-
-        protected internal abstract TResult Accept(Interval<TMinimum, TMaximum, TNumeric, TValue>.Mesh node, TContext context);
-
-        protected internal abstract TResult Accept<TMaximum2, TNewMaximum, TSubInterval2>(Interval<TMinimum, TMaximum2, TNumeric, TValue>.Partition<TNewMaximum, TSubInterval2> node, TContext context)
-            where TMaximum2 : TNumeric, IGreaterThan<TMinimum>
-            where TNewMaximum : TNumeric, IGreaterThan<TMaximum2>, IGreaterThan<TMinimum>
-            where TSubInterval2 : Interval<TMinimum, TMaximum2, TNumeric, TValue>;
     }
 }
