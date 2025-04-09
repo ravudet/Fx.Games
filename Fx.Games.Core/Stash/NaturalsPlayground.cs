@@ -56,7 +56,7 @@
         }
 
         private sealed class SwitchVisitor<TNode, TResult, TContext, TMinimum, TMaximum, TNumeric> :
-            Fx.Interval.IntervalVisitor<TMinimum, TMaximum, Func<TNode, TContext, TResult>, TNumeric, TResult, (TNode Node, TContext Context)>
+            Fx.Interval.Interval<TMinimum, TMaximum, TNumeric, Func<TNode, TContext, TResult>>.IntervalVisitor<TResult, (TNode Node, TContext Context)>
             where TMaximum : TNumeric, IGreaterThan<TMinimum>
             where TMinimum : TNumeric
         {
