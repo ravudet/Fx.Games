@@ -55,7 +55,7 @@
         }
 
         /// <summary>
-        /// TODO then move this visitor inside the `interval` class
+        /// TODO get the names making sense for all of the type parameters
         /// TODO then the interval factories need to mimic the `rangeextensions` `followedby` stuff
         /// </summary>
         /// <typeparam name="TMinimum"></typeparam>
