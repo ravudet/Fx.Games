@@ -76,7 +76,7 @@
                 return node.Value(context.Node, context.Context);
             }
 
-            protected internal override TResult Accept<TMinimum2, TMaximum2, TNewMaximum, TSubInterval2>(Interval<TMinimum2, TMaximum2, TNumeric, Func<TNode, TContext, TResult>>.Partition<TNewMaximum, TSubInterval2> node, (TNode Node, TContext Context) context)
+            protected internal override TResult Accept<TMaximum2, TNewMaximum, TSubInterval2>(Interval<TMinimum, TMaximum2, TNumeric, Func<TNode, TContext, TResult>>.Partition<TNewMaximum, TSubInterval2> node, (TNode Node, TContext Context) context)
             {
                 if (context.Node is IGreaterThan<TMaximum2>)
                 {
@@ -84,7 +84,7 @@
                 }
                 else
                 {
-                    return SwitchVisitor<TNode, TResult, TContext, TMinimum2, TMaximum2, TNumeric>.Instance.Visit(node.SubInterval, context);
+                    return SwitchVisitor<TNode, TResult, TContext, TMinimum, TMaximum2, TNumeric>.Instance.Visit(node.SubInterval, context);
                 }
             }
         }

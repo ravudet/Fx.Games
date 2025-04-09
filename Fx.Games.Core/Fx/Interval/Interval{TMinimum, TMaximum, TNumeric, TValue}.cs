@@ -77,10 +77,9 @@
 
         protected internal abstract TResult Accept(Interval<TMinimum, TMaximum, TNumeric, TValue>.Mesh node, TContext context);
 
-        protected internal abstract TResult Accept<TMinimum2, TMaximum2, TNewMaximum, TSubInterval2>(Interval<TMinimum2, TMaximum2, TNumeric, TValue>.Partition<TNewMaximum, TSubInterval2> node, TContext context)
-            where TMinimum2 : TNumeric
-            where TMaximum2 : TNumeric, IGreaterThan<TMinimum2>
-            where TNewMaximum : TNumeric, IGreaterThan<TMaximum2>, IGreaterThan<TMinimum2>
-            where TSubInterval2 : Interval<TMinimum2, TMaximum2, TNumeric, TValue>;
+        protected internal abstract TResult Accept<TMaximum2, TNewMaximum, TSubInterval2>(Interval<TMinimum, TMaximum2, TNumeric, TValue>.Partition<TNewMaximum, TSubInterval2> node, TContext context)
+            where TMaximum2 : TNumeric, IGreaterThan<TMinimum>
+            where TNewMaximum : TNumeric, IGreaterThan<TMaximum2>, IGreaterThan<TMinimum>
+            where TSubInterval2 : Interval<TMinimum, TMaximum2, TNumeric, TValue>;
     }
 }

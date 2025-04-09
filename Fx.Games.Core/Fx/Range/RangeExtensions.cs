@@ -32,9 +32,9 @@
                 yield return (node.Maximum.ToClr() - node.Minimum.ToClr(), node.Value, node.Minimum.ToClr(), node.Maximum.ToClr());
             }
 
-            protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept<TMinimum2, TMaximum2, TNewMaximum, TSubInterval2>(Interval<TMinimum2, TMaximum2, Natural, TValue>.Partition<TNewMaximum, TSubInterval2> node, Nothing context)
+            protected internal override IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)> Accept<TMaximum2, TNewMaximum, TSubInterval2>(Interval<TMinimum, TMaximum2, Natural, TValue>.Partition<TNewMaximum, TSubInterval2> node, Nothing context)
             {
-                var previousWeights = ToWeightsVisitor2<TMinimum2, TMaximum2, TValue>.Instance.Visit(node.SubInterval, context); //// TODO you stole this from other code that thing might have a bug; the code you stole it from just passed `node` in, in case it actually wasn't a bug
+                var previousWeights = ToWeightsVisitor2<TMinimum, TMaximum2, TValue>.Instance.Visit(node.SubInterval, context); //// TODO you stole this from other code that thing might have a bug; the code you stole it from just passed `node` in, in case it actually wasn't a bug
                 (uint Range, TValue Value, uint Minimum, uint Intermediate)? lastWeight = null;
                 foreach (var previousWeight in previousWeights)
                 {

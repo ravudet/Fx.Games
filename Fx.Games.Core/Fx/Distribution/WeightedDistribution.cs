@@ -79,11 +79,11 @@
                 return (new SegmentV3<TValue, TNumeric>(node.Minimum, context!, node.Minimum, node.Maximum, node.Value, null), node.Maximum, node.Minimum);
             }
 
-            protected internal override (SegmentV3<TValue, TNumeric> Segment, TNumeric NestedMaximum, TNumeric GlobalMinimum) Accept<TMinimum2, TMaximum2, TNewMaximum, TSubInterval2>(Interval<TMinimum2, TMaximum2, TNumeric, TValue>.Partition<TNewMaximum, TSubInterval2> node, TNumeric? context)
+            protected internal override (SegmentV3<TValue, TNumeric> Segment, TNumeric NestedMaximum, TNumeric GlobalMinimum) Accept<TMaximum2, TNewMaximum, TSubInterval2>(Interval<TMinimum, TMaximum2, TNumeric, TValue>.Partition<TNewMaximum, TSubInterval2> node, TNumeric? context)
             {
                 var globalMaximum = context ?? node.Maximum;
 
-                var nested = CreateVisitor<TMinimum2, TMaximum2>.Instance.Visit(node.SubInterval, globalMaximum);
+                var nested = CreateVisitor<TMinimum, TMaximum2>.Instance.Visit(node.SubInterval, globalMaximum);
 
                 return (new SegmentV3<TValue, TNumeric>(nested.GlobalMinimum, globalMaximum, nested.NestedMaximum, node.Maximum, node.Value, nested.Segment), node.Maximum, nested.GlobalMinimum);
             }
