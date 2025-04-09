@@ -19,7 +19,7 @@
                     weight => (((double)weight.Range) / (weight.Intermediate - weight.Minimum), weight.Value));
         }
 
-        private sealed class ToWeightsVisitor2<TMinimum, TMaximum, TValue> : Fx.Interval.IntervalVisitor<TMinimum, TMaximum, TValue, Natural, IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)>, Nothing> where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural //// TODO i think you can use a numerics interface instead of `natural`
+        private sealed class ToWeightsVisitor2<TMinimum, TMaximum, TValue> : Fx.Interval.Interval<TMinimum, TMaximum, Natural, TValue>.IntervalVisitor<IEnumerable<(uint Range, TValue Value, uint Minimum, uint Intermediate)>, Nothing> where TMaximum : Natural, IGreaterThan<TMinimum> where TMinimum : Natural //// TODO i think you can use a numerics interface instead of `natural`
         {
             private ToWeightsVisitor2()
             {
