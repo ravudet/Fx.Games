@@ -2020,8 +2020,8 @@
 
         private static void BattleshipConsole()
         {
-            var displayer = BattleshipDisplayer.Instance;
-            ////var displayer = NullDisplayer<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>.Instance;
+            ////var displayer = BattleshipDisplayer.Instance;
+            var displayer = NullDisplayer<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>.Instance;
             var player1 = "player1";
 
             ////var ticks = 155221062;
@@ -2054,8 +2054,8 @@
                 var driver = Driver.Create(
                     new[]
                     {
-                        ////KeyValuePair.Create(player1, new BattleshipNaive()),
-                        KeyValuePair.Create(player1, new BattleshipReverseDistance()),
+                        KeyValuePair.Create(player1, new BattleshipNaive()),
+                        ////KeyValuePair.Create(player1, new BattleshipReverseDistance()),
                         ////KeyValuePair.Create(player1, BattleshipConsoleStrategy.Instance),
                         ////KeyValuePair.Create(player1, new RandomStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>()),
                     }.ToDb().ToDictionary(),
