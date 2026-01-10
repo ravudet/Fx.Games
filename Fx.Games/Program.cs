@@ -1158,8 +1158,18 @@
                 if (this.recentlyDiscoveredTheLastBoatOfALength != null)
                 {
                     if (this.lastMove.X == this.recentlyDiscoveredTheLastBoatOfALength.Value.row)
-                    {// finish out the row at the old distance to make sure we don't accidentally lose track of a boat
-                        this.lastMove = GetNextMove(game, this.lastMove, this.recentlyDiscoveredTheLastBoatOfALength.Value.distance);
+                    {
+                        // finish out the row at the old distance to make sure we don't accidentally lose track of a boat
+                        var nextMove = GetNextMove(game, this.lastMove, this.recentlyDiscoveredTheLastBoatOfALength.Value.distance);
+                        if (nextMove.X == this.recentlyDiscoveredTheLastBoatOfALength.Value.row + 1)
+                        {
+                            this.lastMove = new Coordinate(nextMove.X, 0);
+                        }
+                        else
+                        {
+                            this.lastMove = nextMove;
+                        }
+
                         return this.lastMove;
                     }
                     else if (
@@ -1201,23 +1211,6 @@
 
                     this.lastMove = GetNextMove(game, this.lastMove, distance);
                     return this.lastMove;
-
-                    var nextY = this.lastMove.Y + distance;
-                    if (nextY < 10)
-                    {
-                        this.lastMove = new Coordinate(this.lastMove.X, nextY);
-                        return this.lastMove;
-                    }
-
-                    var nextX = this.lastMove.X + 1;
-                    for (nextY = 0; nextY < 10; ++nextY)
-                    {
-                        if (nextX - (distance - 1) >= 0 && game.Board.Shots[nextX - (distance - 1)][nextY] is BattleshipShotResult.NoShot)
-                        {
-                            this.lastMove = new Coordinate(nextX, nextY);
-                            return this.lastMove;
-                        }
-                    }
                 }
 
                 throw new Exception("TODO");
@@ -1369,7 +1362,8 @@
             var displayer = BattleshipDisplayer.Instance;
             var player1 = "player1";
 
-            var ticks = 155221062; //// Environment.TickCount;
+            ////var ticks = 155221062;
+            var ticks = Environment.TickCount;
             Console.WriteLine(ticks);
             var random = new Random(ticks);
             var filePath = "C:\\github\\battleship_board_states\\0.txt";
