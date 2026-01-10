@@ -1127,32 +1127,28 @@
                     var boat = hit.Boat;
                     if (boat.Length == 2)
                     {
-                        this.remainingTwosToDiscover.Remove(boat);
-                        if (previousDistance == 2)
+                        if (this.remainingTwosToDiscover.Remove(boat) && previousDistance == 2)
                         {
                             this.recentlyDiscoveredTheLastBoatOfALength = true;
                         }
                     }
                     else if (boat.Length == 3)
                     {
-                        this.remainingThreesToDiscover.Remove(boat);
-                        if (!this.remainingThreesToDiscover.Any() && previousDistance == 3)
+                        if (this.remainingThreesToDiscover.Remove(boat) && !this.remainingThreesToDiscover.Any() && previousDistance == 3)
                         {
                             this.recentlyDiscoveredTheLastBoatOfALength = true;
                         }
                     }
                     else if (boat.Length == 4)
                     {
-                        this.remainingFoursToDiscover.Remove(boat);
-                        if (previousDistance == 4)
+                        if (this.remainingFoursToDiscover.Remove(boat) && previousDistance == 4)
                         {
                             this.recentlyDiscoveredTheLastBoatOfALength = true;
                         }
                     }
                     else if (boat.Length == 5)
                     {
-                        this.remainingFivesToDiscover.Remove(boat);
-                        if (previousDistance == 5)
+                        if (this.remainingFivesToDiscover.Remove(boat) && previousDistance == 5)
                         {
                             this.recentlyDiscoveredTheLastBoatOfALength = true;
                         }
@@ -1187,7 +1183,7 @@
 
                 if (this.recentlyDiscoveredTheLastBoatOfALength)
                 {
-                    // we finished the previous row; if have recently finished discovering the 
+                    // we finished the previous row; if have recently finished discovering a boat length, we are going to finish the current row, and then just start over //// TODO i think you should finish the row at the old distance, and then reset in the next row
                     this.recentlyDiscoveredTheLastBoatOfALength = false;
                     this.lastMove = new Coordinate(this.lastMove.X + 1, 0);
                     return this.lastMove;
