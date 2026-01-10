@@ -1162,8 +1162,17 @@
                         var nextMove = GetNextMove(game, this.lastMove, this.recentlyDiscoveredTheLastBoatOfALength.Value.distance);
                         if (nextMove.X == this.recentlyDiscoveredTheLastBoatOfALength.Value.row + 1)
                         {
-                            // start a new full row after finishing the row at the old distance to make sure we don't accidentally lose track of a boat
-                            this.lastMove = new Coordinate(nextMove.X, 0);
+                            if (nextMove.X <= 9)
+                            {
+                                // start a new full row after finishing the row at the old distance to make sure we don't accidentally lose track of a boat
+                                this.lastMove = new Coordinate(nextMove.X, 0);
+                            }
+                            else
+                            {
+                                // you're actually at the end of the board, so the last shot must have discovered the last boat
+                                this.recentlyDiscoveredTheLastBoatOfALength = null;
+                                this.lastMove = DestroyShips(game);
+                            }
                         }
                         else
                         {
@@ -1183,10 +1192,19 @@
                     }
                     else
                     {
-                        // just reset the column once you've completed the full row
                         this.recentlyDiscoveredTheLastBoatOfALength = null;
-                        this.lastMove = new Coordinate(this.lastMove.X + 1, 0);
-                        return this.lastMove;
+                        if (this.lastMove.X < 9)
+                        {
+                            // just reset the column once you've completed the full row
+                            this.lastMove = new Coordinate(this.lastMove.X + 1, 0);
+                            return this.lastMove;
+                        }
+                        else
+                        {
+                            // you're actually at the end of the board, so the last shot must have discovered the last boat
+                            this.lastMove = DestroyShips(game);
+                            return this.lastMove;
+                        }
                     }
                 }
                 else
@@ -1364,31 +1382,37 @@
             var player1 = "player1";
 
             ////var ticks = 155221062;
-            var ticks = Environment.TickCount;
-            Console.WriteLine(ticks);
-            var random = new Random(ticks);
-            var filePath = "C:\\github\\battleship_board_states\\0.txt";
-            Battleship battleship;
-            using (var file = File.OpenRead(filePath))
+            var ticks = 158349719;
+            ////var ticks = Environment.TickCount;
+            for (int i = 0; i < 1000; ++i)
             {
-                var setupStore = new StreamSetupStore(file);
-                var next = random.NextInt64(0, 30_093_975_536); //// TODO add the count to the file
+                ticks += i;
+                Console.WriteLine(ticks);
+                var random = new Random(ticks);
 
-                var setup = setupStore.Get(next);
-                DisplaySetup(setup);
-
-                battleship = new Battleship(setup, player1);
-            }
-
-            var driver = Driver.Create(
-                new[]
+                var filePath = "C:\\github\\battleship_board_states\\0.txt";
+                Battleship battleship;
+                using (var file = File.OpenRead(filePath))
                 {
+                    var setupStore = new StreamSetupStore(file);
+                    var next = random.NextInt64(0, 30_093_975_536); //// TODO add the count to the file
+
+                    var setup = setupStore.Get(next);
+                    DisplaySetup(setup);
+
+                    battleship = new Battleship(setup, player1);
+                }
+
+                var driver = Driver.Create(
+                    new[]
+                    {
                     KeyValuePair.Create(player1, new BattleshipNaive()),
-                    ////KeyValuePair.Create(player1, BattleshipConsoleStrategy.Instance),
-                    ////KeyValuePair.Create(player1, new RandomStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>()),
-                }.ToDb().ToDictionary(),
-                displayer);
-            var result = driver.Run(battleship);
+                        ////KeyValuePair.Create(player1, BattleshipConsoleStrategy.Instance),
+                        ////KeyValuePair.Create(player1, new RandomStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>()),
+                    }.ToDb().ToDictionary(),
+                    displayer);
+                var result = driver.Run(battleship);
+            }
         }
 
         private static void ConnectFourDecisionVersusHuman()
