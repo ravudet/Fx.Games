@@ -1058,7 +1058,7 @@
 
             private HashSet<Boat> remainingFivesToDiscover;
 
-            private int recentlyDiscoveredTheLastBoatOfALength;
+            private bool recentlyDiscoveredTheLastBoatOfALength;
 
             public BattleshipNaive()
             {
@@ -1090,7 +1090,7 @@
                     },
                     BoatComparer.Instance);
 
-                this.recentlyDiscoveredTheLastBoatOfALength = 0;
+                this.recentlyDiscoveredTheLastBoatOfALength = false;
             }
 
             public Coordinate SelectMove(Battleship game)
@@ -1128,25 +1128,34 @@
                     if (boat.Length == 2)
                     {
                         this.remainingTwosToDiscover.Remove(boat);
-                        this.recentlyDiscoveredTheLastBoatOfALength = 2;
+                        if (previousDistance == 2)
+                        {
+                            this.recentlyDiscoveredTheLastBoatOfALength = true;
+                        }
                     }
                     else if (boat.Length == 3)
                     {
                         this.remainingThreesToDiscover.Remove(boat);
-                        if (!this.remainingThreesToDiscover.Any())
+                        if (!this.remainingThreesToDiscover.Any() && previousDistance == 3)
                         {
-                            this.recentlyDiscoveredTheLastBoatOfALength = 3;
+                            this.recentlyDiscoveredTheLastBoatOfALength = true;
                         }
                     }
                     else if (boat.Length == 4)
                     {
                         this.remainingFoursToDiscover.Remove(boat);
-                        this.recentlyDiscoveredTheLastBoatOfALength = 4;
+                        if (previousDistance == 4)
+                        {
+                            this.recentlyDiscoveredTheLastBoatOfALength = true;
+                        }
                     }
                     else if (boat.Length == 5)
                     {
                         this.remainingFivesToDiscover.Remove(boat);
-                        this.recentlyDiscoveredTheLastBoatOfALength = 5;
+                        if (previousDistance == 5)
+                        {
+                            this.recentlyDiscoveredTheLastBoatOfALength = true;
+                        }
                     }
                 }
 
@@ -1176,15 +1185,16 @@
                     return this.lastMove;
                 }
 
-                if (this.recentlyDiscoveredTheLastBoatOfALength == previousDistance)
+                if (this.recentlyDiscoveredTheLastBoatOfALength)
                 {
-                    this.recentlyDiscoveredTheLastBoatOfALength = 0;
+                    // we finished the previous row; if have recently finished discovering the 
+                    this.recentlyDiscoveredTheLastBoatOfALength = false;
                     this.lastMove = new Coordinate(this.lastMove.X + 1, 0);
                     return this.lastMove;
                 }
                 else
                 {
-                    this.recentlyDiscoveredTheLastBoatOfALength = 0;
+                    this.recentlyDiscoveredTheLastBoatOfALength = false;
                     var nextX = this.lastMove.X + 1;
                     for (nextY = 0; nextY < 10; ++nextY)
                     {
