@@ -8,6 +8,7 @@
     using System.Runtime.InteropServices;
     using System.Security.Cryptography.X509Certificates;
     using System.Text.Json.Serialization;
+    using System.Threading;
     using System.Threading.Tasks;
 
     using Db.System.Collections.Generic;
@@ -801,6 +802,110 @@
             }
         }
 
+        public sealed class BattleshipDisplayer : IDisplayer<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>
+        {
+            private BattleshipDisplayer()
+            {
+            }
+
+            public static BattleshipDisplayer Instance { get; } = new BattleshipDisplayer();
+
+            public void DisplayAvailableMoves(Battleship game)
+            {
+            }
+
+            public void DisplayBoard(Battleship game)
+            {
+                Console.Write("  ");
+                for (int i = 0; i < 10; ++i)
+                {
+                    Console.Write($"{i}");
+                }
+
+                Console.WriteLine();
+
+                for (int i = 0; i < 10; ++i)
+                {
+                    Console.Write($"{(char)('A' + i)} ");
+                    for (int j = 0; j < 10; ++j)
+                    {
+                        var square = game.Board.Shots[i][j];
+                        if (square is BattleshipShotResult.Hit hit)
+                        {
+                            Console.Write(hit.Boat.Name[2]);
+                        }
+                        else if (square is BattleshipShotResult.Miss miss)
+                        {
+                            Console.Write('m');
+                        }
+                        else
+                        {
+                            Console.Write(' ');
+                        }
+                    }
+
+                    Console.Write('\t');
+                    if (i == 3)
+                    {
+                        Console.Write("s = destroyer (2)");
+                    }
+                    else if (i == 4)
+                    {
+                        Console.Write("u = cruiser (3)");
+                    }
+                    else if (i == 5)
+                    {
+                        Console.Write("b = submarine (3)");
+                    }
+                    else if (i == 6)
+                    {
+                        Console.Write("t = battleship (4)");
+                    }
+                    else if (i == 7)
+                    {
+                        Console.Write("r = carrier (5)");
+                    }
+
+                    Console.WriteLine();
+                }
+            }
+
+            public void DisplayOutcome(Battleship game)
+            {
+                var winner = game.WinnersAndLosers.Winners.First();
+                Console.WriteLine($"{winner} wins in {game.MoveCount} moves!");
+            }
+
+            public void DisplaySelectedMove(Coordinate move)
+            {
+                Console.WriteLine($"{(char)(move.X + 'A')}{move.Y}");
+            }
+        }
+
+        public sealed class BattleshipConsoleStrategy : IStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>
+        {
+            private BattleshipConsoleStrategy()
+            {
+            }
+
+            public static BattleshipConsoleStrategy Instance { get; } = new BattleshipConsoleStrategy();
+
+            public Coordinate SelectMove(Battleship game)
+            {
+                Console.WriteLine("Select move:");
+                var read = Console.ReadLine();
+                if (read == null)
+                {
+                    throw new Exception("tODO");
+                }
+
+                var x = read[0] - 'A';
+                var y = int.Parse(read.AsSpan().Slice(1));
+
+                return new Coordinate(x, y);
+            }
+        }
+
         public sealed class Battleship : IGame<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>
         {
             private readonly BattleshipSetup battleshipSetup;
@@ -999,13 +1104,14 @@
             (nameof(ConnectFourHumanVersusMontyCarlo), ConnectFourHumanVersusMontyCarlo),
             (nameof(ConnectFourHumanVersusHuman), ConnectFourHumanVersusHuman),
             (nameof(ConnectFourDecisionVersusHuman), ConnectFourDecisionVersusHuman),
+            (nameof(BattleshipConsole), BattleshipConsole),
         };
 
         static void Main(string[] args)
         {
-            DoWork4();
+            ////DoWork4();
 
-            Fx.Games.Game.NewAttempt.CreateOrdered();
+            ////Fx.Games.Game.NewAttempt.CreateOrdered();
 
             for (int i = 0; true; ++i)
             {
@@ -1039,6 +1145,37 @@
                 }
             }
             while (true);
+        }
+
+        private static void BattleshipConsole()
+        {
+            var displayer = BattleshipDisplayer.Instance;
+            var player1 = "player1";
+
+            var ticks = Environment.TickCount;
+            Console.WriteLine(ticks);
+            var random = new Random(ticks);
+            var filePath = "C:\\github\\battleship_board_states\\0.txt";
+            Battleship battleship;
+            using (var file = File.OpenRead(filePath))
+            {
+                var setupStore = new StreamSetupStore(file);
+                var next = random.NextInt64(0, 30_093_975_536); //// TODO add the count to the file
+
+                var setup = setupStore.Get(next);
+                //// DisplaySetup(setup);
+
+                battleship = new Battleship(setup, player1);
+            }
+
+            var driver = Driver.Create(
+                new[]
+                {
+                    //// KeyValuePair.Create(player1, BattleshipConsoleStrategy.Instance),
+                    KeyValuePair.Create(player1, new RandomStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>()),
+                }.ToDb().ToDictionary(),
+                displayer);
+            var result = driver.Run(battleship);
         }
 
         private static void ConnectFourDecisionVersusHuman()
