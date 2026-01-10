@@ -1058,7 +1058,7 @@
 
             private HashSet<Boat> remainingFivesToDiscover;
 
-            private int recentlyDiscoveredTheLastBoatOfALength;
+            private (int distance, long row)? recentlyDiscoveredTheLastBoatOfALength;
 
             public BattleshipNaive()
             {
@@ -1090,7 +1090,7 @@
                     },
                     BoatComparer.Instance);
 
-                this.recentlyDiscoveredTheLastBoatOfALength = 0;
+                this.recentlyDiscoveredTheLastBoatOfALength = null;
             }
 
             public Coordinate SelectMove(Battleship game)
@@ -1129,45 +1129,51 @@
                     {
                         if (this.remainingTwosToDiscover.Remove(boat) && previousDistance == 2)
                         {
-                            this.recentlyDiscoveredTheLastBoatOfALength = previousDistance;
+                            this.recentlyDiscoveredTheLastBoatOfALength = (previousDistance, this.lastMove.X);
                         }
                     }
                     else if (boat.Length == 3)
                     {
                         if (this.remainingThreesToDiscover.Remove(boat) && !this.remainingThreesToDiscover.Any() && previousDistance == 3)
                         {
-                            this.recentlyDiscoveredTheLastBoatOfALength = previousDistance;
+                            this.recentlyDiscoveredTheLastBoatOfALength = (previousDistance, this.lastMove.X);
                         }
                     }
                     else if (boat.Length == 4)
                     {
                         if (this.remainingFoursToDiscover.Remove(boat) && previousDistance == 4)
                         {
-                            this.recentlyDiscoveredTheLastBoatOfALength = previousDistance;
+                            this.recentlyDiscoveredTheLastBoatOfALength = (previousDistance, this.lastMove.X);
                         }
                     }
                     else if (boat.Length == 5)
                     {
                         if (this.remainingFivesToDiscover.Remove(boat) && previousDistance == 5)
                         {
-                            this.recentlyDiscoveredTheLastBoatOfALength = previousDistance;
+                            this.recentlyDiscoveredTheLastBoatOfALength = (previousDistance, this.lastMove.X);
                         }
                     }
                 }
 
-                if (this.recentlyDiscoveredTheLastBoatOfALength != 0)
+                if (this.recentlyDiscoveredTheLastBoatOfALength != null)
                 {
-                    var nextY = this.lastMove.Y + this.recentlyDiscoveredTheLastBoatOfALength;
-                    if (nextY < 10)
+                    if (this.lastMove.X == this.recentlyDiscoveredTheLastBoatOfALength.Value.row)
+                    {// finish out the row at the old distance to make sure we don't accidentally lose track of a boat
+                        this.lastMove = GetNextMove(game, this.lastMove, this.recentlyDiscoveredTheLastBoatOfALength.Value.distance);
+                        return this.lastMove;
+                    }
+                    else if (
+                        this.lastMove.X == this.recentlyDiscoveredTheLastBoatOfALength.Value.row + 1 &&
+                        this.lastMove.Y < 9)
                     {
-                        // finish out the row at the old distance to make sure we don't accidentally lose track of a boat
-                        this.lastMove = new Coordinate(this.lastMove.X, nextY);
+                        // now do a full row at the to make sure we don't accidentally lose track of a boat
+                        this.lastMove = new Coordinate(this.lastMove.X, this.lastMove.Y + 1);
                         return this.lastMove;
                     }
                     else
                     {
-                        // just reset once you've completed the last row at the old distance
-                        this.recentlyDiscoveredTheLastBoatOfALength = 0;
+                        // just reset the column once you've completed the full row
+                        this.recentlyDiscoveredTheLastBoatOfALength = null;
                         this.lastMove = new Coordinate(this.lastMove.X + 1, 0);
                         return this.lastMove;
                     }
@@ -1193,6 +1199,9 @@
                         }
                     }
 
+                    this.lastMove = GetNextMove(game, this.lastMove, distance);
+                    return this.lastMove;
+
                     var nextY = this.lastMove.Y + distance;
                     if (nextY < 10)
                     {
@@ -1212,6 +1221,25 @@
                 }
 
                 throw new Exception("TODO");
+            }
+
+            private static Coordinate GetNextMove(Battleship game, Coordinate lastMove, int distance)
+            {
+                var nextY = lastMove.Y + distance;
+                if (nextY < 10)
+                {
+                    return new Coordinate(lastMove.X, nextY);
+                }
+
+                for (int j = 0; j < distance - 1; ++j)
+                {
+                    if (!(game.Board.Shots[lastMove.X][j] is BattleshipShotResult.NoShot))
+                    {
+                        return new Coordinate(lastMove.X + 1, j + 1);
+                    }
+                }
+
+                return new Coordinate(lastMove.X + 1, 0);
             }
 
             private Coordinate DestroyShips(Battleship game)
@@ -1352,7 +1380,7 @@
                 var next = random.NextInt64(0, 30_093_975_536); //// TODO add the count to the file
 
                 var setup = setupStore.Get(next);
-                //// DisplaySetup(setup);
+                DisplaySetup(setup);
 
                 battleship = new Battleship(setup, player1);
             }
