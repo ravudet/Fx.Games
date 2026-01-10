@@ -1639,16 +1639,16 @@
 
         private static void BattleshipConsole()
         {
-            var displayer = BattleshipDisplayer.Instance;
-            ////var displayer = NullDisplayer<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>.Instance;
+            ////var displayer = BattleshipDisplayer.Instance;
+            var displayer = NullDisplayer<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>.Instance;
             var player1 = "player1";
 
             ////var ticks = 155221062;
             ////var ticks = 158349719;
-            var ticks = 159575046;
-            ////var ticks = Environment.TickCount;
+            ////var ticks = 159575046;
+            var ticks = Environment.TickCount;
             var average = 0;
-            var length = 1;
+            var length = 100;
             for (int i = 0; i < length; ++i)
             {
                 ticks += i;
