@@ -1379,12 +1379,15 @@
         private static void BattleshipConsole()
         {
             var displayer = BattleshipDisplayer.Instance;
+            ////var displayer = NullDisplayer<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>.Instance;
             var player1 = "player1";
 
             ////var ticks = 155221062;
-            var ticks = 158349719;
-            ////var ticks = Environment.TickCount;
-            for (int i = 0; i < 1000; ++i)
+            ////var ticks = 158349719;
+            var ticks = Environment.TickCount;
+            var average = 0;
+            var length = 1;
+            for (int i = 0; i < length; ++i)
             {
                 ticks += i;
                 Console.WriteLine(ticks);
@@ -1412,7 +1415,11 @@
                     }.ToDb().ToDictionary(),
                     displayer);
                 var result = driver.Run(battleship);
+
+                average += result.MoveCount;
             }
+
+            Console.WriteLine(average / length);
         }
 
         private static void ConnectFourDecisionVersusHuman()
