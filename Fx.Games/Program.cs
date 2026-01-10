@@ -1159,14 +1159,15 @@
                 {
                     if (this.lastMove.X == this.recentlyDiscoveredTheLastBoatOfALength.Value.row)
                     {
-                        // finish out the row at the old distance to make sure we don't accidentally lose track of a boat
                         var nextMove = GetNextMove(game, this.lastMove, this.recentlyDiscoveredTheLastBoatOfALength.Value.distance);
                         if (nextMove.X == this.recentlyDiscoveredTheLastBoatOfALength.Value.row + 1)
                         {
+                            // start a new full row after finishing the row at the old distance to make sure we don't accidentally lose track of a boat
                             this.lastMove = new Coordinate(nextMove.X, 0);
                         }
                         else
                         {
+                            // finish out the row at the old distance to make sure we don't accidentally lose track of a boat
                             this.lastMove = nextMove;
                         }
 
@@ -1176,7 +1177,7 @@
                         this.lastMove.X == this.recentlyDiscoveredTheLastBoatOfALength.Value.row + 1 &&
                         this.lastMove.Y < 9)
                     {
-                        // now do a full row at the to make sure we don't accidentally lose track of a boat
+                        // complete the full row to make sure we don't accidentally lose track of a boat
                         this.lastMove = new Coordinate(this.lastMove.X, this.lastMove.Y + 1);
                         return this.lastMove;
                     }
