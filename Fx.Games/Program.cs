@@ -1746,6 +1746,217 @@
             }
         }
 
+
+        private static Coordinate DestroyShips(Battleship game)
+        {
+            for (int i = 0; i < 10; ++i)
+            {
+                for (int j = 0; j < 10; ++j)
+                {
+                    if (game.Board.Shots[i][j] is BattleshipShotResult.Hit hit)
+                    {
+                        var boat = hit.Boat;
+                        var axis = DetermineAxis(game, boat, i, j);
+                        if (axis == null)
+                        {
+                            Coordinate? coordinate;
+                            if (TryShoot(game, i, j + 1, out coordinate))
+                            {
+                                return coordinate;
+                            }
+
+                            if (TryShoot(game, i + 1, j, out coordinate))
+                            {
+                                return coordinate;
+                            }
+
+                            if (TryShoot(game, i, j - 1, out coordinate))
+                            {
+                                return coordinate;
+                            }
+
+                            if (TryShoot(game, i - 1, j, out coordinate))
+                            {
+                                return coordinate;
+                            }
+                        }
+                        else
+                        { 
+                            var extremes = DetermineExtremes(game, boat, i, j, axis.Value);
+                            if (axis.Value)
+                            {
+                                var distance = extremes.max.y - extremes.min.y + 1;
+                                if (distance == boat.Length)
+                                {
+                                    for (int k = 0; k < boat.Length; ++k)
+                                    {
+                                        if (TryShoot(game, i, k, out var coordinate))
+                                        {
+                                            return coordinate;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    for (int k = 0; k < 10; ++k)
+                                    {
+                                        Coordinate? coordinate;
+                                        if (TryShoot(game, extremes.min.x, extremes.min.y + k, out coordinate))
+                                        {
+                                            return coordinate;
+                                        }
+
+                                        if (TryShoot(game, extremes.min.x, extremes.min.y - k, out coordinate))
+                                        {
+                                            return coordinate;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                var distance = extremes.max.x - extremes.min.x + 1;
+                                if (distance == boat.Length)
+                                {
+                                    for (int k = 0; k < boat.Length; ++k)
+                                    {
+                                        if (TryShoot(game, k, j, out var coordinate))
+                                        {
+                                            return coordinate;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    for (int k = 0; k < 10; ++k)
+                                    {
+                                        Coordinate? coordinate;
+                                        if (TryShoot(game, extremes.min.x + k, extremes.min.y, out coordinate))
+                                        {
+                                            return coordinate;
+                                        }
+
+                                        if (TryShoot(game, extremes.min.x - k, extremes.min.y, out coordinate))
+                                        {
+                                            return coordinate;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            throw new Exception("TODO the game is still in progress, but the strategy thinks we've sunk all the ships");
+        }
+
+        private static ((int x, int y) min, (int x, int y) max) DetermineExtremes(
+            Battleship game, 
+            Boat boat, 
+            int i,
+            int j,
+            bool leftToRight)
+        {
+            (int x, int y)? min = null;
+            (int x, int y)? max = null;
+            if (leftToRight)
+            {
+                for (int k = 0; k < 10; ++k)
+                {
+                    if (game.Board.Shots[i][k] is BattleshipShotResult.Hit hit)
+                    {
+                        if (BoatComparer.Instance.Equals(hit.Boat, boat))
+                        {
+                            if (min == null)
+                            {
+                                min = (i, k);
+                            }
+                            else
+                            {
+                                max = (i, k);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int k = 0; k < 10; ++k)
+                {
+                    if (game.Board.Shots[k][j] is BattleshipShotResult.Hit hit)
+                    {
+                        if (BoatComparer.Instance.Equals(hit.Boat, boat))
+                        {
+                            if (min == null)
+                            {
+                                min = (k, j);
+                            }
+                            else
+                            {
+                                max = (k, j);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return (min!.Value, max!.Value);
+        }
+
+        private static bool? DetermineAxis(Battleship game, Boat boat, int i, int j)
+        {
+            for (int k = 0; k < 10; ++k)
+            {
+                if (IsSameBoat(game, boat, i, k))
+                {
+                    return true;
+                }
+
+                if (IsSameBoat(game, boat, k, j))
+                {
+                    return false;
+                }
+            }
+
+            return null;
+        }
+
+        private static bool IsSameBoat(Battleship game, Boat boat, int i, int j)
+        {
+            if (i < 0 || i >= 10 || j < 0 || j >= 10)
+            {
+                return false;
+            }
+
+            var square = game.Board.Shots[i][j];
+            if (square is BattleshipShotResult.Hit hit)
+            {
+                return BoatComparer.Instance.Equals(hit.Boat, boat);
+            }
+
+            return false;
+        }
+
+        private static bool TryShoot(Battleship game, int i, int j, [MaybeNullWhen(false)] out Coordinate coordinate)
+        {
+            if (i >= 10 || i < 0 || j >= 10 || j < 0)
+            {
+                coordinate = null;
+                return false;
+            }
+
+            if (game.Board.Shots[i][j] is BattleshipShotResult.NoShot)
+            {
+                coordinate = new Coordinate(i, j);
+                return true;
+            }
+
+            coordinate = null;
+            return false;
+        }
+
+
         private static readonly IReadOnlyList<(string, Action)> games = new (string, Action)[]
         {
             (nameof(PegsRandom), PegsRandom),
