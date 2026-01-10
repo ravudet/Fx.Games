@@ -917,7 +917,7 @@
 
             public Battleship(BattleshipSetup battleshipSetup, string player)
                 : this(
-                      battleshipSetup, 
+                      battleshipSetup,
                       player,
                       new BattleshipShotResults(),
                       0)
@@ -925,9 +925,9 @@
             }
 
             private Battleship(
-                BattleshipSetup battleshipSetup, 
-                string player, 
-                BattleshipShotResults battleshipShotResults, 
+                BattleshipSetup battleshipSetup,
+                string player,
+                BattleshipShotResults battleshipShotResults,
                 int moveCount)
             {
                 this.battleshipSetup = battleshipSetup;
@@ -953,8 +953,8 @@
                     if (this.IsGameOver)
                     {
                         return new WinnersAndLosers<string>(
-                            new[] { this.player }, 
-                            Enumerable.Empty<string>(), 
+                            new[] { this.player },
+                            Enumerable.Empty<string>(),
                             Enumerable.Empty<string>());
                     }
                     else
@@ -1058,17 +1058,17 @@
 
             private HashSet<Boat> remainingFivesToDiscover;
 
-            private bool recentlyDiscoveredTheLastBoatOfALength;
+            private int recentlyDiscoveredTheLastBoatOfALength;
 
             public BattleshipNaive()
             {
                 this.lastMove = null;
 
                 this.remainingTwosToDiscover = new HashSet<Boat>(
-                    new[] 
-                    { 
+                    new[]
+                    {
                         new Boat("destroyer", 2),
-                    }, 
+                    },
                     BoatComparer.Instance);
                 this.remainingThreesToDiscover = new HashSet<Boat>(
                     new[]
@@ -1090,7 +1090,7 @@
                     },
                     BoatComparer.Instance);
 
-                this.recentlyDiscoveredTheLastBoatOfALength = false;
+                this.recentlyDiscoveredTheLastBoatOfALength = 0;
             }
 
             public Coordinate SelectMove(Battleship game)
@@ -1129,68 +1129,77 @@
                     {
                         if (this.remainingTwosToDiscover.Remove(boat) && previousDistance == 2)
                         {
-                            this.recentlyDiscoveredTheLastBoatOfALength = true;
+                            this.recentlyDiscoveredTheLastBoatOfALength = previousDistance;
                         }
                     }
                     else if (boat.Length == 3)
                     {
                         if (this.remainingThreesToDiscover.Remove(boat) && !this.remainingThreesToDiscover.Any() && previousDistance == 3)
                         {
-                            this.recentlyDiscoveredTheLastBoatOfALength = true;
+                            this.recentlyDiscoveredTheLastBoatOfALength = previousDistance;
                         }
                     }
                     else if (boat.Length == 4)
                     {
                         if (this.remainingFoursToDiscover.Remove(boat) && previousDistance == 4)
                         {
-                            this.recentlyDiscoveredTheLastBoatOfALength = true;
+                            this.recentlyDiscoveredTheLastBoatOfALength = previousDistance;
                         }
                     }
                     else if (boat.Length == 5)
                     {
                         if (this.remainingFivesToDiscover.Remove(boat) && previousDistance == 5)
                         {
-                            this.recentlyDiscoveredTheLastBoatOfALength = true;
+                            this.recentlyDiscoveredTheLastBoatOfALength = previousDistance;
                         }
                     }
                 }
 
-                var distance = 2;
-                if (!this.remainingTwosToDiscover.Any())
+                if (this.recentlyDiscoveredTheLastBoatOfALength != 0)
                 {
-                    distance = 3;
-                    if (!this.remainingThreesToDiscover.Any())
+                    var nextY = this.lastMove.Y + this.recentlyDiscoveredTheLastBoatOfALength;
+                    if (nextY < 10)
                     {
-                        distance = 4;
-                        if (!this.remainingFoursToDiscover.Any())
-                        {
-                            distance = 5;
-                            if (!this.remainingFivesToDiscover.Any())
-                            {
-                                this.lastMove = DestroyShips(game);
-                                return this.lastMove;
-                            }
-                        }
+                        // finish out the row at the old distance to make sure we don't accidentally lose track of a boat
+                        this.lastMove = new Coordinate(this.lastMove.X, nextY);
+                        return this.lastMove;
                     }
-                }
-
-                var nextY = this.lastMove.Y + distance;
-                if (nextY < 10)
-                {
-                    this.lastMove = new Coordinate(this.lastMove.X, nextY);
-                    return this.lastMove;
-                }
-
-                if (this.recentlyDiscoveredTheLastBoatOfALength)
-                {
-                    // we finished the previous row; if have recently finished discovering a boat length, we are going to finish the current row, and then just start over //// TODO i think you should finish the row at the old distance, and then reset in the next row
-                    this.recentlyDiscoveredTheLastBoatOfALength = false;
-                    this.lastMove = new Coordinate(this.lastMove.X + 1, 0);
-                    return this.lastMove;
+                    else
+                    {
+                        // just reset once you've completed the last row at the old distance
+                        this.recentlyDiscoveredTheLastBoatOfALength = 0;
+                        this.lastMove = new Coordinate(this.lastMove.X + 1, 0);
+                        return this.lastMove;
+                    }
                 }
                 else
                 {
-                    this.recentlyDiscoveredTheLastBoatOfALength = false;
+                    var distance = 2;
+                    if (!this.remainingTwosToDiscover.Any())
+                    {
+                        distance = 3;
+                        if (!this.remainingThreesToDiscover.Any())
+                        {
+                            distance = 4;
+                            if (!this.remainingFoursToDiscover.Any())
+                            {
+                                distance = 5;
+                                if (!this.remainingFivesToDiscover.Any())
+                                {
+                                    this.lastMove = DestroyShips(game);
+                                    return this.lastMove;
+                                }
+                            }
+                        }
+                    }
+
+                    var nextY = this.lastMove.Y + distance;
+                    if (nextY < 10)
+                    {
+                        this.lastMove = new Coordinate(this.lastMove.X, nextY);
+                        return this.lastMove;
+                    }
+
                     var nextX = this.lastMove.X + 1;
                     for (nextY = 0; nextY < 10; ++nextY)
                     {
