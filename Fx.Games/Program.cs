@@ -1057,6 +1057,9 @@
             private HashSet<Boat> remainingFoursToDiscover;
 
             private HashSet<Boat> remainingFivesToDiscover;
+
+            private bool recentlyDestroyedTheLastBoatOfALength;
+
             public BattleshipNaive()
             {
                 this.lastMove = null;
@@ -1086,6 +1089,8 @@
                         new Boat("carrier", 5),
                     },
                     BoatComparer.Instance);
+
+                this.recentlyDestroyedTheLastBoatOfALength = false;
             }
 
             public Coordinate SelectMove(Battleship game)
@@ -1104,18 +1109,25 @@
                     if (boat.Length == 2)
                     {
                         this.remainingTwosToDiscover.Remove(boat);
+                        this.recentlyDestroyedTheLastBoatOfALength = true;
                     }
                     else if (boat.Length == 3)
                     {
                         this.remainingThreesToDiscover.Remove(boat);
+                        if (!this.remainingThreesToDiscover.Any())
+                        {
+                            this.recentlyDestroyedTheLastBoatOfALength = true;
+                        }
                     }
                     else if (boat.Length == 4)
                     {
                         this.remainingFoursToDiscover.Remove(boat);
+                        this.recentlyDestroyedTheLastBoatOfALength = true;
                     }
                     else if (boat.Length == 5)
                     {
                         this.remainingFivesToDiscover.Remove(boat);
+                        this.recentlyDestroyedTheLastBoatOfALength = true;
                     }
                 }
 
@@ -1145,13 +1157,22 @@
                     return this.lastMove;
                 }
 
-                var nextX = this.lastMove.X + 1;
-                for (nextY = 0; nextY < 10; ++nextY)
+                if (this.recentlyDestroyedTheLastBoatOfALength)
                 {
-                    if (nextX - (distance - 1) >= 0 && game.Board.Shots[nextX - (distance - 1)][nextY] is BattleshipShotResult.NoShot)
+                    this.recentlyDestroyedTheLastBoatOfALength = false;
+                    this.lastMove = new Coordinate(this.lastMove.X + 1, 0);
+                    return this.lastMove;
+                }
+                else
+                {
+                    var nextX = this.lastMove.X + 1;
+                    for (nextY = 0; nextY < 10; ++nextY)
                     {
-                        this.lastMove = new Coordinate(nextX, nextY);
-                        return this.lastMove;
+                        if (nextX - (distance - 1) >= 0 && game.Board.Shots[nextX - (distance - 1)][nextY] is BattleshipShotResult.NoShot)
+                        {
+                            this.lastMove = new Coordinate(nextX, nextY);
+                            return this.lastMove;
+                        }
                     }
                 }
 
@@ -1285,7 +1306,7 @@
             var displayer = BattleshipDisplayer.Instance;
             var player1 = "player1";
 
-            var ticks = Environment.TickCount;
+            var ticks = 155221062; //// Environment.TickCount;
             Console.WriteLine(ticks);
             var random = new Random(ticks);
             var filePath = "C:\\github\\battleship_board_states\\0.txt";
