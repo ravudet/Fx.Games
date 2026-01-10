@@ -1171,8 +1171,8 @@
             var driver = Driver.Create(
                 new[]
                 {
-                    //// KeyValuePair.Create(player1, BattleshipConsoleStrategy.Instance),
-                    KeyValuePair.Create(player1, new RandomStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>()),
+                    KeyValuePair.Create(player1, BattleshipConsoleStrategy.Instance),
+                    ////KeyValuePair.Create(player1, new RandomStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>()),
                 }.ToDb().ToDictionary(),
                 displayer);
             var result = driver.Run(battleship);
