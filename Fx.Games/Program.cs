@@ -1114,7 +1114,7 @@
                             previousDistance = 5;
                             if (!this.remainingFivesToDiscover.Any())
                             {
-                                this.lastMove = DestroyShips(game);
+                                this.lastMove = Program.DestroyShips(game);
                                 return this.lastMove;
                             }
                         }
@@ -1171,7 +1171,7 @@
                             {
                                 // you're actually at the end of the board, so the last shot must have discovered the last boat
                                 this.recentlyDiscoveredTheLastBoatOfALength = null;
-                                this.lastMove = DestroyShips(game);
+                                this.lastMove = Program.DestroyShips(game);
                             }
                         }
                         else
@@ -1202,7 +1202,7 @@
                         else
                         {
                             // you're actually at the end of the board, so the last shot must have discovered the last boat
-                            this.lastMove = DestroyShips(game);
+                            this.lastMove = Program.DestroyShips(game);
                             return this.lastMove;
                         }
                     }
@@ -1221,7 +1221,7 @@
                                 distance = 5;
                                 if (!this.remainingFivesToDiscover.Any())
                                 {
-                                    this.lastMove = DestroyShips(game);
+                                    this.lastMove = Program.DestroyShips(game);
                                     return this.lastMove;
                                 }
                             }
@@ -1419,7 +1419,7 @@
                     {
                         if (!this.remainingTwosToDiscover.Any())
                         {
-                            this.lastMove = DestroyShips(game);
+                            this.lastMove = Program.DestroyShips(game);
                             return this.lastMove;
                         }
                     }
@@ -1790,7 +1790,7 @@
                                 {
                                     for (int k = 0; k < boat.Length; ++k)
                                     {
-                                        if (TryShoot(game, i, k, out var coordinate))
+                                        if (TryShoot(game, i, extremes.min.y + k, out var coordinate))
                                         {
                                             return coordinate;
                                         }
@@ -1801,7 +1801,7 @@
                                     for (int k = 0; k < 10; ++k)
                                     {
                                         Coordinate? coordinate;
-                                        if (TryShoot(game, extremes.min.x, extremes.min.y + k, out coordinate))
+                                        if (TryShoot(game, extremes.min.x, extremes.max.y + k, out coordinate))
                                         {
                                             return coordinate;
                                         }
@@ -1820,7 +1820,7 @@
                                 {
                                     for (int k = 0; k < boat.Length; ++k)
                                     {
-                                        if (TryShoot(game, k, j, out var coordinate))
+                                        if (TryShoot(game, extremes.min.x + k, j, out var coordinate))
                                         {
                                             return coordinate;
                                         }
@@ -1831,7 +1831,7 @@
                                     for (int k = 0; k < 10; ++k)
                                     {
                                         Coordinate? coordinate;
-                                        if (TryShoot(game, extremes.min.x + k, extremes.min.y, out coordinate))
+                                        if (TryShoot(game, extremes.max.x + k, extremes.min.y, out coordinate))
                                         {
                                             return coordinate;
                                         }
@@ -1872,10 +1872,8 @@
                             {
                                 min = (i, k);
                             }
-                            else
-                            {
-                                max = (i, k);
-                            }
+
+                            max = (i, k);
                         }
                     }
                 }
@@ -1892,10 +1890,8 @@
                             {
                                 min = (k, j);
                             }
-                            else
-                            {
-                                max = (k, j);
-                            }
+
+                            max = (k, j);
                         }
                     }
                 }
@@ -1908,12 +1904,12 @@
         {
             for (int k = 0; k < 10; ++k)
             {
-                if (IsSameBoat(game, boat, i, k))
+                if (IsSameBoat(game, boat, i, k) && j != k)
                 {
                     return true;
                 }
 
-                if (IsSameBoat(game, boat, k, j))
+                if (IsSameBoat(game, boat, k, j) && i != k)
                 {
                     return false;
                 }
@@ -2024,14 +2020,16 @@
 
         private static void BattleshipConsole()
         {
-            ////var displayer = BattleshipDisplayer.Instance;
-            var displayer = NullDisplayer<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>.Instance;
+            var displayer = BattleshipDisplayer.Instance;
+            ////var displayer = NullDisplayer<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>.Instance;
             var player1 = "player1";
 
             ////var ticks = 155221062;
             ////var ticks = 158349719;
             ////var ticks = 159575046;
-            var ticks = Environment.TickCount;
+            ////var ticks = 165841500;
+            var ticks = 165841503;
+            ////var ticks = Environment.TickCount;
             var average = 0;
             var length = 100;
             for (int i = 0; i < length; ++i)
