@@ -1058,7 +1058,7 @@
 
             private HashSet<Boat> remainingFivesToDiscover;
 
-            private bool recentlyDestroyedTheLastBoatOfALength;
+            private bool recentlyDiscoveredTheLastBoatOfALength;
 
             public BattleshipNaive()
             {
@@ -1090,7 +1090,7 @@
                     },
                     BoatComparer.Instance);
 
-                this.recentlyDestroyedTheLastBoatOfALength = false;
+                this.recentlyDiscoveredTheLastBoatOfALength = false;
             }
 
             public Coordinate SelectMove(Battleship game)
@@ -1109,25 +1109,25 @@
                     if (boat.Length == 2)
                     {
                         this.remainingTwosToDiscover.Remove(boat);
-                        this.recentlyDestroyedTheLastBoatOfALength = true;
+                        this.recentlyDiscoveredTheLastBoatOfALength = true;
                     }
                     else if (boat.Length == 3)
                     {
                         this.remainingThreesToDiscover.Remove(boat);
                         if (!this.remainingThreesToDiscover.Any())
                         {
-                            this.recentlyDestroyedTheLastBoatOfALength = true;
+                            this.recentlyDiscoveredTheLastBoatOfALength = true;
                         }
                     }
                     else if (boat.Length == 4)
                     {
                         this.remainingFoursToDiscover.Remove(boat);
-                        this.recentlyDestroyedTheLastBoatOfALength = true;
+                        this.recentlyDiscoveredTheLastBoatOfALength = true;
                     }
                     else if (boat.Length == 5)
                     {
                         this.remainingFivesToDiscover.Remove(boat);
-                        this.recentlyDestroyedTheLastBoatOfALength = true;
+                        this.recentlyDiscoveredTheLastBoatOfALength = true;
                     }
                 }
 
@@ -1157,9 +1157,9 @@
                     return this.lastMove;
                 }
 
-                if (this.recentlyDestroyedTheLastBoatOfALength)
+                if (this.recentlyDiscoveredTheLastBoatOfALength)
                 {
-                    this.recentlyDestroyedTheLastBoatOfALength = false;
+                    this.recentlyDiscoveredTheLastBoatOfALength = false;
                     this.lastMove = new Coordinate(this.lastMove.X + 1, 0);
                     return this.lastMove;
                 }
