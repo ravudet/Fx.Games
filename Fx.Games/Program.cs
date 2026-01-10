@@ -3,8 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
+    using System.Reflection.Metadata.Ecma335;
+    using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
     using System.Security.Cryptography.X509Certificates;
     using System.Text.Json.Serialization;
@@ -1047,17 +1050,42 @@
         {
             private Coordinate? lastMove;
 
-            private HashSet<Boat> remainingTwos;
+            private HashSet<Boat> remainingTwosToDiscover;
 
-            private HashSet<Boat> remainingThrees;
+            private HashSet<Boat> remainingThreesToDiscover;
 
-            private HashSet<Boat> remainingFours;
+            private HashSet<Boat> remainingFoursToDiscover;
 
-            private HashSet<Boat> remainingFives;
-
+            private HashSet<Boat> remainingFivesToDiscover;
             public BattleshipNaive()
             {
                 this.lastMove = null;
+
+                this.remainingTwosToDiscover = new HashSet<Boat>(
+                    new[] 
+                    { 
+                        new Boat("destroyer", 2),
+                    }, 
+                    BoatComparer.Instance);
+                this.remainingThreesToDiscover = new HashSet<Boat>(
+                    new[]
+                    {
+                        new Boat("submarine", 3),
+                        new Boat("cruiser", 3),
+                    },
+                    BoatComparer.Instance);
+                this.remainingFoursToDiscover = new HashSet<Boat>(
+                    new[]
+                    {
+                        new Boat("battleship", 4),
+                    },
+                    BoatComparer.Instance);
+                this.remainingFivesToDiscover = new HashSet<Boat>(
+                    new[]
+                    {
+                        new Boat("carrier", 5),
+                    },
+                    BoatComparer.Instance);
             }
 
             public Coordinate SelectMove(Battleship game)
@@ -1072,13 +1100,118 @@
                 var resultOfLastShot = game.Board.Shots[this.lastMove.X][this.lastMove.Y];
                 if (resultOfLastShot is BattleshipShotResult.Hit hit)
                 {
-                    if (hit.Boat.Length == 2)
+                    var boat = hit.Boat;
+                    if (boat.Length == 2)
                     {
-                        
+                        this.remainingTwosToDiscover.Remove(boat);
+                    }
+                    else if (boat.Length == 3)
+                    {
+                        this.remainingThreesToDiscover.Remove(boat);
+                    }
+                    else if (boat.Length == 4)
+                    {
+                        this.remainingFoursToDiscover.Remove(boat);
+                    }
+                    else if (boat.Length == 5)
+                    {
+                        this.remainingFivesToDiscover.Remove(boat);
+                    }
+                }
+
+                var distance = 2;
+                if (!this.remainingTwosToDiscover.Any())
+                {
+                    distance = 3;
+                    if (!this.remainingThreesToDiscover.Any())
+                    {
+                        distance = 4;
+                        if (!this.remainingFoursToDiscover.Any())
+                        {
+                            distance = 5;
+                            if (!this.remainingFivesToDiscover.Any())
+                            {
+                                this.lastMove = DestroyShips(game);
+                                return this.lastMove;
+                            }
+                        }
+                    }
+                }
+
+                var nextY = this.lastMove.Y + distance;
+                if (nextY < 10)
+                {
+                    this.lastMove = new Coordinate(this.lastMove.X, nextY);
+                    return this.lastMove;
+                }
+
+                var nextX = this.lastMove.X + 1;
+                for (nextY = 0; nextY < 10; ++nextY)
+                {
+                    if (nextX - (distance - 1) >= 0 && game.Board.Shots[nextX - (distance - 1)][nextY] is BattleshipShotResult.NoShot)
+                    {
+                        this.lastMove = new Coordinate(nextX, nextY);
+                        return this.lastMove;
                     }
                 }
 
                 throw new Exception("TODO");
+            }
+
+            private Coordinate DestroyShips(Battleship game)
+            {
+                for (int i = 0; i < 10; ++i)
+                {
+                    for (int j = 0; j < 10; ++j)
+                    {
+                        if (game.Board.Shots[i][j] is BattleshipShotResult.Hit hit)
+                        {
+                            for (int k = 1; k < hit.Boat.Length; ++k)
+                            {
+                                Coordinate? coordinate;
+                                if (this.TryShoot(game, i, j + k, out coordinate))
+                                {
+                                    return coordinate;
+                                }
+
+                                if (this.TryShoot(game, i + k, j, out coordinate))
+                                {
+                                    return coordinate;
+                                }
+
+                                if (this.TryShoot(game, i, j - k, out coordinate))
+                                {
+                                    return coordinate;
+                                }
+
+                                if (this.TryShoot(game, i - k, j, out coordinate))
+                                {
+                                    return coordinate;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                throw new Exception("TODO the game is still in progress, but the strategy thinks we've sunk all the ships");
+            }
+
+            private bool TryShoot(Battleship game, int i, int j, [MaybeNullWhen(false)] out Coordinate coordinate)
+            {
+                if (i >= 10 || i < 0 || j >= 10 || j < 0)
+                {
+                    coordinate = null;
+                    return false;
+                }
+
+                if (game.Board.Shots[i][j] is BattleshipShotResult.NoShot)
+                {
+                    coordinate = new Coordinate(i, j);
+                    return true;
+                }
+
+                coordinate = null;
+                return false;
             }
         }
 
@@ -1171,7 +1304,8 @@
             var driver = Driver.Create(
                 new[]
                 {
-                    KeyValuePair.Create(player1, BattleshipConsoleStrategy.Instance),
+                    KeyValuePair.Create(player1, new BattleshipNaive()),
+                    ////KeyValuePair.Create(player1, BattleshipConsoleStrategy.Instance),
                     ////KeyValuePair.Create(player1, new RandomStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>()),
                 }.ToDb().ToDictionary(),
                 displayer);
