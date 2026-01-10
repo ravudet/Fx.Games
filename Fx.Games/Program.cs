@@ -1572,6 +1572,180 @@
             }
         }
 
+
+        public sealed class BattleshipRandomDiscovery : IStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>
+        {
+            private Coordinate? lastMove;
+
+            private HashSet<Boat> remainingTwosToDiscover;
+
+            private HashSet<Boat> remainingThreesToDiscover;
+
+            private HashSet<Boat> remainingFoursToDiscover;
+
+            private HashSet<Boat> remainingFivesToDiscover;
+
+            private (int distance, long row)? recentlyDiscoveredTheLastBoatOfALength;
+
+            private bool finishedFours;
+            private readonly Random random;
+
+            public BattleshipRandomDiscovery(Random random)
+            {
+                this.lastMove = null;
+
+                this.remainingTwosToDiscover = new HashSet<Boat>(
+                    new[]
+                    {
+                        new Boat("destroyer", 2),
+                    },
+                    BoatComparer.Instance);
+                this.remainingThreesToDiscover = new HashSet<Boat>(
+                    new[]
+                    {
+                        new Boat("submarine", 3),
+                        new Boat("cruiser", 3),
+                    },
+                    BoatComparer.Instance);
+                this.remainingFoursToDiscover = new HashSet<Boat>(
+                    new[]
+                    {
+                        new Boat("battleship", 4),
+                    },
+                    BoatComparer.Instance);
+                this.remainingFivesToDiscover = new HashSet<Boat>(
+                    new[]
+                    {
+                        new Boat("carrier", 5),
+                    },
+                    BoatComparer.Instance);
+
+                this.recentlyDiscoveredTheLastBoatOfALength = null;
+
+                this.finishedFours = false;
+                this.random = random;
+            }
+
+            public Coordinate SelectMove(Battleship game)
+            {
+                if (
+                    this.remainingTwosToDiscover.Any() ||
+                    this.remainingThreesToDiscover.Any() ||
+                    this.remainingFoursToDiscover.Any() ||
+                    this.remainingFivesToDiscover.Any())
+                {
+                    var moves = game.Moves.ToList();
+                    var next = random.Next(0, moves.Count);
+
+                    if (this.lastMove != null)
+                    {
+                        var resultOfLastShot = game.Board.Shots[this.lastMove.X][this.lastMove.Y];
+                        if (resultOfLastShot is BattleshipShotResult.Hit hit)
+                        {
+                            var boat = hit.Boat;
+                            if (boat.Length == 2)
+                            {
+                                this.remainingTwosToDiscover.Remove(boat);
+                            }
+                            else if (boat.Length == 3)
+                            {
+                                this.remainingThreesToDiscover.Remove(boat);
+                            }
+                            else if (boat.Length == 4)
+                            {
+                                this.remainingFoursToDiscover.Remove(boat);
+                            }
+                            else if (boat.Length == 5)
+                            {
+                                this.remainingFivesToDiscover.Remove(boat);
+                            }
+                        }
+                    }
+
+                    this.lastMove = moves[next];
+                    return this.lastMove;
+                }
+
+                this.lastMove = DestroyShips(game);
+                return this.lastMove;
+            }
+
+            private static Coordinate GetNextMove(Battleship game, Coordinate lastMove, int distance)
+            {
+                var nextY = lastMove.Y + distance;
+                if (nextY < 10)
+                {
+                    return new Coordinate(lastMove.X, nextY);
+                }
+
+                for (int j = 0; j < distance - 1; ++j)
+                {
+                    if (!(game.Board.Shots[lastMove.X][j] is BattleshipShotResult.NoShot))
+                    {
+                        return new Coordinate(lastMove.X + 1, j + 1);
+                    }
+                }
+
+                return new Coordinate(lastMove.X + 1, 0);
+            }
+
+            private static Coordinate DestroyShips(Battleship game)
+            {
+                for (int i = 0; i < 10; ++i)
+                {
+                    for (int j = 0; j < 10; ++j)
+                    {
+                        if (game.Board.Shots[i][j] is BattleshipShotResult.Hit hit)
+                        {
+                            for (int k = 1; k < hit.Boat.Length; ++k)
+                            {
+                                Coordinate? coordinate;
+                                if (TryShoot(game, i, j + k, out coordinate))
+                                {
+                                    return coordinate;
+                                }
+
+                                if (TryShoot(game, i + k, j, out coordinate))
+                                {
+                                    return coordinate;
+                                }
+
+                                if (TryShoot(game, i, j - k, out coordinate))
+                                {
+                                    return coordinate;
+                                }
+
+                                if (TryShoot(game, i - k, j, out coordinate))
+                                {
+                                    return coordinate;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                throw new Exception("TODO the game is still in progress, but the strategy thinks we've sunk all the ships");
+            }
+
+            private static bool TryShoot(Battleship game, int i, int j, [MaybeNullWhen(false)] out Coordinate coordinate)
+            {
+                if (i >= 10 || i < 0 || j >= 10 || j < 0)
+                {
+                    coordinate = null;
+                    return false;
+                }
+
+                if (game.Board.Shots[i][j] is BattleshipShotResult.NoShot)
+                {
+                    coordinate = new Coordinate(i, j);
+                    return true;
+                }
+
+                coordinate = null;
+                return false;
+            }
+        }
+
         private static readonly IReadOnlyList<(string, Action)> games = new (string, Action)[]
         {
             (nameof(PegsRandom), PegsRandom),
