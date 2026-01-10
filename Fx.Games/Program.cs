@@ -2031,7 +2031,7 @@
             var ticks = 165841503;
             ////var ticks = Environment.TickCount;
             var average = 0;
-            var length = 100;
+            var length = 10000;
             for (int i = 0; i < length; ++i)
             {
                 ticks += i;
@@ -2054,8 +2054,8 @@
                 var driver = Driver.Create(
                     new[]
                     {
-                        KeyValuePair.Create(player1, new BattleshipNaive()),
-                        ////KeyValuePair.Create(player1, new BattleshipReverseDistance()),
+                        ////KeyValuePair.Create(player1, new BattleshipNaive()),
+                        KeyValuePair.Create(player1, new BattleshipReverseDistance()),
                         ////KeyValuePair.Create(player1, BattleshipConsoleStrategy.Instance),
                         ////KeyValuePair.Create(player1, new RandomStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>()),
                     }.ToDb().ToDictionary(),
