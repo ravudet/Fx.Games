@@ -170,269 +170,13 @@
             }
         }
 
-        public sealed class BoardState
-        {
-            public BoardState(System.Collections.Generic.IEnumerable<Placement> placements)
-            {
-                Placements = placements;
-            }
-
-            public System.Collections.Generic.IEnumerable<Placement> Placements { get; }
-        }
-
-        public sealed class BoardStateComparer : IEqualityComparer<BoardState>
-        {
-            private BoardStateComparer()
-            {
-            }
-
-            public static BoardStateComparer Instance { get; } = new BoardStateComparer();
-
-            public bool Equals(BoardState? x, BoardState? y)
-            {
-                if (object.ReferenceEquals(x, y))
-                {
-                    return true;
-                }
-
-                if (x == null)
-                {
-                    return false;
-                }
-
-                if (y == null)
-                {
-                    return false;
-                }
-
-                return Enumerable.SequenceEqual(x.Placements, y.Placements, PlacementComparer.Instance);
-            }
-
-            public int GetHashCode(BoardState obj)
-            {
-                var hashCode = 0;
-                foreach (var placement in obj.Placements)
-                {
-                    hashCode ^= PlacementComparer.Instance.GetHashCode(placement);
-                }
-
-                return hashCode;
-            }
-        }
-
-        public static bool Fits(Placement placement)
-        {
-            if (placement.LeftToRight)
-            {
-                if (placement.Coordinate.X + placement.Boat.Length >= 10)
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (placement.Coordinate.Y + placement.Boat.Length >= 10)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public static bool Overlaps(System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<Coordinate>> boardState, Placement placement)
-        {
-            var newBoatCoordinates = BoatCoordinates(placement).ToHashSet(CoordinateComparer.Instance);
-
-            foreach (var boat in boardState)
-            {
-                var boatCoordinates = boat;
-                if (newBoatCoordinates.Intersect(boatCoordinates).Any())
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private static System.Collections.Generic.IEnumerable<Coordinate> BoatCoordinates(Placement placement)
-        {
-            if (placement.LeftToRight)
-            {
-                for (int i = 0; i < placement.Boat.Length; ++i)
-                {
-                    yield return new Coordinate(placement.Coordinate.X + i, placement.Coordinate.Y);
-                }
-            }
-            else
-            {
-                for (int i = 0; i < placement.Boat.Length; ++i)
-                {
-                    yield return new Coordinate(placement.Coordinate.X, placement.Coordinate.Y + i);
-                }
-            }
-        }
-
-
-
-        public sealed class BetterBoard
-        {
-            public BetterBoard(char[][] board)
-            {
-                Board = board;
-            }
-
-            public char[][] Board { get; }
-        }
-
-        private static void DoWork2()
-        {
-            var boats = new[]
-            {
-                new Boat("carrier", 5),
-                new Boat("battleship", 4),
-                new Boat("submarine", 3),
-                new Boat("cruiser", 3),
-                new Boat("destroyer", 2),
-            };
-
-            System.Collections.Generic.IEnumerable<BetterBoard> existingBoardStates = new[] { new BetterBoard(new[] { new char[10], new char[10], new char[10], new char[10], new char[10], new char[10], new char[10], new char[10], new char[10], new char[10] }) };
-            foreach (var boat in boats)
-            {
-                var newBoardStates = new List<BetterBoard>();
-                int count = 0;
-                foreach (var boardState in existingBoardStates)
-                {
-                    foreach (var leftToRight in new[] { true, false })
-                    {
-                        for (int i = 0; i < 10; ++i)
-                        {
-                            for (int j = 0; j < 10; ++j)
-                            {
-                                if (boardState.Board[i][j] == 0)
-                                {
-                                    if (leftToRight)
-                                    {
-                                        var keep = true;
-                                        for (int k = 1; k < boat.Length; ++k)
-                                        {
-                                            if (i + k >= 10 || boardState.Board[i + k][j] != 0)
-                                            {
-                                                keep = false;
-                                                break;
-                                            }
-                                        }
-
-                                        if (keep)
-                                        {
-                                            var newBoardState = boardState.Board.Select(row => (row.Clone() as char[])!).ToArray();
-                                            for (int k = 0; k < boat.Length; ++k)
-                                            {
-                                                newBoardState[i + k][j] = boat.Name[0];
-                                            }
-
-                                            newBoardStates.Add(new BetterBoard(newBoardState));
-                                        }
-                                    }
-                                    else
-                                    {
-                                        var keep = true;
-                                        for (int k = 1; k < boat.Length; ++k)
-                                        {
-                                            if (j + k >= 10 || boardState.Board[i][j + k] != 0)
-                                            {
-                                                keep = false;
-                                                break;
-                                            }
-                                        }
-
-                                        if (keep)
-                                        {
-                                            var newBoardState = boardState.Board.Select(row => (row.Clone() as char[])!).ToArray();
-                                            for (int k = 0; k < boat.Length; ++k)
-                                            {
-                                                newBoardState[i][j + k] = boat.Name[0];
-                                            }
-
-                                            newBoardStates.Add(new BetterBoard(newBoardState));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    ++count;
-                }
-
-                existingBoardStates = newBoardStates;
-            }
-
-            Console.WriteLine(existingBoardStates.Count());
-        }
-
-        private static void DoWork()
-        {
-            var boats = new[]
-            {
-                new Boat("carrier", 5),
-                new Boat("battleship", 4),
-                new Boat("submarine", 3),
-                new Boat("cruiser", 3),
-                new Boat("destroyer", 2),
-            };
-
-            List<System.Collections.Generic.IEnumerable<List<Coordinate>>> existingBoardStates =
-                PossiblePlacements(boats[0])
-                .Select(placement => new BoardState(new[] { placement }))
-                .Select(boardState => boardState.Placements.Select(placement => BoatCoordinates(placement).ToList()).ToList().AsEnumerable())
-                .ToList();
-            foreach (var boat in boats.Skip(1))
-            {
-                var newBoardStates = new List<System.Collections.Generic.IEnumerable<List<Coordinate>>>();
-                foreach (var placement in PossiblePlacements(boat))
-                {
-                    foreach (var boardState in existingBoardStates)
-                    {
-                        if (!Overlaps(boardState, placement))
-                        {
-                            newBoardStates.Add(boardState.Append(BoatCoordinates(placement).ToList()).ToList());
-                        }
-                    }
-                }
-
-                existingBoardStates = newBoardStates;
-            }
-
-            Console.WriteLine(existingBoardStates.Count());
-        }
-
-        private static System.Collections.Generic.IEnumerable<Placement> PossiblePlacements(Boat boat)
-        {
-            for (int i = 0; i < 10; ++i)
-            {
-                for (int j = 0; j < 10; ++j)
-                {
-                    foreach (var orientation in new[] { true, false })
-                    {
-                        var placement = new Placement(boat, new Coordinate(i, j), orientation);
-                        if (Fits(placement))
-                        {
-                            yield return placement;
-                        }
-                    }
-                }
-            }
-        }
-
-        private static void DoWork3()
+        private static void GenerateLegalBoards()
         {
             var start = DateTime.UtcNow;
             var workingDirectory = "C:\\github\\battleship_board_states";
 
             long id = 0;
-            var filePath = Path.Combine(workingDirectory, $"{id}.txt");
+            var filePath = Path.Combine(workingDirectory, $"{id}.txt"); //// TODO this should be a ".bin" file
             using (var file = File.OpenWrite(filePath))
             {
                 foreach (var board in LegalBoards())
@@ -627,7 +371,7 @@
             }
         }
 
-        public static void DoWork4()
+        public static void DisplayRandomBoard()
         {
             var filePath = "C:\\github\\battleship_board_states\\0.txt";
 
@@ -750,6 +494,11 @@
                         }
                     }
                 }
+            }
+
+            public BattleshipSetup(Boat?[][] squares)
+            {
+                Squares = squares;
             }
 
             public Boat?[][] Squares { get; }
@@ -1491,9 +1240,9 @@
                 {
                     return this.SelectMove(game);
                 }
-                    ///}
+                ///}
 
-                    throw new Exception("TODO");
+                throw new Exception("TODO");
             }
 
             private static Coordinate GetNextMove(Battleship game, Coordinate lastMove, int distance)
@@ -1781,7 +1530,7 @@
                             }
                         }
                         else
-                        { 
+                        {
                             var extremes = DetermineExtremes(game, boat, i, j, axis.Value);
                             if (axis.Value)
                             {
@@ -1852,8 +1601,8 @@
         }
 
         private static ((int x, int y) min, (int x, int y) max) DetermineExtremes(
-            Battleship game, 
-            Boat boat, 
+            Battleship game,
+            Boat boat,
             int i,
             int j,
             bool leftToRight)
@@ -1952,6 +1701,83 @@
             return false;
         }
 
+        public interface ITransform
+        {
+            Coordinate Transform(Coordinate coordinate);
+        }
+
+        public static class Transform
+        {
+            public static ITransform MirrorOverX { get; } = MirrorOverXTransform.Instance;
+
+            private sealed class MirrorOverXTransform : ITransform
+            {
+                private MirrorOverXTransform()
+                {
+                }
+
+                public static MirrorOverXTransform Instance { get; } = new MirrorOverXTransform();
+
+                public Coordinate Transform(Coordinate coordinate)
+                {
+                    return new Coordinate(9 - coordinate.X, coordinate.Y);
+                }
+            }
+
+            public static ITransform MirrorOverY { get; } = MirrorOverYTransform.Instance;
+
+            private sealed class MirrorOverYTransform : ITransform
+            {
+                private MirrorOverYTransform()
+                {
+                }
+
+                public static MirrorOverYTransform Instance { get; } = new MirrorOverYTransform();
+
+                public Coordinate Transform(Coordinate coordinate)
+                {
+                    return new Coordinate(coordinate.X, 9 - coordinate.Y);
+                }
+            }
+
+            public static ITransform MirrorOver45 { get; } = MirrorOver45Transform.Instance;
+
+            private sealed class MirrorOver45Transform : ITransform
+            {
+                private MirrorOver45Transform()
+                {
+                }
+
+                public static MirrorOver45Transform Instance { get; } = new MirrorOver45Transform();
+
+                public Coordinate Transform(Coordinate coordinate)
+                {
+                    return new Coordinate(9 - coordinate.X, 9 - coordinate.Y);
+                }
+            }
+        }
+
+        private static BattleshipSetup TransformSetup(BattleshipSetup setup, ITransform transform)
+        {
+            var squares = new Boat?[10][];
+            for (int i = 0; i < 10; ++i)
+            {
+                squares[i] = new Boat?[10];
+            }
+
+            for (int i = 0; i < 10; ++i)
+            {
+                for (int j = 0; j < 10; ++j)
+                {
+                    var coordinate = new Coordinate(i, j);
+                    var transformedCoordinate = transform.Transform(coordinate);
+
+                    squares[transformedCoordinate.X][transformedCoordinate.Y] = setup.Squares[i][j];
+                }
+            }
+
+            return new BattleshipSetup(squares);
+        }
 
         private static readonly IReadOnlyList<(string, Action)> games = new (string, Action)[]
         {
@@ -1980,8 +1806,6 @@
 
         static void Main(string[] args)
         {
-            ////DoWork4();
-
             ////Fx.Games.Game.NewAttempt.CreateOrdered();
 
             for (int i = 0; true; ++i)
@@ -2028,41 +1852,76 @@
             ////var ticks = 158349719;
             ////var ticks = 159575046;
             ////var ticks = 165841500;
-            var ticks = 165841503;
-            ////var ticks = Environment.TickCount;
+            ////var ticks = 165841503;
+            var ticks = Environment.TickCount;
             var average = 0;
-            var length = 10000;
-            for (int i = 0; i < length; ++i)
+            var length = 100000;
+            for (int i = 0; true; ++i)
             {
-                ticks += i;
-                Console.WriteLine(ticks);
+                ++ticks;
+                ////Console.WriteLine(ticks);
                 var random = new Random(ticks);
 
                 var filePath = "C:\\github\\battleship_board_states\\0.txt";
-                Battleship battleship;
+                BattleshipSetup setup;
                 using (var file = File.OpenRead(filePath))
                 {
                     var setupStore = new StreamSetupStore(file);
                     var next = random.NextInt64(0, 30_093_975_536); //// TODO add the count to the file
 
-                    var setup = setupStore.Get(next);
-                    DisplaySetup(setup);
-
-                    battleship = new Battleship(setup, player1);
+                    setup = setupStore.Get(next);
                 }
 
-                var driver = Driver.Create(
-                    new[]
-                    {
+                
+                Battleship result;
+                {
+                    var strategy = new BattleshipReverseDistance();
+                    ////DisplaySetup(setup);
+                    var battleship = new Battleship(setup, player1);
+
+                    var driver = Driver.Create(
+                        new[]
+                        {
                         ////KeyValuePair.Create(player1, new BattleshipNaive()),
-                        KeyValuePair.Create(player1, new BattleshipReverseDistance()),
-                        ////KeyValuePair.Create(player1, BattleshipConsoleStrategy.Instance),
-                        ////KeyValuePair.Create(player1, new RandomStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>()),
-                    }.ToDb().ToDictionary(),
-                    displayer);
-                var result = driver.Run(battleship);
+                        KeyValuePair.Create(player1, strategy),
+                            ////KeyValuePair.Create(player1, BattleshipConsoleStrategy.Instance),
+                            ////KeyValuePair.Create(player1, new RandomStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>()),
+                        }.ToDb().ToDictionary(),
+                        displayer);
+                    result = driver.Run(battleship);
+                }
 
                 average += result.MoveCount;
+
+                var transforms = new[] { Transform.MirrorOverX, Transform.MirrorOverY, Transform.MirrorOver45 };
+                var miniAverage = result.MoveCount;
+                if (result.MoveCount > 50)
+                {
+                    foreach (var transform in transforms)
+                    {
+                        var strategy = new BattleshipReverseDistance();
+                        var transformedSetup = TransformSetup(setup, transform);
+                        ////DisplaySetup(transformedSetup);
+                        var battleship = new Battleship(transformedSetup, player1);
+
+                        var driver = Driver.Create(
+                            new[]
+                            {
+                                KeyValuePair.Create(player1, strategy),
+                            }.ToDb().ToDictionary(),
+                            displayer);
+                        result = driver.Run(battleship);
+
+                        miniAverage += result.MoveCount;
+                    }
+
+                    var actualAverage = miniAverage / (transforms.Length + 1);
+                    if (actualAverage > 60)
+                    {
+                        Console.WriteLine($"A variation was found that averaged {actualAverage} moves using seed {ticks}:");
+                        DisplaySetup(setup);
+                    }
+                }
             }
 
             Console.WriteLine(average / length);
