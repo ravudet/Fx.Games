@@ -88,40 +88,6 @@
             public long Y { get; }
         }
 
-        public sealed class CoordinateComparer : IEqualityComparer<Coordinate>
-        {
-            private CoordinateComparer()
-            {
-            }
-
-            public static CoordinateComparer Instance { get; } = new CoordinateComparer();
-
-            public bool Equals(Coordinate? x, Coordinate? y)
-            {
-                if (object.ReferenceEquals(x, y))
-                {
-                    return true;
-                }
-
-                if (x == null)
-                {
-                    return false;
-                }
-
-                if (y == null)
-                {
-                    return false;
-                }
-
-                return x.X == y.X && x.Y == y.Y;
-            }
-
-            public int GetHashCode(Coordinate obj)
-            {
-                return obj.X.GetHashCode() ^ obj.Y.GetHashCode();
-            }
-        }
-
         public sealed class Placement
         {
             public Placement(Boat boat, Coordinate coordinate, bool leftToRight)
@@ -134,40 +100,6 @@
             public Boat Boat { get; }
             public Coordinate Coordinate { get; }
             public bool LeftToRight { get; }
-        }
-
-        public sealed class PlacementComparer : IEqualityComparer<Placement>
-        {
-            private PlacementComparer()
-            {
-            }
-
-            public static PlacementComparer Instance { get; } = new PlacementComparer();
-
-            public bool Equals(Placement? x, Placement? y)
-            {
-                if (object.ReferenceEquals(x, y))
-                {
-                    return true;
-                }
-
-                if (x == null)
-                {
-                    return false;
-                }
-
-                if (y == null)
-                {
-                    return false;
-                }
-
-                return BoatComparer.Instance.Equals(x.Boat, y.Boat) && CoordinateComparer.Instance.Equals(x.Coordinate, y.Coordinate) && x.LeftToRight == y.LeftToRight;
-            }
-
-            public int GetHashCode(Placement obj)
-            {
-                return BoatComparer.Instance.GetHashCode(obj.Boat) ^ CoordinateComparer.Instance.GetHashCode(obj.Coordinate) ^ obj.LeftToRight.GetHashCode();
-            }
         }
 
         private static void GenerateLegalBoards()
