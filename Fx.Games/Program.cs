@@ -218,6 +218,17 @@
             }
         }
 
+        /// <summary>
+        /// The returned "placement" is 16 bits with a format of:
+        /// 
+        /// rrrrrrrxxxxyyyyo
+        /// 
+        /// where r is a reserved bit and should be 0; x is the "x" coordinate of the boat; y is the "y" coordinate of the boat; o is the orientation of the boat, where 0 indicates left-to-right and 1 indicates top-to-bottom
+        /// 
+        /// this will return (10 - length + 1) * 2 total placements
+        /// </summary>
+        /// <param name="length"></param>
+        /// <returns></returns>
         private static System.Collections.Generic.IEnumerable<(short Placement, UInt128 Bitboard)> PossiblePlacements(int length)
         {
             for (byte i = 0; i < 10 - (length - 1); ++i)
