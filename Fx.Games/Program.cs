@@ -1792,6 +1792,10 @@
         {
             //// TODO now that you have all of the legal setups, you can create a "heat map" which shows, for each square, the probability that a boat is in that square; you should shoot the squares with the highest probability first //// TODO this strategy feels like it could be gamed by someone who know the heatmap
 
+            //// TODO should you orient the boat before continuing with the distance strategy?
+            //// TODO should you destroy the boat before continuing with the distance strategy?
+            //// TODO you boat destruction algorithm doesn't try to leverage any knowledge of the strategy; there might be strategies that can use more optimized tactics
+
             ////var displayer = BattleshipDisplayer.Instance;
             var displayer = NullDisplayer<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>.Instance;
             var player1 = "player1";
