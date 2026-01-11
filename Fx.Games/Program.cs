@@ -1790,6 +1790,8 @@
 
         private static void BattleshipConsole()
         {
+            //// TODO now that you have all of the legal setups, you can create a "heat map" which shows, for each square, the probability that a boat is in that square; you should shoot the squares with the highest probability first //// TODO this strategy feels like it could be gamed by someone who know the heatmap
+
             ////var displayer = BattleshipDisplayer.Instance;
             var displayer = NullDisplayer<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>.Instance;
             var player1 = "player1";
