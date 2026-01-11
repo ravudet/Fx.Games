@@ -1794,7 +1794,7 @@
 
             //// TODO should you orient the boat before continuing with the distance strategy?
             //// TODO should you destroy the boat before continuing with the distance strategy?
-            //// TODO you boat destruction algorithm doesn't try to leverage any knowledge of the strategy; there might be strategies that can use more optimized tactics
+            //// TODO you boat destruction algorithm doesn't try to leverage any knowledge of the strategy; there might be strategies that can use more optimized tactics //// TODO also, your boat destruction algorithm treats every boat the same; there might be optimizations available for boats of specific sizes
 
             ////var displayer = BattleshipDisplayer.Instance;
             var displayer = NullDisplayer<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>.Instance;
