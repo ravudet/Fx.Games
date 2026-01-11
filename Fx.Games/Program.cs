@@ -22,6 +22,7 @@
     using Fx.Games.Displayer;
     using Fx.Games.Driver;
     using Fx.Games.Game;
+    using Fx.Games.Game.Amazons;
     using Fx.Games.Strategy;
 
     using static ConsoleApplication1.Program;
@@ -1792,6 +1793,12 @@
             ////var displayer = BattleshipDisplayer.Instance;
             var displayer = NullDisplayer<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>.Instance;
             var player1 = "player1";
+
+            // interesting seeds:
+            // 59 moves seed: 175297017
+            // 59 moves seed: 175363003
+            // 60 moves seed: 175393835
+            // 61 moves seed: 300138036
 
             ////var ticks = 155221062;
             ////var ticks = 158349719;
