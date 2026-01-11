@@ -134,11 +134,13 @@
 
         private static System.Collections.Generic.IEnumerable<long> LegalBoards()
         {
-            var destroyer = PossiblePlacements(2).ToList();
-            var cruiser = PossiblePlacements(3).ToList();
-            var submarine = PossiblePlacements(3).ToList();
-            var battleship = PossiblePlacements(4).ToList();
-            var carrier = PossiblePlacements(5).ToList();
+            var destroyer = PossiblePlacements(2).ToList(); // 90 * 2 possible placements
+            var cruiser = PossiblePlacements(3).ToList(); // 80 * 2 possible placemenets
+            var submarine = PossiblePlacements(3).ToList(); // 80 * 2 possible placements
+            var battleship = PossiblePlacements(4).ToList(); // 70 * 2 possible placements
+            var carrier = PossiblePlacements(5).ToList(); // 60 * 2 possible placements
+
+            // there are a maximum of 90 * 2 * 80 * 2 * 80 * 2 * 70 * 2 * 60 * 2 = (20 ^ 5) * (9 * 8 * 8 * 7 * 6) = 77,414,400,000 placements to test
 
             long count = 0;
             foreach (var destroyerPlacement in destroyer)
