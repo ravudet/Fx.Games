@@ -1444,8 +1444,17 @@
             }
         }
 
-
         private static Coordinate DestroyShips(Battleship game)
+        {
+            if (!TryDestroyShips(game, out var coordinate))
+            {
+                throw new Exception("TODO the game is still in progress, but the strategy thinks we've sunk all the ships");
+            }
+            
+            return coordinate;
+        }
+
+        private static bool TryDestroyShips(Battleship game, [MaybeNullWhen(false)] out Coordinate coordinate)
         {
             for (int i = 0; i < 10; ++i)
             {
@@ -1457,25 +1466,24 @@
                         var axis = DetermineAxis(game, boat, i, j);
                         if (axis == null)
                         {
-                            Coordinate? coordinate;
                             if (TryShoot(game, i, j + 1, out coordinate))
                             {
-                                return coordinate;
+                                return true;
                             }
 
                             if (TryShoot(game, i + 1, j, out coordinate))
                             {
-                                return coordinate;
+                                return true;
                             }
 
                             if (TryShoot(game, i, j - 1, out coordinate))
                             {
-                                return coordinate;
+                                return true;
                             }
 
                             if (TryShoot(game, i - 1, j, out coordinate))
                             {
-                                return coordinate;
+                                return true;
                             }
                         }
                         else
@@ -1488,9 +1496,9 @@
                                 {
                                     for (int k = 0; k < boat.Length; ++k)
                                     {
-                                        if (TryShoot(game, i, extremes.min.y + k, out var coordinate))
+                                        if (TryShoot(game, i, extremes.min.y + k, out coordinate))
                                         {
-                                            return coordinate;
+                                            return true;
                                         }
                                     }
                                 }
@@ -1498,15 +1506,14 @@
                                 {
                                     for (int k = 0; k < 10; ++k)
                                     {
-                                        Coordinate? coordinate;
                                         if (TryShoot(game, extremes.min.x, extremes.max.y + k, out coordinate))
                                         {
-                                            return coordinate;
+                                            return true;
                                         }
 
                                         if (TryShoot(game, extremes.min.x, extremes.min.y - k, out coordinate))
                                         {
-                                            return coordinate;
+                                            return true;
                                         }
                                     }
                                 }
@@ -1518,9 +1525,9 @@
                                 {
                                     for (int k = 0; k < boat.Length; ++k)
                                     {
-                                        if (TryShoot(game, extremes.min.x + k, j, out var coordinate))
+                                        if (TryShoot(game, extremes.min.x + k, j, out coordinate))
                                         {
-                                            return coordinate;
+                                            return true;
                                         }
                                     }
                                 }
@@ -1528,15 +1535,14 @@
                                 {
                                     for (int k = 0; k < 10; ++k)
                                     {
-                                        Coordinate? coordinate;
                                         if (TryShoot(game, extremes.max.x + k, extremes.min.y, out coordinate))
                                         {
-                                            return coordinate;
+                                            return true;
                                         }
 
                                         if (TryShoot(game, extremes.min.x - k, extremes.min.y, out coordinate))
                                         {
-                                            return coordinate;
+                                            return true;
                                         }
                                     }
                                 }
@@ -1546,7 +1552,8 @@
                 }
             }
 
-            throw new Exception("TODO the game is still in progress, but the strategy thinks we've sunk all the ships");
+            coordinate = default;
+            return false;
         }
 
         private static ((int x, int y) min, (int x, int y) max) DetermineExtremes(
@@ -1906,14 +1913,12 @@
             {
                 if (this.destroyingBoats)
                 {
-                    try
+                    if (Program.TryDestroyShips(game, out var coordinate))
                     {
-                        return Program.DestroyShips(game);
+                        return coordinate;
                     }
-                    catch (Exception) //// TODO catch the correct exception type
-                    {
-                        this.destroyingBoats = false;
-                    }
+
+                    this.destroyingBoats = false;
                 }
                 else if (this.lastMove != null)
                 {
@@ -2127,7 +2132,7 @@
             ////var ticks = 165841503;
             var ticks = Environment.TickCount;
             var average = 0;
-            var length = 10000;
+            var length = 1000;
             for (int i = 0; i < length; ++i)
             {
                 ++ticks;
