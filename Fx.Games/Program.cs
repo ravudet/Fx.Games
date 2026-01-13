@@ -1938,8 +1938,17 @@
                                 Min(squaresAbove, squaresBelow, boat.Length - 1) +
                                 2;
                         }
+
+                        if (currentTemperature >= temperature)
+                        {
+                            currentTemperature = temperature;
+                            x = i;
+                            y = j;
+                        }
                     }
                 }
+
+                return new Coordinate(x, y);
             }
 
             private static int Min(int x, int y, int z)
