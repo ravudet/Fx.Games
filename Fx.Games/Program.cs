@@ -1725,6 +1725,84 @@
             return new BattleshipSetup(squares);
         }
 
+        public sealed class HardcodedSquares : IStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>
+        {
+            private readonly IReadOnlyList<Coordinate> squares;
+
+            private int index;
+
+            public HardcodedSquares(IReadOnlyList<Coordinate> squares)
+            {
+                this.squares = squares;
+
+                this.index = -1;
+            }
+
+            public Coordinate SelectMove(Battleship game)
+            {
+                if (++this.index < this.squares.Count)
+                {
+                    return this.squares[this.index];
+                }
+
+                return Program.DestroyShips(game);
+            }
+
+            public static IReadOnlyList<Coordinate> _2sHeatmap { get; } = new[]
+            {
+                new Coordinate(4, 5),
+                new Coordinate(5, 6),
+                new Coordinate(6, 5),
+                new Coordinate(5, 4),
+                new Coordinate(3, 6),
+                new Coordinate(4, 7),
+                new Coordinate(6, 7),
+                new Coordinate(3, 4),
+                new Coordinate(5, 8),
+                new Coordinate(7, 6),
+                new Coordinate(4, 3),
+                new Coordinate(2, 5),
+                new Coordinate(2, 7),
+                new Coordinate(3, 8),
+                new Coordinate(7, 4),
+                new Coordinate(6, 3),
+                new Coordinate(2, 3),
+                new Coordinate(7, 8),
+                new Coordinate(1, 6),
+                new Coordinate(4, 9),
+                new Coordinate(8, 5),
+                new Coordinate(5, 2),
+                new Coordinate(3, 2),
+                new Coordinate(1, 4),
+                new Coordinate(6, 9),
+                new Coordinate(8, 7),
+                new Coordinate(1, 8),
+                new Coordinate(2, 9),
+                new Coordinate(8, 3),
+                new Coordinate(7, 2),
+                new Coordinate(4, 1),
+                new Coordinate(0, 5),
+                new Coordinate(5, 10),
+                new Coordinate(9, 6),
+                new Coordinate(9, 4),
+                new Coordinate(6, 1),
+                new Coordinate(0, 7),
+                new Coordinate(3, 10),
+                new Coordinate(8, 9),
+                new Coordinate(1, 2),
+                new Coordinate(0, 3),
+                new Coordinate(7, 10),
+                new Coordinate(9, 8),
+                new Coordinate(2, 1),
+                new Coordinate(0, 9),
+                new Coordinate(1, 10),
+                new Coordinate(9, 2),
+                new Coordinate(8, 1),
+                new Coordinate(0, 1),
+                new Coordinate(9, 10),
+            };
+        }
+
         private static readonly IReadOnlyList<(string, Action)> games = new (string, Action)[]
         {
             (nameof(PegsRandom), PegsRandom),
