@@ -1968,7 +1968,8 @@
 
                 Func<IStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>> strategyFactory =
                     ////() => new BattleshipReverseDistance();
-                    () => new HardcodedSquares(HardcodedSquares._2sHeatmap);
+                    ////() => new HardcodedSquares(HardcodedSquares._2sHeatmap);
+                    () => new HardcodedSquares(new[] { HardcodedSquares._4sHeatmap, HardcodedSquares._2sHeatmap });
 
                 Battleship result;
                 {
