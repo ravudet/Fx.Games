@@ -708,6 +708,19 @@
             {
                 get
                 {
+                    /*var results = this.battleshipShotResults.Shots.Select(row => row.ToArray()).ToArray();
+                    for (int i = 0; i < 10; ++i)
+                    {
+                        for (int j = 0; j < 10; ++j)
+                        {
+                            if (results[i][j] is BattleshipShotResult.Hit)
+                            {
+                                results[i][j] = BattleshipShotResult.Miss.Instance;
+                            }
+                        }
+                    }
+
+                    return new BattleshipShotResults(results);*/
                     return this.battleshipShotResults;
                 }
             }
@@ -2115,8 +2128,8 @@
             //// TODO should you destroy the boat before continuing with the distance strategy?
             //// TODO you boat destruction algorithm doesn't try to leverage any knowledge of the strategy; there might be strategies that can use more optimized tactics //// TODO also, your boat destruction algorithm treats every boat the same; there might be optimizations available for boats of specific sizes
 
-            var displayer = BattleshipDisplayer.Instance;
-            ////var displayer = NullDisplayer<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>.Instance;
+            ////var displayer = BattleshipDisplayer.Instance;
+            var displayer = NullDisplayer<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>.Instance;
             var player1 = "player1";
 
             // interesting seeds:
