@@ -2132,7 +2132,7 @@
             ////var ticks = 165841503;
             var ticks = Environment.TickCount;
             var average = 0;
-            var length = 1000;
+            var length = 10000;
             for (int i = 0; i < length; ++i)
             {
                 ++ticks;
