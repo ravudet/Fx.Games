@@ -1909,7 +1909,10 @@
                 }
 
 
-                Func<IStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>> strategyFactory = () => new BattleshipReverseDistance();
+                Func<IStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>> strategyFactory =
+                    ////() => new BattleshipReverseDistance();
+                    () => new HardcodedSquares(HardcodedSquares._2sHeatmap);
+
                 Battleship result;
                 {
                     var strategy = strategyFactory();
