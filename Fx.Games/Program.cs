@@ -1629,7 +1629,7 @@
             return false;
         }
 
-        private static bool TryShoot(Battleship game, int i, int j, [MaybeNullWhen(false)] out Coordinate coordinate)
+        private static bool TryShoot(Battleship game, long i, long j, [MaybeNullWhen(false)] out Coordinate coordinate)
         {
             if (i >= 10 || i < 0 || j >= 10 || j < 0)
             {
@@ -1757,7 +1757,14 @@
                 if (++this.squareIndex < sequence.Count)
                 {
                     var square = sequence[this.squareIndex];
-                    return square;
+                    if (Program.TryShoot(game, square.X, square.Y, out _))
+                    {
+                        return square;
+                    }
+                    else
+                    {
+                        return this.SelectMove(game);
+                    }
                 }
                 else
                 {
@@ -1824,7 +1831,32 @@
 
             public static IReadOnlyList<Coordinate> _4sHeatmap { get; } = new[]
             {
-
+                new Coordinate(4, 1),
+                new Coordinate(5, 6),
+                new Coordinate(6, 7),
+                new Coordinate(3, 4),
+                new Coordinate(2, 7),
+                new Coordinate(3, 8),
+                new Coordinate(7, 4),
+                new Coordinate(6, 3),
+                new Coordinate(2, 3),
+                new Coordinate(7, 8),
+                new Coordinate(5, 2),
+                new Coordinate(1, 6),
+                new Coordinate(4, 9),
+                new Coordinate(8, 5),
+                new Coordinate(4, 1),
+                new Coordinate(0, 5),
+                new Coordinate(5, 10),
+                new Coordinate(9, 6),
+                new Coordinate(1, 2),
+                new Coordinate(8, 9),
+                new Coordinate(9, 2),
+                new Coordinate(8, 1),
+                new Coordinate(0, 9),
+                new Coordinate(1, 10),
+                new Coordinate(0, 1),
+                new Coordinate(9, 10),
             };
         }
 
