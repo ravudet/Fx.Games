@@ -1727,25 +1727,45 @@
 
         public sealed class HardcodedSquares : IStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>
         {
-            private readonly IReadOnlyList<Coordinate> squares;
+            private readonly IReadOnlyList<IReadOnlyList<Coordinate>> squares;
 
-            private int index;
+            private int squareIndex;
+
+            private int sequenceIndex;
 
             public HardcodedSquares(IReadOnlyList<Coordinate> squares)
+                : this(new[] { squares })
+            {
+            }
+
+            public HardcodedSquares(IReadOnlyList<IReadOnlyList<Coordinate>> squares)
             {
                 this.squares = squares;
 
-                this.index = -1;
+                this.squareIndex = -1;
+                this.sequenceIndex = 0;
             }
 
             public Coordinate SelectMove(Battleship game)
             {
-                if (++this.index < this.squares.Count)
+                if (this.sequenceIndex >= this.squares.Count)
                 {
-                    return this.squares[this.index];
+                    return Program.DestroyShips(game);
                 }
 
-                return Program.DestroyShips(game);
+                var sequence = this.squares[this.sequenceIndex];
+                if (++this.squareIndex < sequence.Count)
+                {
+                    var square = sequence[this.squareIndex];
+                    return square;
+                }
+                else
+                {
+                    ++this.sequenceIndex;
+                    this.squareIndex = -1;
+
+                    return this.SelectMove(game);
+                }
             }
 
             public static IReadOnlyList<Coordinate> _2sHeatmap { get; } = new[]
@@ -1800,6 +1820,11 @@
                 new Coordinate(8, 0),
                 new Coordinate(0, 0),
                 new Coordinate(9, 9),
+            };
+
+            public static IReadOnlyList<Coordinate> _4sHeatmap { get; } = new[]
+            {
+
             };
         }
 
