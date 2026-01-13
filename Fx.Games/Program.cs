@@ -1891,8 +1891,8 @@
             ////var ticks = 165841503;
             var ticks = Environment.TickCount;
             var average = 0;
-            var length = 100000;
-            for (int i = 0; true; ++i)
+            var length = 10000;
+            for (int i = 0; i < length; ++i)
             {
                 ++ticks;
                 ////Console.WriteLine(ticks);
@@ -1908,10 +1908,11 @@
                     setup = setupStore.Get(next);
                 }
 
-                
+
+                Func<IStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>> strategyFactory = () => new BattleshipReverseDistance();
                 Battleship result;
                 {
-                    var strategy = new BattleshipReverseDistance();
+                    var strategy = strategyFactory();
                     ////DisplaySetup(setup);
                     var battleship = new Battleship(setup, player1);
 
@@ -1929,13 +1930,13 @@
 
                 average += result.MoveCount;
 
-                var transforms = new[] { Transform.MirrorOverX, Transform.MirrorOverY, Transform.MirrorOver45 };
+                /*var transforms = new[] { Transform.MirrorOverX, Transform.MirrorOverY, Transform.MirrorOver45 };
                 var miniAverage = result.MoveCount;
                 if (result.MoveCount > 50)
                 {
                     foreach (var transform in transforms)
                     {
-                        var strategy = new BattleshipReverseDistance();
+                        var strategy = strategyFactory();
                         var transformedSetup = TransformSetup(setup, transform);
                         ////DisplaySetup(transformedSetup);
                         var battleship = new Battleship(transformedSetup, player1);
@@ -1957,7 +1958,7 @@
                         Console.WriteLine($"A variation was found that averaged {actualAverage} moves using seed {ticks}:");
                         DisplaySetup(setup);
                     }
-                }
+                }*/
             }
 
             Console.WriteLine(average / length);
