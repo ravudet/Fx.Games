@@ -6,6 +6,7 @@
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
+    using System.Numerics;
     using System.Reflection.Metadata.Ecma335;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
@@ -1860,6 +1861,134 @@
             };
         }
 
+        public sealed class HeatmapStrategy : IStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>
+        {
+            private readonly int[][] heatmap;
+
+            private readonly HashSet<Boat> remainingBoats;
+
+            private Coordinate? lastMove;
+
+            private bool destroyingBoats;
+
+            public HeatmapStrategy()
+            {
+                this.heatmap = new int[10][];
+                for (int i = 0; i < this.heatmap.Length; ++i)
+                {
+                    this.heatmap[i] = new int[10];
+                }
+
+                this.remainingBoats = new HashSet<Boat>(
+                    new[]
+                    {
+                        new Boat("destroyer", 2),
+                        new Boat("submarine", 3),
+                        new Boat("cruiser", 3),
+                        new Boat("battleship", 4),
+                        new Boat("carrier", 5),
+                    },
+                    BoatComparer.Instance);
+
+                this.lastMove = null;
+                this.destroyingBoats = false;
+            }
+
+            public Coordinate SelectMove(Battleship game)
+            {
+                if (this.destroyingBoats)
+                {
+                    try
+                    {
+                        Program.DestroyShips(game);
+                    }
+                    catch (Exception) //// TODO catch the correct exception type
+                    {
+                        this.destroyingBoats = false;
+                    }
+                }
+                else if (this.lastMove != null)
+                {
+                    if (game.Board.Shots[this.lastMove.X][this.lastMove.Y] is BattleshipShotResult.Hit hit)
+                    {
+                        this.remainingBoats.Remove(hit.Boat);
+                        this.destroyingBoats = true;
+                        return Program.DestroyShips(game);
+                    }
+                }
+
+                int x = 0;
+                int y = 0;
+                int temperature = 0;
+
+                for (int i = 0; i < 10; ++i)
+                {
+                    for (int j = 0; j < 10; ++j)
+                    {
+                        var squaresToTheLeft = SquaresToTheLeft(game, i, j);
+                        var squaresToTheRight = SquaresToTheRight(game, i, j);
+                        var squaresAbove = SquaresAbove(game, i, j);
+                        var squaresBelow = SquaresBelow(game, i, j);
+
+                        var currentTemperature = 0;
+                        foreach (var boat in this.remainingBoats)
+                        {
+                            currentTemperature +=
+                                Min(squaresToTheLeft, squaresToTheRight, boat.Length - 1) +
+                                Min(squaresAbove, squaresBelow, boat.Length - 1) +
+                                2;
+                        }
+                    }
+                }
+            }
+
+            private static int Min(int x, int y, int z)
+            {
+                return Math.Min(x, Math.Min(y, z));
+            }
+
+            private static int SquaresToTheLeft(Battleship game, int i, int j)
+            {
+                int left;
+                for (left = j; left >= 0 && game.Board.Shots[i][left] is BattleshipShotResult.NoShot; --left)
+                {
+                }
+
+                return j - left - 1;
+            }
+
+            private static int SquaresToTheRight(Battleship game, int i, int j)
+            {
+                int right;
+                for (right = j; right < 10 && game.Board.Shots[i][right] is BattleshipShotResult.NoShot; ++right)
+                {
+                }
+
+                return right - j - 1;
+            }
+
+            private static int SquaresAbove(Battleship game, int i, int j)
+            {
+                int above;
+                for (above = i; above >= 0 && game.Board.Shots[above][j] is BattleshipShotResult.NoShot; --above)
+                {
+                }
+
+                return i - above - 1;
+            }
+
+            private static int SquaresBelow(Battleship game, int i, int j)
+            {
+                int above;
+                for (above = i; above < 10 && game.Board.Shots[above][j] is BattleshipShotResult.NoShot; ++above)
+                {
+                }
+
+                return above - i - 1;
+            }
+        }
+
+
         private static readonly IReadOnlyList<(string, Action)> games = new (string, Action)[]
         {
             (nameof(PegsRandom), PegsRandom),
@@ -1969,12 +2098,13 @@
                 Func<IStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>> strategyFactory =
                     ////() => new BattleshipReverseDistance();
                     ////() => new HardcodedSquares(HardcodedSquares._2sHeatmap);
-                    () => new HardcodedSquares(new[] { HardcodedSquares._4sHeatmap, HardcodedSquares._2sHeatmap });
+                    ////() => new HardcodedSquares(new[] { HardcodedSquares._4sHeatmap, HardcodedSquares._2sHeatmap });
+                    () => new HeatmapStrategy();
 
                 Battleship result;
                 {
                     var strategy = strategyFactory();
-                    ////DisplaySetup(setup);
+                    ////DisplaySetup(setup); 
                     var battleship = new Battleship(setup, player1);
 
                     var driver = Driver.Create(
