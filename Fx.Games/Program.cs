@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Data;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
@@ -1863,7 +1865,7 @@
 
         public sealed class HeatmapStrategy : IStrategy<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>
         {
-            private readonly int[][] heatmap;
+            private readonly (int temperate, int adjacentShots)[][] heatmap;
 
             private readonly HashSet<Boat> remainingBoats;
 
@@ -1873,10 +1875,10 @@
 
             public HeatmapStrategy()
             {
-                this.heatmap = new int[10][];
+                this.heatmap = new (int temperate, int adjacentShots)[10][];
                 for (int i = 0; i < this.heatmap.Length; ++i)
                 {
-                    this.heatmap[i] = new int[10];
+                    this.heatmap[i] = new (int temperate, int adjacentShots)[10];
                 }
 
                 this.remainingBoats = new HashSet<Boat>(
@@ -1896,11 +1898,17 @@
 
             public Coordinate SelectMove(Battleship game)
             {
+                this.lastMove = this.SelectMoveImpl(game);
+                return this.lastMove;
+            }
+
+            private Coordinate SelectMoveImpl(Battleship game)
+            {
                 if (this.destroyingBoats)
                 {
                     try
                     {
-                        Program.DestroyShips(game);
+                        return Program.DestroyShips(game);
                     }
                     catch (Exception) //// TODO catch the correct exception type
                     {
@@ -1917,33 +1925,56 @@
                     }
                 }
 
-                int x = 0;
-                int y = 0;
-                int temperature = 0;
-
                 for (int i = 0; i < 10; ++i)
                 {
                     for (int j = 0; j < 10; ++j)
                     {
-                        var squaresToTheLeft = SquaresToTheLeft(game, i, j);
-                        var squaresToTheRight = SquaresToTheRight(game, i, j);
-                        var squaresAbove = SquaresAbove(game, i, j);
-                        var squaresBelow = SquaresBelow(game, i, j);
-
-                        var currentTemperature = 0;
-                        foreach (var boat in this.remainingBoats)
+                        if (game.Board.Shots[i][j] is BattleshipShotResult.NoShot)
                         {
-                            currentTemperature +=
-                                Min(squaresToTheLeft, squaresToTheRight, boat.Length - 1) +
-                                Min(squaresAbove, squaresBelow, boat.Length - 1) +
-                                2;
+                            var squaresToTheLeft = SquaresToTheLeft(game, i, j);
+                            var squaresToTheRight = SquaresToTheRight(game, i, j);
+                            var squaresAbove = SquaresAbove(game, i, j);
+                            var squaresBelow = SquaresBelow(game, i, j);
+
+                            var currentTemperature = 0;
+                            foreach (var boat in this.remainingBoats)
+                            {
+                                currentTemperature +=
+                                    Min(squaresToTheLeft, squaresToTheRight, boat.Length - 1) +
+                                    Min(squaresAbove, squaresBelow, boat.Length - 1) +
+                                    2;
+                            }
+
+                            var adjacentShots =
+                                IsShot(game, i + 1, j) +
+                                IsShot(game, i - 1, j) +
+                                IsShot(game, i, j + 1) +
+                                IsShot(game, i, j - 1);
+
+                            this.heatmap[i][j] = (currentTemperature, adjacentShots);
                         }
-
-                        if (currentTemperature >= temperature)
+                        else
                         {
-                            currentTemperature = temperature;
-                            x = i;
-                            y = j;
+                            this.heatmap[i][j] = (0, 0);
+                        }
+                    }
+                }
+
+                var (x, y) = (0, 0);
+                int temperature = 0;
+                int shots = 4;
+                for (int i = 0; i < 10; ++i)
+                {
+                    for (int j = 0; j < 10; ++j)
+                    {
+                        var currentTemperate = this.heatmap[i][j].temperate;
+                        var currentShots = this.heatmap[i][j].adjacentShots;
+                        if (currentTemperate > temperature ||
+                            (currentTemperate == temperature && currentShots <= shots))
+                        {
+                            temperature = currentTemperate;
+                            shots = currentShots;
+                            (x, y) = (i, j);
                         }
                     }
                 }
@@ -1954,6 +1985,16 @@
             private static int Min(int x, int y, int z)
             {
                 return Math.Min(x, Math.Min(y, z));
+            }
+
+            private static int IsShot(Battleship game, int i, int j)
+            {
+                if (i < 0 || i > 9 || j < 0 || j > 9)
+                {
+                    return 0;
+                }
+
+                return game.Board.Shots[i][j] is BattleshipShotResult.NoShot ? 0 : 1;
             }
 
             private static int SquaresToTheLeft(Battleship game, int i, int j)
