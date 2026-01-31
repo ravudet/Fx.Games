@@ -2362,8 +2362,8 @@
             //// TODO should you destroy the boat before continuing with the distance strategy?
             //// TODO you boat destruction algorithm doesn't try to leverage any knowledge of the strategy; there might be strategies that can use more optimized tactics //// TODO also, your boat destruction algorithm treats every boat the same; there might be optimizations available for boats of specific sizes
 
-            var displayer = BattleshipDisplayer.Instance;
-            ////var displayer = NullDisplayer<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>.Instance;
+            ////var displayer = BattleshipDisplayer.Instance;
+            var displayer = NullDisplayer<Battleship, BattleshipShotResults, Coordinate, string, Univariate<Battleship>>.Instance;
             var player1 = "player1";
 
             // interesting seeds:
@@ -2379,7 +2379,7 @@
             ////var ticks = 165841503;
             var ticks = Environment.TickCount;
             var average = 0;
-            var length = 1;
+            var length = 1000;
             for (int i = 0; i < length; ++i)
             {
                 ++ticks;
@@ -2454,7 +2454,7 @@
                 }*/
             }
 
-            Console.WriteLine(average / length);
+            Console.WriteLine((double)average / length);
         }
 
         private static void ConnectFourDecisionVersusHuman()
