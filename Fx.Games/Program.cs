@@ -1,6 +1,7 @@
 ﻿namespace ConsoleApplication1
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Data;
@@ -14,6 +15,7 @@
     using System.Runtime.InteropServices;
     using System.Security.Cryptography.X509Certificates;
     using System.Text.Json.Serialization;
+    using System.Text.Json.Serialization.Metadata;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -708,7 +710,7 @@
             {
                 get
                 {
-                    var results = this.battleshipShotResults.Shots.Select(row => row.ToArray()).ToArray();
+                    /*var results = this.battleshipShotResults.Shots.Select(row => row.ToArray()).ToArray();
                     for (int i = 0; i < 10; ++i)
                     {
                         for (int j = 0; j < 10; ++j)
@@ -720,8 +722,8 @@
                         }
                     }
 
-                    return new BattleshipShotResults(results);
-                    ////return this.battleshipShotResults;
+                    return new BattleshipShotResults(results);*/
+                    return this.battleshipShotResults;
                 }
             }
 
@@ -1463,7 +1465,7 @@
             {
                 throw new Exception("TODO the game is still in progress, but the strategy thinks we've sunk all the ships");
             }
-            
+
             return coordinate;
         }
 
@@ -1501,6 +1503,17 @@
                         }
                         else
                         {
+                            Func<Battleship, int, int, bool> isTerminal = (game, x, y) =>
+                            {
+                                if (x < 0 || x >= 10 || y < 0 || y >= 10)
+                                {
+                                    return true;
+                                }
+
+                                var shot = game.Board.Shots[x][y];
+                                return shot is BattleshipShotResult.Miss || (shot is BattleshipShotResult.Hit ahit && !BoatComparer.Instance.Equals(ahit.Boat, boat));
+                            };
+
                             var extremes = DetermineExtremes(game, boat, i, j, axis.Value);
                             if (axis.Value)
                             {
@@ -1519,14 +1532,20 @@
                                 {
                                     for (int k = 0; k < 10; ++k)
                                     {
-                                        if (TryShoot(game, extremes.min.x, extremes.max.y + k, out coordinate))
+                                        if (!isTerminal(game, extremes.min.x, extremes.max.y + 1))
                                         {
-                                            return true;
+                                            if (TryShoot(game, extremes.min.x, extremes.max.y + k, out coordinate))
+                                            {
+                                                return true;
+                                            }
                                         }
 
-                                        if (TryShoot(game, extremes.min.x, extremes.min.y - k, out coordinate))
+                                        if (!isTerminal(game, extremes.min.x, extremes.min.y - 1))
                                         {
-                                            return true;
+                                            if (TryShoot(game, extremes.min.x, extremes.min.y - k, out coordinate))
+                                            {
+                                                return true;
+                                            }
                                         }
                                     }
                                 }
@@ -1548,14 +1567,20 @@
                                 {
                                     for (int k = 0; k < 10; ++k)
                                     {
-                                        if (TryShoot(game, extremes.max.x + k, extremes.min.y, out coordinate))
+                                        if (!isTerminal(game, extremes.max.x + 1, extremes.min.y))
                                         {
-                                            return true;
+                                            if (TryShoot(game, extremes.max.x + k, extremes.min.y, out coordinate))
+                                            {
+                                                return true;
+                                            }
                                         }
 
-                                        if (TryShoot(game, extremes.min.x - k, extremes.min.y, out coordinate))
+                                        if (!isTerminal(game, extremes.min.x - 1, extremes.max.y))
                                         {
-                                            return true;
+                                            if (TryShoot(game, extremes.min.x - k, extremes.min.y, out coordinate))
+                                            {
+                                                return true;
+                                            }
                                         }
                                     }
                                 }
@@ -2120,8 +2145,217 @@
             while (true);
         }
 
+        private static System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<Coordinate>> ShootingPermutations(IReadOnlyList<Coordinate> coordinates)
+        {
+            /*if (ComputedCoordinates[coordinates.Count] != null)
+            {
+                return ComputedCoordinates[coordinates.Count];
+            }*/
+
+            var result = ShootingPermutationsImpl(coordinates); ////.ToList();
+            ////ComputedCoordinates[coordinates.Count] = result;
+            return result;
+        }
+
+        private static System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<Coordinate>> ShootingPermutationsImpl(IReadOnlyList<Coordinate> coordinates)
+        {
+            if (coordinates.Count == 0)
+            {
+
+            }
+
+            if (coordinates.Count == 1)
+            {
+                yield return new[] { coordinates[0] };
+                yield break;
+            }
+
+            for (int i = 0; i < coordinates.Count; ++i)
+            {
+                foreach (var permutation in ShootingPermutationsImpl(Slice(coordinates, i)))
+                {
+                    yield return permutation.Prepend(coordinates[i]);
+                }
+            }
+        }
+
+        private static System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<Coordinate>>[] ComputedCoordinates = new System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<Coordinate>>[18];
+
+        private static IReadOnlyList<T> Slice<T>(IReadOnlyList<T> list, int from)
+        {
+            return new Sliced<T>(list, from);
+        }
+
+        private sealed class Sliced<T> : IReadOnlyList<T>
+        {
+            private readonly IReadOnlyList<T> original;
+            private readonly int from;
+
+            public Sliced(IReadOnlyList<T> original, int from)
+            {
+                this.original = original;
+                this.from = from;
+            }
+
+            public T this[int index]
+            {
+                get
+                {
+                    if (index < this.from)
+                    {
+                        return this.original[index];
+                    }
+
+                    return this.original[index + 1];
+                }
+            }
+
+            public int Count
+            {
+                get
+                {
+                    return this.original.Count - 1;
+                }
+            }
+
+            public System.Collections.Generic.IEnumerator<T> GetEnumerator()
+            {
+                for (int i = 0; i < this.original.Count; ++i)
+                {
+                    if (i != this.from)
+                    {
+                        yield return this.original[i];
+                    }
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+        }
+
+        private static int Shots(
+            HashSet<Coordinate> placements,
+            System.Collections.Generic.IEnumerable<Coordinate> permutation)
+        {
+            int count = 1;
+            foreach (var shot in permutation)
+            {
+                placements.Remove(shot);
+                if (placements.Count == 0)
+                {
+                    return count;
+                }
+
+                ++count;
+            }
+
+            return -1;
+        }
+
+        private sealed class CoodinateComparer : IEqualityComparer<Coordinate>
+        {
+            private CoodinateComparer()
+            {
+            }
+
+            public static CoodinateComparer Instance { get; } = new CoodinateComparer();
+
+            public bool Equals(Coordinate? x, Coordinate? y)
+            {
+                if (object.ReferenceEquals(x, y))
+                {
+                    return true;
+                }
+
+                if (x == null)
+                {
+                    return false;
+                }
+
+                if (y == null)
+                {
+                    return false;
+                }
+
+                return x.X == y.X && x.Y == y.Y;
+            }
+
+            public int GetHashCode([DisallowNull] Coordinate obj)
+            {
+                return obj.X.GetHashCode() ^ obj.Y.GetHashCode();
+            }
+        }
+
         private static void BattleshipConsole()
         {
+            ////var coordinates = Enumerable.Range(0, 9).SelectMany(row => Enumerable.Range(0, 9).Select(column => new Coordinate(row, column))).ToList();
+
+            /*var coordinates = new[]
+            {
+                new Coordinate(4, 0),
+                new Coordinate(4, 1),
+                new Coordinate(4, 2),
+                new Coordinate(4, 3),
+                new Coordinate(4, 4),
+                new Coordinate(4, 5),
+                new Coordinate(4, 6),
+                new Coordinate(4, 7),
+                new Coordinate(4, 8),
+                new Coordinate(0, 4),
+                new Coordinate(1, 4),
+                new Coordinate(2, 4),
+                new Coordinate(3, 4),
+                new Coordinate(5, 4),
+                new Coordinate(6, 4),
+                new Coordinate(7, 4),
+                new Coordinate(8, 4),
+            };
+
+            var permutations = ShootingPermutations(coordinates);
+
+            var placements = new[]
+            {
+                new[] { new Coordinate(4, 0), new Coordinate(4, 1), new Coordinate(4, 2), new Coordinate(4, 3), new Coordinate(4, 4) },
+                new[] { new Coordinate(4, 1), new Coordinate(4, 2), new Coordinate(4, 3), new Coordinate(4, 4), new Coordinate(4, 5) },
+                new[] { new Coordinate(4, 2), new Coordinate(4, 3), new Coordinate(4, 4), new Coordinate(4, 5), new Coordinate(4, 6) },
+                new[] { new Coordinate(4, 3), new Coordinate(4, 4), new Coordinate(4, 5), new Coordinate(4, 6), new Coordinate(4, 7) },
+                new[] { new Coordinate(4, 4), new Coordinate(4, 5), new Coordinate(4, 6), new Coordinate(4, 7), new Coordinate(4, 8) },
+
+                new[] { new Coordinate(0, 4), new Coordinate(1, 4), new Coordinate(2, 4), new Coordinate(3, 4), new Coordinate(4, 4) },
+                new[] { new Coordinate(1, 4), new Coordinate(2, 4), new Coordinate(3, 4), new Coordinate(4, 4), new Coordinate(5, 4) },
+                new[] { new Coordinate(2, 4), new Coordinate(3, 4), new Coordinate(4, 4), new Coordinate(5, 4), new Coordinate(6, 4) },
+                new[] { new Coordinate(3, 4), new Coordinate(4, 4), new Coordinate(5, 4), new Coordinate(6, 4), new Coordinate(7, 4) },
+                new[] { new Coordinate(4, 4), new Coordinate(5, 4), new Coordinate(6, 4), new Coordinate(7, 4), new Coordinate(8, 4) },
+            };
+
+            int index = 0;
+            foreach (var permutation in permutations)
+            {
+                var max = 0;
+                var averageShots = 0;
+                foreach (var placement in placements)
+                {
+                    var shots = Shots(placement.ToHashSet(CoodinateComparer.Instance), permutation);
+                    if (shots == -1)
+                    {
+                        throw new Exception("TODO");
+                    }
+
+                    if (shots > max)
+                    {
+                        max = shots;
+                    }
+
+                    averageShots += shots;
+                }
+
+                Console.WriteLine($"Permutation {index}: max {max}, average {(double)averageShots / placements.Length}");
+
+                ++index;
+            }*/
+
             //// TODO now that you have all of the legal setups, you can create a "heat map" which shows, for each square, the probability that a boat is in that square; you should shoot the squares with the highest probability first //// TODO this strategy feels like it could be gamed by someone who know the heatmap
 
             //// TODO should you orient the boat before continuing with the distance strategy?
